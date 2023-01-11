@@ -1,7 +1,7 @@
 import { Button, ButtonProps, Flex, Spinner } from '@chakra-ui/react';
 import { useDAO, useWallet } from 'contexts';
 import { useDelegation, useMixpanel } from 'hooks';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 interface IDelegateButton extends ButtonProps {
   delegated: string;
@@ -18,9 +18,18 @@ export const DelegateButton: FC<IDelegateButton> = ({
   const { config } = daoInfo;
   const { mixpanel } = useMixpanel();
 
+  const [writeAfterAction, setWriteAfterAction] = useState(false);
+
   const { isLoading, write } = useDelegation({
     delegatee: delegated,
   });
+
+  useEffect(() => {
+    if (write && isConnected && writeAfterAction) {
+      setWriteAfterAction(false);
+      write();
+    }
+  }, [write && isConnected]);
 
   const handleCase = () => {
     mixpanel.reportEvent({
@@ -32,9 +41,12 @@ export const DelegateButton: FC<IDelegateButton> = ({
     }
 
     if (!isConnected) {
+      setWriteAfterAction(true);
       return openConnectModal && openConnectModal();
     }
+
     if (chain && chain.id !== config.DAO_CHAIN.id) {
+      setWriteAfterAction(true);
       return openChainModal && openChainModal();
     }
     return write && write();

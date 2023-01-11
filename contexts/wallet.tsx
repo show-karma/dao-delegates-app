@@ -2,6 +2,7 @@ import React, { useContext, createContext, useMemo } from 'react';
 
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit';
 import { Chain, useAccount, useNetwork } from 'wagmi';
+import { useIsMounted } from 'hooks/useIsMounted';
 
 interface IWalletProps {
   isConnected: boolean;
@@ -21,6 +22,7 @@ interface ProviderProps {
 }
 
 export const WalletProvider: React.FC<ProviderProps> = ({ children }) => {
+  const isMounted = useIsMounted();
   const { openConnectModal } = useConnectModal();
   const { openChainModal } = useChainModal();
   const { isConnected } = useAccount();
@@ -36,11 +38,11 @@ export const WalletProvider: React.FC<ProviderProps> = ({ children }) => {
     [isConnected, openConnectModal, openChainModal, chain]
   );
 
-  return (
+  return isMounted ? (
     <WalletContext.Provider value={providerValue}>
       {children}
     </WalletContext.Provider>
-  );
+  ) : null;
 };
 
 export const useWallet = () => useContext(WalletContext);
