@@ -1,4 +1,5 @@
-import { DAOContainer } from 'containers';
+import UserProfilePage from 'components/pages/profile';
+import { DefaultContainer } from 'containers/default';
 import { DAOProvider } from 'contexts';
 import { daosDictionary } from 'helpers';
 import { GetStaticPaths, GetStaticProps } from 'next';
@@ -49,7 +50,9 @@ interface IIndex {
 
 const User = ({ dao, user }: IIndex) => (
   <DAOProvider selectedDAO={dao} withPathname>
-    <DAOContainer user={user} />
+    <DefaultContainer>
+      <UserProfilePage user={user} />
+    </DefaultContainer>
   </DAOProvider>
 );
 
