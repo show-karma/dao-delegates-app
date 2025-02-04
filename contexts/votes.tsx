@@ -98,7 +98,9 @@ export const VotesProvider: React.FC<ProviderProps> = ({
       ).data.data;
       return breakdown;
     },
-    enabled: !!profile.address,
+    enabled:
+      !!profile.address &&
+      !daoInfo.config?.EXCLUDED_CARD_FIELDS?.includes('offChainVotesPct'),
     cacheTime: 0,
     retry: 2,
     refetchOnWindowFocus: false,
@@ -170,8 +172,16 @@ export const VotesProvider: React.FC<ProviderProps> = ({
 
   const setupVotes = () => {
     setIsLoading(true);
-    setOnChainVotes(dataOnChainVotes || []);
-    setOffChainVotes(dataOffChainVotes || []);
+    let finalOnChainVotes = dataOnChainVotes || [];
+    let finalOffChainVotes = dataOffChainVotes || [];
+    if (daoInfo.config?.EXCLUDED_CARD_FIELDS?.includes('onChainVotesPct')) {
+      finalOnChainVotes = [];
+    }
+    if (daoInfo.config?.EXCLUDED_CARD_FIELDS?.includes('offChainVotesPct')) {
+      finalOffChainVotes = [];
+    }
+    setOnChainVotes(finalOnChainVotes);
+    setOffChainVotes(finalOffChainVotes);
     setIsLoading(false);
   };
 
@@ -185,16 +195,30 @@ export const VotesProvider: React.FC<ProviderProps> = ({
     const filteredOffChain = dataOffChainVotes?.filter(vote =>
       vote.proposal.toLowerCase().includes(partialText.toLowerCase())
     );
-    setOffChainVotes(filteredOffChain?.length ? filteredOffChain : []);
     const filteredOnChain = dataOnChainVotes?.filter(vote =>
       vote.proposal.toLowerCase().includes(partialText.toLowerCase())
     );
-    setOnChainVotes(filteredOnChain?.length ? filteredOnChain : []);
-
+    if (daoInfo.config?.EXCLUDED_CARD_FIELDS?.includes('offChainVotesPct')) {
+      setOffChainVotes([]);
+    } else {
+      setOffChainVotes(filteredOffChain?.length ? filteredOffChain : []);
+    }
+    if (daoInfo.config?.EXCLUDED_CARD_FIELDS?.includes('onChainVotesPct')) {
+      setOnChainVotes([]);
+    } else {
+      setOnChainVotes(filteredOnChain?.length ? filteredOnChain : []);
+    }
     setIsLoading(false);
   }, 500);
 
   const setupOnChainVoteBreakdown = () => {
+    if (daoInfo.config?.EXCLUDED_CARD_FIELDS?.includes('onChainVotesPct')) {
+      setOnChainVoteBreakdown(undefined);
+      setOnChainVoteBreakdownLoading(false);
+      setOnChainVoteBreakdownError(false);
+      return;
+    }
+
     if (!onChainVotes || onChainVotes.length === 0) {
       setOnChainVoteBreakdownError(true);
       setOnChainVoteBreakdown(undefined);
@@ -241,8 +265,16 @@ export const VotesProvider: React.FC<ProviderProps> = ({
   }, [onChainVotes]);
 
   const resetProposal = () => {
-    setOffChainVotes(dataOffChainVotes || []);
-    setOnChainVotes(dataOnChainVotes || []);
+    if (daoInfo.config?.EXCLUDED_CARD_FIELDS?.includes('offChainVotesPct')) {
+      setOffChainVotes([]);
+    } else {
+      setOffChainVotes(dataOffChainVotes || []);
+    }
+    if (daoInfo.config?.EXCLUDED_CARD_FIELDS?.includes('onChainVotesPct')) {
+      setOnChainVotes([]);
+    } else {
+      setOnChainVotes(dataOnChainVotes || []);
+    }
   };
 
   const providerValue = useMemo(
