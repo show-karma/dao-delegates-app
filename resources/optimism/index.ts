@@ -50,7 +50,7 @@ const config: IDAOConfig = {
     'offChainVotesPct',
   ],
   ENABLE_DELEGATE_TRACKER: true,
-  EXCLUDED_VOTING_HISTORY_COLUMN: [],
+  EXCLUDED_VOTING_HISTORY_COLUMN: ['offChainVoteBreakdown'],
   DAO_CATEGORIES_TYPE: 'workstreams',
   DAO_EXT_VOTES_PROVIDER: {
     onChain: onChainOptimismVotesProvider,
