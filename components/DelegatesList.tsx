@@ -94,6 +94,12 @@ const DelegatesCases: FC<IDelegatesCasesProps> = ({
   );
 };
 
+// Helper function to format the period
+const formatPeriod = (period = 'lifetime') => {
+  if (period === 'lifetime') return '';
+  return `${parseInt(period, 10)} Days`;
+};
+
 export const DelegatesList: FC<IDelegatesList> = ({ pathUser }) => {
   const {
     isLoading,
@@ -208,16 +214,26 @@ export const DelegatesList: FC<IDelegatesList> = ({ pathUser }) => {
       {selectedBreakdownUser && !!selectedBreakdownUser.address && (
         <StyledModal
           isOpen={isOpen}
-          title="Score Breakdown"
+          title={`Forum Score Breakdown ${
+            formatPeriod(selectedBreakdownUser.period)
+              ? ` (Last ${formatPeriod(selectedBreakdownUser.period)})`
+              : ''
+          }`}
           description={
             <Flex flexDir="column" gap="2" color={theme.text}>
               <Text>
-                Below is a breakdown of the user’s activities and actions in the
-                DAO.
+                Below is an in-depth analysis of the user&apos;s engagement and
+                impact within the DAO
+                {formatPeriod(selectedBreakdownUser.period)
+                  ? ` over the past ${formatPeriod(
+                      selectedBreakdownUser.period
+                    ).toLowerCase()}`
+                  : ''}
+                .
               </Text>
               <Text>
-                The total score is calculated through a formula and represents
-                their total contributions to the DAO.
+                The total score is derived from a calculated formula, reflecting
+                the user&apos;s overall contributions in the forum.
               </Text>
             </Flex>
           }
