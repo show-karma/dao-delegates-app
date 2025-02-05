@@ -31,7 +31,7 @@ import {
   MenuItem,
 } from '@chakra-ui/react';
 import { ImgWithFallback } from 'components/ImgWithFallback';
-import { useAuth, useDAO, useDelegates } from 'contexts';
+import { useAuth, useDAO } from 'contexts';
 import { FC, useEffect, useState } from 'react';
 import { DelegateCompensationStats } from 'types';
 import { useForm } from 'react-hook-form';
@@ -43,10 +43,11 @@ import { IoCopy } from 'react-icons/io5';
 import { formatNumberPercentage, truncateAddress } from 'utils';
 import { FaCheckCircle, FaExternalLinkAlt } from 'react-icons/fa';
 import { DownChevron } from 'components/Icons';
-import { API_ROUTES, KARMA_API } from 'helpers';
+import { API_ROUTES, KARMA_API, LINKS } from 'helpers';
 import debounce from 'lodash.debounce';
 import { AiFillQuestionCircle } from 'react-icons/ai';
 import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
+import { ChakraLink } from 'components/ChakraLink';
 
 interface BreakdownModalProps {
   delegate: DelegateCompensationStats;
@@ -112,11 +113,10 @@ export const BreakdownModal: FC<BreakdownModalProps> = ({
   onClose,
   refreshFn,
 }) => {
-  const { theme, daoInfo } = useDAO();
+  const { theme, daoInfo, rootPathname } = useDAO();
   const { isDaoAdmin, authToken } = useAuth();
 
   const [isSaving, setIsSaving] = useState(false);
-  const { openProfile } = useDelegates();
   const { onCopy } = useClipboard(delegate?.delegate?.publicAddress || '');
   const { toast } = useToasty();
 
@@ -1084,20 +1084,18 @@ export const BreakdownModal: FC<BreakdownModalProps> = ({
                 mt="8"
                 mb="4"
               >
-                <Button
-                  onClick={() => {
-                    openProfile(
+                <ChakraLink
+                  href={LINKS.PROFILE(
+                    rootPathname,
+                    delegate.delegate.ensName ||
                       delegate.delegate.publicAddress,
-                      'overview',
-                      false
-                    );
-                    onClose();
-                  }}
+                    'overview'
+                  )}
                   bg={theme.branding}
                   color={theme.buttonText}
                 >
                   View Delegate Info
-                </Button>
+                </ChakraLink>
                 {isDirty && isDaoAdmin ? (
                   <Button
                     type="submit"

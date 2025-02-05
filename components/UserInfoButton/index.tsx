@@ -1,7 +1,7 @@
-import { Button, Text } from '@chakra-ui/react';
+import { Text } from '@chakra-ui/react';
+import { ChakraLink } from 'components/ChakraLink';
 import { useDAO } from 'contexts';
 import { LINKS } from 'helpers';
-import { useRouter } from 'next/router';
 import { FC } from 'react';
 import { IActiveTab, IDelegate } from 'types';
 
@@ -13,33 +13,9 @@ interface IUserInfoProps {
 export const UserInfoButton: FC<IUserInfoProps> = ({ onOpen, profile }) => {
   const { theme, rootPathname } = useDAO();
 
-  const router = useRouter();
-
-  const redirectWithoutRefresh = (hash: IActiveTab) => {
-    onOpen(profile, hash);
-
-    router
-      .push(
-        {
-          pathname: LINKS.PROFILE(
-            rootPathname,
-            profile.ensName || profile.address
-          ),
-          hash,
-        },
-        undefined,
-        { shallow: true }
-      )
-      .catch(error => {
-        if (!error.cancelled) {
-          throw error;
-        }
-      });
-  };
-
   return (
-    <Button
-      as={Button}
+    <ChakraLink
+      href={LINKS.PROFILE(rootPathname, profile.ensName || profile.address)}
       fontSize={['sm', 'md']}
       fontWeight="medium"
       color={theme.buttonTextSec}
@@ -57,13 +33,13 @@ export const UserInfoButton: FC<IUserInfoProps> = ({ onOpen, profile }) => {
       h="10"
       px="3"
       py="6"
-      onClick={() => redirectWithoutRefresh('overview')}
       display="flex"
       alignItems="center"
       justifyContent="center"
+      borderRadius="md"
     >
       {/* <HistoryIcon boxSize="17px" /> */}
       <Text h="max-content">Overview</Text>
-    </Button>
+    </ChakraLink>
   );
 };

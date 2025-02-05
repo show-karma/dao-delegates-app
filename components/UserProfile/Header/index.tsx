@@ -29,7 +29,7 @@ import { useAuth } from 'contexts/auth';
 import { useToasty } from 'hooks';
 import { FC, useMemo, useState } from 'react';
 import { IoCopy } from 'react-icons/io5';
-import { IActiveTab, IProfile } from 'types';
+import { IActiveTab, IDelegate } from 'types';
 import { convertHexToRGBA, truncateAddress } from 'utils';
 import { NameEditable, PictureEditable } from '../EditProfile';
 import { StatsRow } from '../Stats';
@@ -38,7 +38,7 @@ import { NavigatorRow } from './NavigatorRow';
 import { ProxySwitch } from './ProxySwitch';
 
 const SocialMedias: FC<{
-  profile: IProfile;
+  profile: IDelegate;
   changeTab: (selectedTab: IActiveTab) => void;
   isSamePerson: boolean;
   iconSize?: string;
@@ -139,7 +139,7 @@ const DelegateCases: FC<{ status?: string; fullAddress: string }> = ({
 };
 
 interface IUserSection {
-  profile: IProfile;
+  profile: IDelegate;
   changeTab: (selectedTab: IActiveTab) => void;
 }
 
@@ -215,7 +215,7 @@ const UserSection: FC<IUserSection> = ({ profile, changeTab }) => {
 
   return (
     <Flex
-      px={{ base: '1.25rem', lg: '2.5rem' }}
+      pl={{ base: '0', lg: '4' }}
       w="full"
       mt={{ base: '-1.25rem', lg: '-3.5rem' }}
       flexDir="column"
@@ -342,7 +342,7 @@ const UserSection: FC<IUserSection> = ({ profile, changeTab }) => {
                   profile.ensName ||
                   truncateAddress(profile.address)
                 }
-                endorsingImage={profile.avatar}
+                endorsingImage={profile.profilePicture}
                 changeTab={changeTab}
               />
             )}
@@ -437,7 +437,7 @@ const UserSection: FC<IUserSection> = ({ profile, changeTab }) => {
                 profile.ensName ||
                 truncateAddress(profile.address)
               }
-              endorsingImage={profile.avatar}
+              endorsingImage={profile.profilePicture}
               changeTab={changeTab}
             />
           )}
@@ -454,7 +454,7 @@ const UserSection: FC<IUserSection> = ({ profile, changeTab }) => {
 interface IHeader {
   activeTab: IActiveTab;
   changeTab: (selectedTab: IActiveTab) => void;
-  profile: IProfile;
+  profile: IDelegate;
 }
 
 export const Header: FC<IHeader> = ({ activeTab, changeTab, profile }) => {
@@ -494,12 +494,12 @@ export const Header: FC<IHeader> = ({ activeTab, changeTab, profile }) => {
           borderColor={theme.modal.header.border}
           borderTopRadius="12px"
           w="full"
-          h="180"
+          h={{ base: '60px', md: '120px', lg: '200px' }}
         />
 
         <UserSection profile={profile} changeTab={changeTab} />
       </Flex>
-      <Flex px={{ base: '1.25rem', lg: '2.5rem' }}>
+      <Flex>
         <StatsRow />
       </Flex>
 

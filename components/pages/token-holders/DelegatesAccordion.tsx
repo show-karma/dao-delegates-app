@@ -21,9 +21,7 @@ export const DelegatesAccordion: FC<IDelegatesAccordionProps> = ({
   return useMemo(
     () => (
       <VotesProvider
-        profile={{
-          address: lastDelegation.toDelegate,
-        }}
+        address={lastDelegation.toDelegate}
         selectedTimeframe={{
           from: lastDelegation.timestamp,
           to: moment(new Date()).unix(),

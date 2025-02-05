@@ -10,7 +10,7 @@ interface IExpandableText {
 export const ExpandableTitle: FC<IExpandableText> = props => {
   const { theme } = useDAO();
 
-  const { text, maxChars = 48 } = props;
+  const { text, maxChars = 60 } = props;
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleIsExpanded = () => setIsExpanded(!isExpanded);
 
@@ -18,7 +18,7 @@ export const ExpandableTitle: FC<IExpandableText> = props => {
     <Flex flexDir="column" gap="2.5">
       {text.length <= maxChars ? (
         <Text
-          maxW="372"
+          maxW="full"
           fontSize="sm"
           fontWeight="medium"
           textAlign="left"
@@ -29,7 +29,8 @@ export const ExpandableTitle: FC<IExpandableText> = props => {
       ) : (
         <Flex flexDir="column" w="full">
           <Text
-            maxW={{ base: '200', md: '372' }}
+            w="full"
+            maxW="full"
             fontSize="sm"
             fontWeight="medium"
             textAlign="left"

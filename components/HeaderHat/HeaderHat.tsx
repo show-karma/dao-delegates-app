@@ -13,7 +13,6 @@ import {
   DelegateLoginModal,
   EcosystemAccordion,
   EcosystemDropdown,
-  UserProfile,
 } from 'components';
 import { DelegateVotesModal } from 'components/Modals/DelegateToAnyone';
 import { UndelegateModal } from 'components/pages/token-holders/UndelegateModal';
@@ -59,14 +58,7 @@ export const HeaderHat: FC<IHeaderHat> = ({
 }) => {
   const { daoInfo, theme, rootPathname } = useDAO();
   const { config } = daoInfo;
-  const {
-    isOpenProfile,
-    onCloseProfile,
-    profileSelected,
-    selectedTab,
-    isOpenVoteToAnyone,
-    onToggleVoteToAnyone,
-  } = useDelegates();
+  const { isOpenVoteToAnyone, onToggleVoteToAnyone } = useDelegates();
   const { delegateLoginIsOpen, delegateLoginOnClose, delegateLoginOnOpen } =
     useWallet();
   const { isDaoAdmin } = useAuth();
@@ -330,21 +322,6 @@ export const HeaderHat: FC<IHeaderHat> = ({
         isOpen={delegateLoginIsOpen}
         onClose={delegateLoginOnClose}
       />
-      {profileSelected && (
-        <UserProfile
-          isOpen={isOpenProfile}
-          onClose={onCloseProfile}
-          profile={{
-            ...profileSelected,
-            avatar:
-              profileSelected.profilePicture ||
-              `${config.IMAGE_PREFIX_URL}${profileSelected.address}`,
-            twitter: profileSelected.twitterHandle,
-            forumHandle: profileSelected.discourseHandle,
-          }}
-          selectedTab={selectedTab}
-        />
-      )}
     </Flex>
   );
 };

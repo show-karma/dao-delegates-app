@@ -4,7 +4,7 @@ import { FC, useMemo, useState } from 'react';
 
 import { VotingReasonModal } from 'components/VotingReason/VotingReasonModal';
 import { useToasty, useVoteReason } from 'hooks';
-import { IChainRow, IProfile } from 'types';
+import { IChainRow, IDelegate } from 'types';
 import { SelectedProposal } from 'types/voting-reason';
 import { formatNumber } from 'utils';
 import { walletClientToSigner } from 'utils/eas/useSigner';
@@ -20,7 +20,7 @@ import { ProposalVote } from './ProposalVote';
 import { SearchProposalInput } from './SearchProposalInput';
 
 interface IVotingHistory {
-  profile: IProfile;
+  profile: IDelegate;
 }
 
 export const VotingHistory: FC<IVotingHistory> = ({ profile }) => {
@@ -76,7 +76,6 @@ export const VotingHistory: FC<IVotingHistory> = ({ profile }) => {
         ch => ch.id === +chainId
       );
 
-      console.log({ client });
       const signer = walletClientToSigner(client);
       if (!signer) throw new Error('Signer not found');
 
@@ -144,7 +143,7 @@ export const VotingHistory: FC<IVotingHistory> = ({ profile }) => {
         gap="4"
         align={{ base: 'center', lg: 'flex-start' }}
       >
-        <Flex maxW={{ base: 'full', lg: '588px' }} w="full" flexDir="column">
+        <Flex w="full" flexDir="column">
           <Flex
             zIndex="1001"
             boxShadow={`0px 0px 18px 5px ${theme.modal.votingHistory.headline}0D`}
