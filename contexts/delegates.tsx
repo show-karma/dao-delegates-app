@@ -53,8 +53,6 @@ interface IDelegateProps {
   period: IFilterPeriod;
   clearFilters: () => void;
   voteInfos: IVoteInfo;
-  isOpenProfile: boolean;
-  onCloseProfile: () => void;
   profileSelected?: IDelegate;
   selectProfile: (
     profile: IDelegate,
@@ -65,7 +63,8 @@ interface IDelegateProps {
   searchProfileModal: (
     userToSearch: string,
     defaultTab?: IActiveTab,
-    shouldRouterPush?: boolean
+    shouldRouterPush?: boolean,
+    selectedPeriod?: IFilterPeriod
   ) => Promise<void>;
   interests: string[];
   interestFilter: string[];
@@ -119,11 +118,6 @@ interface IDelegateProps {
   isFiltersDirty: () => boolean;
   shouldRefreshEndorsements: boolean;
   changeRefreshEndorsements: (choose: boolean) => void;
-  openProfile: (
-    profileAddress: string,
-    tab?: IActiveTab,
-    shouldRouterPush?: boolean
-  ) => Promise<void>;
 }
 
 export const DelegatesContext = createContext({} as IDelegateProps);
@@ -214,7 +208,7 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
   const [voteInfos, setVoteInfos] = useState({} as IVoteInfo);
   const [selectedTab, setSelectedTab] = useState<IActiveTab>('overview');
   const [profileSelected, setProfileSelected] = useState<IDelegate | undefined>(
-    {} as IDelegate
+    undefined as IDelegate | undefined
   );
   const [delegateCount, setDelegateCount] = useState(0);
   const [workstreams, setWorkstreams] = useState<IWorkstream[]>([]);
@@ -226,12 +220,6 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
   const { toast } = useToasty();
   const router = useRouter();
   const { asPath } = router;
-
-  const {
-    isOpen: isOpenProfile,
-    onOpen: onOpenProfile,
-    onClose: closeModalProfile,
-  } = useDisclosure();
 
   const { isOpen: isOpenVoteToAnyone, onToggle: onToggleVoteToAnyone } =
     useDisclosure();
@@ -474,20 +462,15 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
     });
     setSelectedTab(tab);
     setProfileSelected(profile);
-    onOpenProfile();
     if (shouldRouterPush) {
       router
-        .push(
-          {
-            pathname: LINKS.PROFILE(
-              rootPathname,
-              profile.ensName || profile.address
-            ),
-            hash: tab,
-          },
-          undefined,
-          { shallow: true }
-        )
+        .push({
+          pathname: LINKS.PROFILE(
+            rootPathname,
+            profile.ensName || profile.address
+          ),
+          hash: tab,
+        })
         .catch(error => {
           if (!error.cancelled) {
             throw error;
@@ -552,6 +535,7 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
       toast({
         title: `We couldn't find the contributor page`,
       });
+      setProfileSelected(undefined);
     }
   };
 
@@ -621,7 +605,8 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
   const searchProfileModal = async (
     userToSearch: string,
     defaultTab?: IActiveTab,
-    shouldRouterPush = true
+    shouldRouterPush = true,
+    selectedPeriod = 'lifetime'
   ) => {
     try {
       const axiosClient = await api.get(`/dao/find-delegate`, {
@@ -632,9 +617,10 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
       });
       const { data } = axiosClient.data;
       const { delegate: fetchedDelegate } = data;
+      console.log('fetchedDelegate', fetchedDelegate);
 
       const fetchedPeriod = (fetchedDelegate as IDelegateFromAPI).stats.find(
-        fetchedStat => fetchedStat.period === period
+        fetchedStat => fetchedStat.period === (selectedPeriod || period)
       );
       const userFound: IDelegate = {
         address: fetchedDelegate.publicAddress,
@@ -693,7 +679,12 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
         shouldRouterPush
       );
     } catch (error: any) {
-      if (error?.response?.data && error?.response?.data.error) {
+      if (
+        error?.response?.data?.error?.message
+          ?.toLowerCase?.()
+          ?.includes('not found') ||
+        (error?.response?.data && error?.response?.data.error)
+      ) {
         await checkIfUserNotFound(
           userToSearch,
           error?.response?.data.error.error,
@@ -1261,11 +1252,6 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
     return false;
   };
 
-  const onCloseProfile = () => {
-    closeModalProfile();
-    setProfileSelected(undefined);
-  };
-
   const setDelegationError = debounce((value: boolean) => {
     setDelegationWillHaveError(value);
   }, 300);
@@ -1275,91 +1261,6 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
 
   const changeRefreshEndorsements = (choose: boolean) => {
     setShouldRefreshEndorsements(choose);
-  };
-
-  const openProfile = async (profileAddress: string, tab?: IActiveTab) => {
-    if (!profileAddress) return;
-
-    const axiosClient = await api
-      .get(`/dao/find-delegate`, {
-        params: {
-          dao: config.DAO_KARMA_ID,
-          user: profileAddress,
-        },
-      })
-      .then(data => data)
-      .catch(error => error);
-    const getRealWallet = await checkRealAddress(profileAddress);
-    let userData: IDelegate = {
-      address: getRealWallet || profileAddress,
-      forumActivity: 0,
-      karmaScore: 0,
-      discordScore: 0,
-      voteParticipation: {
-        onChain: 0,
-        offChain: 0,
-      },
-      status: 'active',
-      rawStats: [],
-    };
-    if (axiosClient?.data) {
-      const { data } = axiosClient.data;
-      const { delegate: fetchedDelegate } = data;
-      const fetchedPeriod = (fetchedDelegate as IDelegateFromAPI).stats.find(
-        fetchedStat => fetchedStat.period === period
-      );
-      userData = {
-        ...userData,
-        address: fetchedDelegate.publicAddress,
-        ensName: fetchedDelegate.ensName,
-        delegatorCount: fetchedDelegate.delegatorCount || 0,
-        forumActivity: fetchedPeriod?.forumActivityScore || 0,
-        discordScore: fetchedPeriod?.discordScore || 0,
-        delegateSince:
-          fetchedDelegate.joinDateAt || fetchedDelegate.firstTokenDelegatedAt,
-        voteParticipation: {
-          onChain: fetchedPeriod?.onChainVotesPct || 0,
-          offChain: fetchedPeriod?.offChainVotesPct || 0,
-        },
-        votingWeight: fetchedDelegate.voteWeight,
-        delegatedVotes:
-          fetchedDelegate.delegatedVotes ||
-          fetchedDelegate.snapshotDelegatedVotes,
-        gitcoinHealthScore: fetchedPeriod?.gitcoinHealthScore || 0,
-        twitterHandle: fetchedDelegate.twitterHandle,
-        discourseHandle: fetchedDelegate.discourseHandle,
-        discordHandle: fetchedDelegate.discordHandle,
-        discordUsername: fetchedDelegate.discordUsername,
-        updatedAt: fetchedPeriod?.updatedAt,
-        karmaScore: fetchedPeriod?.karmaScore || 0,
-        delegatePitch: fetchedDelegate.delegatePitch,
-        aboutMe: fetchedDelegate.aboutMe,
-        realName: fetchedDelegate.realName,
-        profilePicture: fetchedDelegate.profilePicture,
-        workstreams: fetchedDelegate.workstreams,
-        tracks: fetchedDelegate.tracks,
-        status: fetchedDelegate.status,
-        userCreatedAt: fetchedDelegate.userCreatedAt,
-        acceptedTOS: fetchedDelegate.acceptedTOS,
-        website: fetchedDelegate.website,
-        discussionThread: fetchedDelegate.discussionThread,
-        rawStats: fetchedDelegate.stats || [],
-      };
-    }
-    const getTab = asPath.split('#');
-    const tabs: IActiveTab[] = [
-      'votinghistory',
-      'overview',
-      'handles',
-      'withdraw',
-      'endorsements-received',
-      'endorsements-given',
-    ];
-    if (userData.aboutMe) tabs.push('aboutme');
-    if (daoInfo.config.DAO_SUPPORTS_TOA) tabs.push('toa');
-    const checkTab = tabs.includes(getTab[1] as IActiveTab);
-
-    selectProfile(userData, checkTab ? tab : undefined, false);
   };
 
   const providerValue = useMemo(
@@ -1384,8 +1285,6 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
       userToFind,
       clearFilters,
       voteInfos,
-      isOpenProfile,
-      onCloseProfile,
       profileSelected,
       selectProfile,
       selectedTab,
@@ -1427,11 +1326,9 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
       isFiltersDirty,
       shouldRefreshEndorsements,
       changeRefreshEndorsements,
-      openProfile,
     }),
     [
       profileSelected,
-      isOpenProfile,
       delegates,
       isLoading,
       lastUpdate,
@@ -1478,7 +1375,6 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
       isFiltersDirty,
       shouldRefreshEndorsements,
       changeRefreshEndorsements,
-      openProfile,
     ]
   );
 

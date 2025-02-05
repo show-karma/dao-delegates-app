@@ -12,7 +12,7 @@ import dynamic from 'next/dynamic';
 import { FC, useEffect, useState } from 'react';
 import { ICustomFields } from 'types';
 import { convertHexToRGBA } from 'utils';
-import { Sidebar } from '../Sidebar';
+import { Sidebar } from '../Modals/Sidebar';
 import { NoStatement } from './NoStatement';
 import { SelectSavingMethod } from './SelectSavingMethod';
 
@@ -28,7 +28,7 @@ const TextSection: FC<ITextSection> = ({ statement }) => {
 
   return (
     <Flex
-      maxW={{ base: 'full', lg: '30rem' }}
+      maxW={{ base: 'full' }}
       gap="4"
       flexDir="column"
       flex="1"
@@ -46,7 +46,7 @@ const TextSection: FC<ITextSection> = ({ statement }) => {
           flexDir="column"
           wordBreak="break-word"
           listStyleType="none"
-          maxW={{ base: 'full', lg: '30rem' }}
+          maxW={{ base: 'full' }}
           sx={{
             ol: {
               marginLeft: '32px',
@@ -92,8 +92,7 @@ const StatementCases: FC<IStatementCases> = ({
   isLoading,
   statement,
 }) => {
-  if (isLoading)
-    return <SkeletonText w="full" mt="4" noOfLines={4} spacing="4" />;
+  if (isLoading) return <SkeletonText w="full" noOfLines={4} spacing="4" />;
   if (isEditing) return <EditStatement />;
   if (!statement || !statement?.value.length) return <NoStatement />;
   return <TextSection statement={statement} />;
@@ -143,7 +142,7 @@ export const Statement: FC = () => {
   };
 
   return (
-    <Flex flexDir="column" gap="1" px="4" py="4" mb="10">
+    <Flex flexDir="column" gap="1" mb="10" w="full" flex="2">
       {isEditing && (
         <Flex flexDir="column" gap="1.5" mb={{ base: '5', lg: '5' }}>
           <Text
@@ -213,15 +212,11 @@ export const Statement: FC = () => {
       )}
       <Flex
         mb={{ base: '10', lg: '20' }}
-        gap={{ base: '2rem', lg: '4rem' }}
-        flexDir={{ base: 'column', lg: 'row' }}
+        gap={{ base: '2rem' }}
+        flexDir={{ base: 'column', lg: 'row-reverse' }}
         px="0"
+        w="full"
       >
-        <StatementCases
-          isEditing={isEditing}
-          isLoading={isLoadingStatement}
-          statement={statement}
-        />
         {isLoadingStatement ? (
           <Flex flexDir="column" w="full" maxW="40" gap="10">
             <Skeleton w="full" h="10" />
@@ -236,6 +231,13 @@ export const Statement: FC = () => {
         ) : (
           <Sidebar isEditMode={isEditing} interests={interests} />
         )}
+        <Flex flex="2">
+          <StatementCases
+            isEditing={isEditing}
+            isLoading={isLoadingStatement}
+            statement={statement}
+          />
+        </Flex>
       </Flex>
     </Flex>
   );

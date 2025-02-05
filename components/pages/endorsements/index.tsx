@@ -15,7 +15,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { useDAO, useDelegates } from 'contexts';
+import { useDAO } from 'contexts';
 import { api, easQueryGeneralistic } from 'helpers';
 import { FC, useEffect, useState } from 'react';
 import { GeneralisticEndorsementData } from 'types';
@@ -38,9 +38,8 @@ import { UserClickable, UserNotClickable } from 'components/Endorsements';
 
 export const EndorsementsComponent: FC = () => {
   const [data, setData] = useState<GeneralisticEndorsementData[]>([]);
-  const { openProfile } = useDelegates();
 
-  const { daoInfo, theme } = useDAO();
+  const { daoInfo, theme, rootPathname } = useDAO();
   const endorsersCounter = data.length;
 
   const [isLoading, setIsLoading] = useState(false);

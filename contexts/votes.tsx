@@ -4,7 +4,7 @@ import { useOffChainVotes, useOnChainVotes } from 'hooks';
 import debounce from 'lodash.debounce';
 import moment from 'moment';
 import React, { createContext, useContext, useMemo, useState } from 'react';
-import { IChainRow, IProfile, IVoteBreakdown } from 'types';
+import { IChainRow, IDelegate, IVoteBreakdown } from 'types';
 import { checkDecision } from 'utils';
 import { useDAO } from './dao';
 import { useDelegates } from './delegates';
@@ -34,7 +34,7 @@ export const VotesContext = createContext({} as IVotesProps);
 
 interface ProviderProps {
   children: React.ReactNode;
-  profile: IProfile;
+  address: IDelegate['address'];
   selectedTimeframe?: {
     from: number;
     to: number;
@@ -43,7 +43,7 @@ interface ProviderProps {
 
 export const VotesProvider: React.FC<ProviderProps> = ({
   children,
-  profile,
+  address,
   selectedTimeframe,
 }) => {
   const { daoInfo } = useDAO();
@@ -51,12 +51,12 @@ export const VotesProvider: React.FC<ProviderProps> = ({
 
   const { data: dataOffChainVotes } = useOffChainVotes(
     voteInfos.snapshotIds,
-    profile.address
+    address
   );
 
   const { data: dataOnChainVotes } = useOnChainVotes(
     voteInfos.onChainId,
-    profile.address
+    address
   );
 
   const [offChainVotes, setOffChainVotes] = useState<IChainRow[] | undefined>(
@@ -93,13 +93,13 @@ export const VotesProvider: React.FC<ProviderProps> = ({
     queryFn: async () => {
       const { breakdown } = (
         await axios.get(
-          `${process.env.NEXT_PUBLIC_KARMA_API}/dao/${daoInfo.config.DAO_KARMA_ID}/delegates/${profile.address}/vote-breakdown`
+          `${process.env.NEXT_PUBLIC_KARMA_API}/dao/${daoInfo.config.DAO_KARMA_ID}/delegates/${address}/vote-breakdown`
         )
       ).data.data;
       return breakdown;
     },
     enabled:
-      !!profile.address &&
+      !!address &&
       !daoInfo.config?.EXCLUDED_CARD_FIELDS?.includes('offChainVotesPct'),
     cacheTime: 0,
     retry: 2,

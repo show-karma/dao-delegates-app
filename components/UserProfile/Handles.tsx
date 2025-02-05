@@ -26,14 +26,14 @@ import { lessThanDays } from 'utils';
 import { getProfile } from 'utils/getProfile';
 import { useQuery } from 'wagmi';
 import * as yup from 'yup';
-import { GithubModal } from '../Linking/Github';
+import { GithubModal } from '../Modals/Linking/Github';
 
 const TwitterModal = dynamic(() =>
-  import('../Linking/Twitter').then(module => module.TwitterModal)
+  import('../Modals/Linking/Twitter').then(module => module.TwitterModal)
 );
 
 const DiscourseModal = dynamic(() =>
-  import('../Linking/Forum').then(module => module.DiscourseModal)
+  import('../Modals/Linking/Forum').then(module => module.DiscourseModal)
 );
 
 interface IHandleCasesProps {

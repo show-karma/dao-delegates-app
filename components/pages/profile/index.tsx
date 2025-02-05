@@ -1,40 +1,43 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
-import { Box } from '@chakra-ui/react';
-import { EditProfileProvider, useDAO, VotesProvider } from 'contexts';
-import { Header } from 'components/Modals/UserProfile/Header';
-import { VotingHistory } from 'components/Modals/UserProfile/VotingHistory';
-import { EndorsementsReceived } from 'components/Modals/UserProfile/EndorsementsReceived';
-import { EndorsementsGiven } from 'components/Modals/UserProfile/EndorsementsGiven';
+import { Box, Text } from '@chakra-ui/react';
+import {
+  EditProfileProvider,
+  useDAO,
+  useDelegates,
+  VotesProvider,
+} from 'contexts';
+import { Header } from 'components/UserProfile/Header';
+import { VotingHistory } from 'components/UserProfile/VotingHistory';
+import { EndorsementsReceived } from 'components/UserProfile/EndorsementsReceived';
+import { EndorsementsGiven } from 'components/UserProfile/EndorsementsGiven';
 import { useMixpanel } from 'hooks';
-import { IActiveTab, IProfile } from 'types';
+import { IActiveTab, IDelegate } from 'types';
 
 const WithdrawDelegation = dynamic(() =>
-  import('components/Modals/UserProfile/WithdrawDelegation').then(
+  import('components/UserProfile/WithdrawDelegation').then(
     module => module.WithdrawDelegation
   )
 );
 
 const AboutMe = dynamic(() =>
-  import('components/Modals/UserProfile/AboutMe').then(module => module.AboutMe)
+  import('components/UserProfile/AboutMe').then(module => module.AboutMe)
 );
 
 const Statement = dynamic(() =>
-  import('components/Modals/UserProfile/Statement').then(
-    module => module.Statement
-  )
+  import('components/UserProfile/Statement').then(module => module.Statement)
 );
 
 const ToA = dynamic(() =>
-  import('components/Modals/UserProfile/ToA').then(module => module.ToA)
+  import('components/UserProfile/ToA').then(module => module.ToA)
 );
 
 const Handles = dynamic(() =>
-  import('components/Modals/UserProfile/Handles').then(module => module.Handles)
+  import('components/UserProfile/Handles').then(module => module.Handles)
 );
 
-const Tab: FC<{ activeTab: IActiveTab; profile: IProfile }> = ({
+const Tab: FC<{ activeTab: IActiveTab; profile: IDelegate }> = ({
   activeTab,
   profile,
 }) => {
@@ -43,7 +46,7 @@ const Tab: FC<{ activeTab: IActiveTab; profile: IProfile }> = ({
   }
   if (activeTab === 'votinghistory') {
     return (
-      <VotesProvider profile={profile}>
+      <VotesProvider address={profile.address}>
         <VotingHistory profile={profile} />
       </VotesProvider>
     );
@@ -73,21 +76,26 @@ interface UserProfilePageProps {
 const UserProfilePage = ({ user }: UserProfilePageProps) => {
   const router = useRouter();
 
-  const { theme, rootPathname } = useDAO();
+  const { theme, rootPathname, daoInfo } = useDAO();
+  const {
+    profileSelected: profile,
+    isLoading,
+    searchProfileModal,
+  } = useDelegates();
   const { mixpanel } = useMixpanel();
 
   // Get the selected tab from URL hash, defaulting to 'statement'
   const hash = router.asPath.split('#')[1];
   const selectedTab: IActiveTab = (hash as IActiveTab) || 'statement';
 
-  // For demonstration, using a dummy profile. In a real application, fetch profile data appropriately.
-  const dummyProfile: IProfile = {
-    address: '0x123',
-    ensName: 'dummy.eth',
-  } as IProfile;
-
+  // Fetching the profile info from an API endpoint using the user prop
   const [activeTab, setActiveTab] = useState<IActiveTab>(selectedTab);
+
   useMemo(() => {
+    searchProfileModal(user, 'overview');
+  }, [user]);
+
+  useEffect(() => {
     setActiveTab(selectedTab);
   }, [selectedTab]);
 
@@ -97,7 +105,7 @@ const UserProfilePage = ({ user }: UserProfilePageProps) => {
       properties: { tab: newTab },
     });
     router
-      .push({ pathname: router.pathname, hash: newTab }, undefined, {
+      .push({ pathname: rootPathname, hash: newTab }, undefined, {
         shallow: true,
       })
       .catch(error => {
@@ -108,22 +116,26 @@ const UserProfilePage = ({ user }: UserProfilePageProps) => {
     setActiveTab(newTab);
   };
 
+  if (isLoading) return <div>Loading profile...</div>;
+  if (!profile)
+    return (
+      <Text color={theme.title}>
+        We couldn&apos;t find the contributor page
+      </Text>
+    );
+
   return (
     <EditProfileProvider>
       <Box
-        maxW={{ base: 'max-content', lg: '1100px' }}
+        maxW={{ base: '400px', md: '820px', lg: '944px', xl: '1360px' }}
         w={{ base: 'auto', lg: 'full' }}
         borderRadius="12px"
         bgColor={theme.modal.background}
         mx="1rem"
         p="6"
       >
-        <Header
-          changeTab={changeTab}
-          activeTab={activeTab}
-          profile={dummyProfile}
-        />
-        <Tab activeTab={activeTab} profile={dummyProfile} />
+        <Header changeTab={changeTab} activeTab={activeTab} profile={profile} />
+        <Tab activeTab={activeTab} profile={profile} />
       </Box>
     </EditProfileProvider>
   );

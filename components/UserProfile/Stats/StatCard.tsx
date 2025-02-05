@@ -13,13 +13,13 @@ export const StatCard: FC<StatCardProps> = ({ amount, title }) => {
       display="flex"
       flexDirection="column"
       gap="1"
-      w="140px"
+      w={{ base: '120px', lg: '140px' }}
       height="120px"
       borderWidth="1px"
       borderStyle="solid"
       borderColor={theme.modal.statement.sidebar.item.border}
       borderRadius="12px"
-      px="6"
+      px={{ base: '2', md: '6' }}
       py="4"
       alignItems="flex-start"
       justifyContent="flex-end"

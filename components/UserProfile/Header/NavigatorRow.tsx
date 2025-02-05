@@ -1,11 +1,11 @@
 import { Flex } from '@chakra-ui/react';
 import { useAuth, useDAO } from 'contexts';
 import { FC } from 'react';
-import { IActiveTab, IProfile } from 'types';
+import { IActiveTab, IDelegate } from 'types';
 import { NavButton } from './NavButton';
 
 interface INavigatorRow {
-  profile: IProfile;
+  profile: IDelegate;
   isSamePerson: boolean;
   activeTab: IActiveTab;
   changeTab: (selectedTab: IActiveTab) => void;
@@ -22,13 +22,7 @@ export const NavigatorRow: FC<INavigatorRow> = ({
   const isActiveTab = (section: IActiveTab) => activeTab === section;
 
   return (
-    <Flex
-      px={{ base: '1.25rem', lg: '2.5rem' }}
-      flexDir="column"
-      gap="0"
-      w="full"
-      mb="8"
-    >
+    <Flex px="0" flexDir="column" gap="0" w="full" mb="8">
       <Flex
         w="full"
         justifyContent="flex-start"
