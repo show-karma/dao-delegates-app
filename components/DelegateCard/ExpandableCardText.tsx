@@ -1,5 +1,7 @@
 import { Flex, Text } from '@chakra-ui/react';
+import { ChakraLink } from 'components/ChakraLink';
 import { useDAO } from 'contexts';
+import { LINKS } from 'helpers';
 import dynamic from 'next/dynamic';
 import { FC } from 'react';
 import { removeHtmlTagWithRegex } from 'utils';
@@ -13,20 +15,20 @@ interface IExpandableText {
   maxChars?: number;
   isExpanded: boolean;
   toggleIsExpanded: () => void;
-  selectProfile: () => void;
   color?: string;
+  address: string;
 }
 
 export const ExpandableCardText: FC<IExpandableText> = props => {
-  const { theme } = useDAO();
+  const { theme, rootPathname } = useDAO();
 
   const {
     text,
     maxChars = 78,
     isExpanded,
     toggleIsExpanded,
-    selectProfile,
     color,
+    address,
   } = props;
 
   const formattedText = removeHtmlTagWithRegex(text.replaceAll(/\s/g, ' '));
@@ -80,10 +82,10 @@ export const ExpandableCardText: FC<IExpandableText> = props => {
               />
             </Text>
           </Flex>
-          <Flex
-            onClick={selectProfile}
-            cursor="pointer"
+          <ChakraLink
+            href={LINKS.PROFILE(rootPathname, address)}
             color={theme.card.text.primary}
+            isExternal
             w="max-content"
             as="span"
             fontWeight="bold"
@@ -93,7 +95,7 @@ export const ExpandableCardText: FC<IExpandableText> = props => {
             }}
           >
             view statement
-          </Flex>
+          </ChakraLink>
         </Flex>
       )}
     </Flex>

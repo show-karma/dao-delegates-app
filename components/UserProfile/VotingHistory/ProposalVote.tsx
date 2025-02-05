@@ -19,7 +19,7 @@ import {
 import { useDAO, useDelegates } from 'contexts';
 import { useVoteReason } from 'hooks';
 import { FC, useMemo } from 'react';
-import { IChainRow, IProfile } from 'types';
+import { IChainRow, IDelegate } from 'types';
 import { formatDate } from 'utils';
 import { SelectedProposal } from 'types/voting-reason';
 import { ExpandableReason } from './ExpandableReason';
@@ -81,7 +81,7 @@ const VoteIcon: FC<{ vote: IChainRow }> = ({ vote }) => {
 interface IProposalVote {
   vote: IChainRow;
   isLoading?: boolean;
-  profile: IProfile;
+  profile: IDelegate;
   isLast?: boolean;
   index: number;
   onSelectProposal?: (proposal: SelectedProposal) => void;

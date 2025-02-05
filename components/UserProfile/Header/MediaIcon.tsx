@@ -11,12 +11,12 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useDAO, useDelegates, useHandles, useWallet } from 'contexts';
 import { FC, ReactNode } from 'react';
-import { IActiveTab, IMedias, IProfile } from 'types';
+import { IActiveTab, IDelegate, IMedias } from 'types';
 import { getUserForumUrl } from 'utils';
 import { getProfile } from 'utils/getProfile';
 
 interface IMediaIcon {
-  profile: IProfile;
+  profile: IDelegate;
   media: IMedias;
   changeTab: (selectedTab: IActiveTab) => void;
   isSamePerson: boolean;
@@ -74,16 +74,16 @@ export const MediaIcon: FC<IMediaIcon> = ({
     },
     forum: {
       url:
-        profile?.forumHandle &&
+        profile?.discourseHandle &&
         daoData?.socialLinks.forum &&
         config.DAO_FORUM_TYPE
           ? getUserForumUrl(
-              profile?.forumHandle,
+              profile?.discourseHandle,
               config.DAO_FORUM_TYPE,
               config.DAO_FORUM_URL || daoData?.socialLinks.forum
             )
           : '',
-      value: profile.forumHandle,
+      value: profile.discourseHandle,
       disabledCondition: !daoData?.forumTopicURL,
     },
     discord: {

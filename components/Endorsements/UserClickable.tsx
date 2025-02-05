@@ -1,7 +1,9 @@
-import { Button, Text } from '@chakra-ui/react';
+import { Text } from '@chakra-ui/react';
 import { blo } from 'blo';
+import { ChakraLink } from 'components/ChakraLink';
 import { ImgWithFallback } from 'components/ImgWithFallback';
-import { useDAO, useDelegates } from 'contexts';
+import { useDAO } from 'contexts';
+import { LINKS } from 'helpers';
 import { FC } from 'react';
 
 interface UserClickableProps {
@@ -15,15 +17,12 @@ export const UserClickable: FC<UserClickableProps> = ({
   imageURL,
   nameToShow,
 }) => {
-  const { openProfile } = useDelegates();
-  const { theme } = useDAO();
+  const { theme, rootPathname } = useDAO();
   return (
-    <Button
+    <ChakraLink
+      href={LINKS.PROFILE(rootPathname, address, 'endorsements-received')}
       flexDir="row"
       gap="2"
-      onClick={() => {
-        openProfile(address, 'endorsements-received', false);
-      }}
       p="0"
       bg="transparent"
       _hover={{ bg: 'transparent' }}
@@ -52,6 +51,6 @@ export const UserClickable: FC<UserClickableProps> = ({
       >
         {nameToShow}
       </Text>
-    </Button>
+    </ChakraLink>
   );
 };

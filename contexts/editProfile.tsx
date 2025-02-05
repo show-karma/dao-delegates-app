@@ -3,7 +3,7 @@ import { api, API_ROUTES, KARMA_API } from 'helpers';
 import { useToasty } from 'hooks';
 import { useIsMounted } from 'hooks/useIsMounted';
 import React, { createContext, useContext, useMemo, useState } from 'react';
-import { ICustomFields, IProfile } from 'types';
+import { ICustomFields } from 'types';
 import { useAccount } from 'wagmi';
 import { useAuth } from './auth';
 import { useDAO } from './dao';
@@ -18,7 +18,6 @@ interface IEditProfileProps {
   setValue: React.Dispatch<React.SetStateAction<string>>;
   isEditSaving: boolean;
   saveEdit: () => void;
-  profile: IProfile;
   statement: ICustomFields;
   languages: ICustomFields;
   interests: ICustomFields;
@@ -107,19 +106,6 @@ export const EditProfileProvider: React.FC<ProviderProps> = ({ children }) => {
 
   const { compareProxy } = useProxy();
 
-  const profile: IProfile = {
-    address: profileSelected?.address || '',
-    avatar:
-      profileSelected?.profilePicture ||
-      `${config.IMAGE_PREFIX_URL}${profileSelected?.address}` ||
-      '',
-    ensName: profileSelected?.ensName || '',
-    // twitter: profileSelected?.twitterHandle || '',
-    aboutMe: profileSelected?.aboutMe || '',
-    realName: profileSelected?.realName || '',
-    website: profileSelected?.website || '',
-  };
-
   const [newToA, setNewToA] = useState('');
   const [newTracks, setNewTracks] = useState<number[]>([]);
   const [newInterests, setNewInterests] = useState(defaultCustomFields);
@@ -127,11 +113,11 @@ export const EditProfileProvider: React.FC<ProviderProps> = ({ children }) => {
     useState<ICustomFields>(defaultCustomFields);
 
   const queryStatement = async () => {
-    if (!profile.address) return;
+    if (!profileSelected?.address) return;
     setIsLoadingStatement(true);
     try {
       const { data: offChainStatement } = await api.get(
-        `/forum-user/${config.DAO_KARMA_ID}/delegate-pitch/${profile.address}`
+        `/forum-user/${config.DAO_KARMA_ID}/delegate-pitch/${profileSelected.address}`
       );
       if (!offChainStatement?.data.delegatePitch) return;
 
@@ -184,13 +170,13 @@ export const EditProfileProvider: React.FC<ProviderProps> = ({ children }) => {
   };
 
   const queryToA = async () => {
-    if (!profile.address) return;
+    if (!profileSelected?.address) return;
     setIsLoadingToA(true);
     try {
       const { data } = await api.get(
         API_ROUTES.DELEGATE.GET_TERMS_OF_SERVICE(
           config.DAO_KARMA_ID,
-          profile.address
+          profileSelected.address
         )
       );
       setDelegateToA(data?.data.agreementText);
@@ -298,7 +284,7 @@ export const EditProfileProvider: React.FC<ProviderProps> = ({ children }) => {
   const hasDelegatePitch = async (): Promise<ICustomFields[] | undefined> => {
     try {
       const { data } = await api.get(
-        `/forum-user/${config.DAO_KARMA_ID}/delegate-pitch/${profile.address}`
+        `/forum-user/${config.DAO_KARMA_ID}/delegate-pitch/${profileSelected?.address}`
       );
       return data?.data.delegatePitch;
     } catch (error) {
@@ -630,7 +616,6 @@ export const EditProfileProvider: React.FC<ProviderProps> = ({ children }) => {
       isEditSaving,
       setEditSaving,
       saveEdit,
-      profile,
       statement,
       languages,
       interests,
@@ -661,7 +646,6 @@ export const EditProfileProvider: React.FC<ProviderProps> = ({ children }) => {
       setValue,
       isEditSaving,
       setEditSaving,
-      profile,
       statement,
       languages,
       interests,

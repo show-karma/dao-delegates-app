@@ -34,29 +34,31 @@ export const Sidebar: FC<ISidebar> = ({ interests, isEditMode }) => {
     : interests.value.split(',');
 
   return (
-    <Flex w={{ base: 'full', lg: '16.875rem' }}>
+    <Flex flex="1">
       <Flex flexDir="column" gap="10" w="full">
-        <Flex flexDir="column" gap="5">
-          {profileSelected?.tracks?.length || (isEditing && tracks.length) ? (
-            <SectionHeader>Tracks</SectionHeader>
-          ) : undefined}
-          <Flex columnGap="1" rowGap="2" flexWrap="wrap">
-            {isEditing
-              ? tracks.map((track, index) => (
-                  <EditableSectionItem
-                    isEditMode={isEditMode}
-                    key={+index}
-                    value={track.id}
-                    label={track.displayName}
-                    isSelected={newTracks.includes(track.id)}
-                    selectItem={editTracks}
-                  />
-                ))
-              : profileSelected?.tracks?.map((track, index) => (
-                  <SectionItem key={+index} label={track.name} />
-                ))}
+        {profileSelected?.tracks?.length || (isEditing && tracks.length) ? (
+          <Flex flexDir="column" gap="5">
+            {profileSelected?.tracks?.length || (isEditing && tracks.length) ? (
+              <SectionHeader>Tracks</SectionHeader>
+            ) : undefined}
+            <Flex columnGap="1" rowGap="2" flexWrap="wrap">
+              {isEditing
+                ? tracks.map((track, index) => (
+                    <EditableSectionItem
+                      isEditMode={isEditMode}
+                      key={+index}
+                      value={track.id}
+                      label={track.displayName}
+                      isSelected={newTracks.includes(track.id)}
+                      selectItem={editTracks}
+                    />
+                  ))
+                : profileSelected?.tracks?.map((track, index) => (
+                    <SectionItem key={+index} label={track.name} />
+                  ))}
+            </Flex>
           </Flex>
-        </Flex>
+        ) : null}
         <Flex flexDir="column" gap="5">
           {((interests && interestsValueArray.length > 0) || isEditing) && (
             <SectionHeader>Interests</SectionHeader>

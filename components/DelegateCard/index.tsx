@@ -31,7 +31,7 @@ import {
 } from 'components/Popovers';
 import { useDAO, useDelegates } from 'contexts';
 import { IBreakdownProps } from 'contexts/scoreBreakdown';
-import { DELEGATOR_TRACKER_NOT_SUPPORTED_DAOS } from 'helpers';
+import { DELEGATOR_TRACKER_NOT_SUPPORTED_DAOS, LINKS } from 'helpers';
 import { useToasty } from 'hooks';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
@@ -49,6 +49,7 @@ import {
   getUserForumUrl,
   truncateAddress,
 } from 'utils';
+import { ChakraLink } from 'components/ChakraLink';
 import { DelegateButton } from '../DelegateButton';
 import { ForumIcon, ThreadIcon, WebsiteIcon } from '../Icons';
 import { ImgWithFallback } from '../ImgWithFallback';
@@ -353,7 +354,6 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
     }
 
     const type = daoInfo.config.DAO_CATEGORIES_TYPE;
-    const categoryName = data?.[type]?.[0]?.name;
 
     return (
       <Popover>
@@ -479,6 +479,7 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
       duration: 3000,
     });
   };
+  const { rootPathname } = useDAO();
 
   const statRows = () => {
     const FIRST_ROW_LENGTH = 3;
@@ -552,18 +553,21 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
               h={['42px', '48px', '54px']}
               w={['42px', '48px', '54px']}
             >
-              <ImgWithFallback
-                h={['42px', '48px', '54px']}
-                w={['42px', '48px', '54px']}
-                borderRadius="full"
-                src={
-                  data.profilePicture ||
-                  `${config.IMAGE_PREFIX_URL}${data.address}`
-                }
-                fallback={data.address}
-                onClick={() => selectProfile(data, 'overview')}
-                cursor="pointer"
-              />
+              <ChakraLink
+                href={LINKS.PROFILE(rootPathname, data.ensName || data.address)}
+              >
+                <ImgWithFallback
+                  h={['42px', '48px', '54px']}
+                  w={['42px', '48px', '54px']}
+                  borderRadius="full"
+                  src={
+                    data.profilePicture ||
+                    `${config.IMAGE_PREFIX_URL}${data.address}`
+                  }
+                  fallback={data.address}
+                  cursor="pointer"
+                />
+              </ChakraLink>
             </Flex>
           ) : (
             <Flex
@@ -631,20 +635,27 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
           >
             {isLoaded && data ? (
               <>
-                <Text
-                  color={theme.title}
-                  fontSize="lg"
-                  fontWeight="bold"
-                  maxH="30px"
-                  maxW={{ base: '200px', lg: '250px' }}
-                  textOverflow="ellipsis"
-                  overflow="hidden"
-                  whiteSpace="nowrap"
-                  onClick={() => selectProfile(data, 'overview')}
-                  cursor="pointer"
+                <ChakraLink
+                  isExternal
+                  href={LINKS.PROFILE(
+                    rootPathname,
+                    data.ensName || data.address
+                  )}
                 >
-                  {data.realName || data.ensName || shortAddress}
-                </Text>
+                  <Text
+                    color={theme.title}
+                    fontSize="lg"
+                    fontWeight="bold"
+                    maxH="30px"
+                    maxW={{ base: '200px', lg: '250px' }}
+                    textOverflow="ellipsis"
+                    overflow="hidden"
+                    whiteSpace="nowrap"
+                    cursor="pointer"
+                  >
+                    {data.realName || data.ensName || shortAddress}
+                  </Text>
+                </ChakraLink>
                 <Flex flexDir="row" color={theme.subtitle} gap="1.5">
                   <Text fontSize="xs" fontWeight="medium">
                     {shortAddress}
@@ -847,7 +858,7 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
                     text={userStatement}
                     isExpanded={isExpanded}
                     toggleIsExpanded={toggleIsExpanded}
-                    selectProfile={() => selectProfile(data, 'overview')}
+                    address={data.address}
                     color={theme.card.text.primary}
                   />
                 </Flex>

@@ -1,7 +1,7 @@
 import { Flex, Text } from '@chakra-ui/react';
 import { FC } from 'react';
 import { useDAO } from 'contexts';
-import { IProfile } from 'types';
+import { IDelegate } from 'types';
 
 interface ITextSection {
   text?: string;
@@ -39,7 +39,7 @@ const TextSection: FC<ITextSection> = ({ text }) => {
 };
 
 interface IStatement {
-  profile: IProfile;
+  profile: IDelegate;
 }
 
 export const AboutMe: FC<IStatement> = ({ profile }) => (

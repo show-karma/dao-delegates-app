@@ -25,9 +25,10 @@ import {
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
+import { ChakraLink } from 'components/ChakraLink';
 import { ImgWithFallback } from 'components/ImgWithFallback';
-import { useAuth, useDAO, useDelegates } from 'contexts';
-import { API_ROUTES, KARMA_API } from 'helpers';
+import { useAuth, useDAO } from 'contexts';
+import { API_ROUTES, KARMA_API, LINKS } from 'helpers';
 import { useToasty } from 'hooks';
 import { FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -102,11 +103,10 @@ export const BreakdownModal: FC<BreakdownModalProps> = ({
   onClose,
   refreshFn,
 }) => {
-  const { theme, daoInfo } = useDAO();
+  const { theme, daoInfo, rootPathname } = useDAO();
   const { isDaoAdmin, authToken } = useAuth();
 
   const [isSaving, setIsSaving] = useState(false);
-  const { openProfile } = useDelegates();
   const { onCopy } = useClipboard(delegate?.delegate?.publicAddress || '');
   const { toast } = useToasty();
 
@@ -1078,20 +1078,17 @@ export const BreakdownModal: FC<BreakdownModalProps> = ({
                 mt="8"
                 mb="4"
               >
-                <Button
-                  onClick={() => {
-                    openProfile(
-                      delegate.delegate.publicAddress,
-                      'overview',
-                      false
-                    );
-                    onClose();
-                  }}
+                <ChakraLink
+                  href={LINKS.PROFILE(
+                    rootPathname,
+                    delegate.delegate.publicAddress,
+                    'overview'
+                  )}
                   bg={theme.branding}
                   color={theme.buttonText}
                 >
                   View Delegate Info
-                </Button>
+                </ChakraLink>
                 {isDirty && isDaoAdmin ? (
                   <Button
                     type="submit"
