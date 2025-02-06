@@ -51,7 +51,7 @@ export const DelegateCompensationAdminDelegates = ({
           delegate={shouldShowDelegate}
           minimumPeriod={new Date(COMPENSATION_DATES.NEW_VERSION_MIN)}
           maximumPeriod={
-            isPublic ? new Date(COMPENSATION_DATES.NEW_VERSION_MAX) : new Date()
+            isPublic ? new Date(COMPENSATION_DATES.AVAILABLE_MAX) : new Date()
           }
         />
         {isFetchingDelegateInfo || isLoadingDelegateInfo ? (

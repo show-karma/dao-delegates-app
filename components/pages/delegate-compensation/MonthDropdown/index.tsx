@@ -4,6 +4,7 @@ import { useDAO } from 'contexts';
 import { useDelegateCompensation } from 'contexts/delegateCompensation';
 import { useRouter } from 'next/router';
 import { FC } from 'react';
+import { compensation } from 'utils/compensation';
 
 interface IMonthDropdown {
   minimumPeriod: Date;
@@ -24,32 +25,35 @@ export const MonthDropdown: FC<IMonthDropdown> = ({
     const supportedDates = [];
     const startYear = 2024;
     const currentDate = maximumPeriod || new Date();
-    for (let year = startYear; year <= currentDate.getFullYear(); year += 1) {
+
+    // Get the latest available date from compensation config
+    const latestAvailableDate = daoInfo.config.DAO_KARMA_ID
+      ? compensation.compensationDates[daoInfo.config.DAO_KARMA_ID]
+          .AVAILABLE_MAX
+      : new Date();
+
+    for (
+      let year = startYear;
+      year <= latestAvailableDate.getFullYear();
+      year += 1
+    ) {
       for (let month = 0; month < 12; month += 1) {
-        if (maximumPeriod && new Date(year, month, 1) > maximumPeriod) {
+        const dateToCheck = new Date(year, month, 1);
+
+        if (maximumPeriod && dateToCheck > maximumPeriod) {
           break;
         }
-        if (new Date(year, month, 1) <= minimumPeriod) {
-          // eslint-disable-next-line no-continue
-          continue;
+        if (dateToCheck > minimumPeriod && dateToCheck <= latestAvailableDate) {
+          supportedDates.push({
+            name: dateToCheck.toLocaleString('en-US', {
+              month: 'long',
+            }),
+            value: {
+              month: month + 1,
+              year,
+            },
+          });
         }
-
-        if (
-          year === currentDate.getFullYear() &&
-          month > currentDate.getMonth()
-        ) {
-          break;
-        }
-
-        supportedDates.push({
-          name: new Date(year, month, 1).toLocaleString('en-US', {
-            month: 'long',
-          }),
-          value: {
-            month: month + 1,
-            year,
-          },
-        });
       }
     }
 

@@ -145,7 +145,7 @@ export const DelegateCompensation = () => {
                   COMPENSATION_DATES.OLD_VERSION_MIN ||
                   COMPENSATION_DATES.NEW_VERSION_MIN
                 }
-                maximumPeriod={COMPENSATION_DATES.NEW_VERSION_MAX}
+                maximumPeriod={COMPENSATION_DATES.AVAILABLE_MAX}
               />
             </Flex>
           </Flex>
