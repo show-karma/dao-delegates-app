@@ -1,13 +1,8 @@
 import React, { FC, useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
-import { Box, Text } from '@chakra-ui/react';
-import {
-  EditProfileProvider,
-  useDAO,
-  useDelegates,
-  VotesProvider,
-} from 'contexts';
+import { Box, Flex, Text } from '@chakra-ui/react';
+import { useDAO, useDelegates, VotesProvider } from 'contexts';
 import { Header } from 'components/UserProfile/Header';
 import { VotingHistory } from 'components/UserProfile/VotingHistory';
 import { EndorsementsReceived } from 'components/UserProfile/EndorsementsReceived';
@@ -125,19 +120,38 @@ const UserProfilePage = ({ user }: UserProfilePageProps) => {
     );
 
   return (
-    <EditProfileProvider>
-      <Box
-        maxW={{ base: '400px', md: '820px', lg: '944px', xl: '1360px' }}
-        w={{ base: 'auto', lg: 'full' }}
-        borderRadius="12px"
+    <Flex
+      bgColor={theme.modal.background}
+      w="full"
+      h="full"
+      flexDir="column"
+      align="center"
+      flex="1"
+    >
+      <Flex
         bgColor={theme.modal.background}
-        mx="1rem"
-        p="6"
+        w="full"
+        h="full"
+        flexDir="column"
+        align="center"
       >
-        <Header changeTab={changeTab} activeTab={activeTab} profile={profile} />
-        <Tab activeTab={activeTab} profile={profile} />
-      </Box>
-    </EditProfileProvider>
+        <Box
+          maxW={{ base: '400px', md: '820px', lg: '944px', xl: '1360px' }}
+          w={{ base: 'auto', lg: 'full' }}
+          borderRadius="12px"
+          bgColor={theme.modal.background}
+          mx="1rem"
+          py="6"
+        >
+          <Header
+            changeTab={changeTab}
+            activeTab={activeTab}
+            profile={profile}
+          />
+          <Tab activeTab={activeTab} profile={profile} />
+        </Box>
+      </Flex>
+    </Flex>
   );
 };
 
