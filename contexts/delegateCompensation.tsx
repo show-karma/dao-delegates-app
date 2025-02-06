@@ -72,7 +72,7 @@ export const DelegateCompensationProvider: React.FC<ProviderProps> = ({
     }
     // Handle delegate paths
     else if (isDelegatePages) {
-      targetDate = DATES.NEW_VERSION_MAX;
+      targetDate = DATES.DEFAULT_SELECTED;
     }
 
     // Handle query params if present
@@ -101,6 +101,9 @@ export const DelegateCompensationProvider: React.FC<ProviderProps> = ({
           undefined,
           { shallow: true }
         );
+      } else if (queryDate > DATES.AVAILABLE_MAX) {
+        // If selected date is beyond available data, default to latest available
+        targetDate = DATES.AVAILABLE_MAX;
       } else {
         targetDate = queryDate;
       }
