@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import {
   DelegatesProvider,
+  EditProfileProvider,
   GovernanceVotesProvider,
   ProxyProvider,
   useDAO,
@@ -102,24 +103,21 @@ export const DefaultContainer: React.FC<IDAOContainer> = ({ children }) => {
               <GovernanceVotesProvider>
                 <ProxyProvider>
                   <HandlesProvider>
-                    <Flex
-                      w="full"
-                      flexDir="column"
-                      align="center"
-                      background={theme.secondBg || theme.bodyBg}
-                      minH="100vh"
-                    >
-                      <HeaderHat />
+                    <EditProfileProvider>
                       <Flex
-                        my="4"
                         w="full"
-                        flex="1"
                         flexDir="column"
                         align="center"
+                        background={theme.secondBg || theme.bodyBg}
+                        minH="100vh"
+                        h="full"
+                        flex="1"
                       >
+                        <HeaderHat />
+
                         {children}
                       </Flex>
-                    </Flex>
+                    </EditProfileProvider>
                   </HandlesProvider>
                 </ProxyProvider>
               </GovernanceVotesProvider>
