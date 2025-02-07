@@ -111,14 +111,15 @@ export const WithdrawPopover: FC = () => {
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        background="#191A1C"
-        border="none"
+        background={theme.modal.background}
+        border="1px solid"
+        borderColor={theme.modal.header.border}
         maxW="max-content"
         w={{ base: '300px', md: '500px', xl: 'full' }}
         px="5"
         mt="4"
       >
-        <PopoverArrow bg="#191A1C" border="none" />
+        <PopoverArrow bg={theme.modal.header.border} border="none" />
         <PopoverHeader border="none" pt="4" pb="0" px="0">
           <Text
             color={theme.modal.header.title}

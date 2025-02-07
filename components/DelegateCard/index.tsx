@@ -554,7 +554,11 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
               w={['42px', '48px', '54px']}
             >
               <ChakraLink
-                href={LINKS.PROFILE(rootPathname, data.ensName || data.address)}
+                href={LINKS.PROFILE(
+                  rootPathname,
+                  data.ensName || data.address,
+                  'overview'
+                )}
               >
                 <ImgWithFallback
                   h={['42px', '48px', '54px']}
@@ -639,7 +643,8 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
                   isExternal
                   href={LINKS.PROFILE(
                     rootPathname,
-                    data.ensName || data.address
+                    data.ensName || data.address,
+                    'overview'
                   )}
                 >
                   <Text
