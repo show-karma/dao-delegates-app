@@ -160,7 +160,7 @@ export const VotingHistory: FC<IVotingHistory> = ({ profile }) => {
             >
               <SearchProposalInput />
               <Text
-                textColor={`${theme.modal.votingHistory.headline}40`}
+                textColor={`${theme.modal.votingHistory.headline}80`}
                 fontWeight="medium"
                 fontSize="sm"
               >

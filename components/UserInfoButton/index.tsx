@@ -19,6 +19,7 @@ export const UserInfoButton: FC<IUserInfoProps> = ({ onOpen, profile }) => {
       fontSize={['sm', 'md']}
       fontWeight="medium"
       color={theme.buttonTextSec}
+      backgroundColor={theme.card.statBg}
       _hover={{
         backgroundColor: theme.card.statBg,
         opacity: 0.8,
@@ -28,7 +29,6 @@ export const UserInfoButton: FC<IUserInfoProps> = ({ onOpen, profile }) => {
       _focusVisible={{}}
       _focusWithin={{}}
       fontFamily="heading"
-      backgroundColor={theme.card.statBg}
       gap="6px"
       h="10"
       px="3"

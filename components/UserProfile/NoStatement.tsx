@@ -31,8 +31,8 @@ export const NoStatement: FC = () => {
           w="min-content"
           py="3"
           px="6"
-          bgColor="white"
-          color="black"
+          color={theme.buttonTextSec}
+          backgroundColor={theme.card.statBg}
           mt="6"
           fontSize="md"
           fontWeight="semibold"

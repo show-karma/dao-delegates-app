@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState, useEffect } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import { Box, Flex, Text } from '@chakra-ui/react';
@@ -81,7 +81,8 @@ const UserProfilePage = ({ user }: UserProfilePageProps) => {
 
   // Get the selected tab from URL hash, defaulting to 'statement'
   const hash = router.asPath.split('#')[1];
-  const selectedTab: IActiveTab = (hash as IActiveTab) || 'statement';
+  const selectedTab: IActiveTab =
+    (hash as IActiveTab) || ('overview' as IActiveTab);
 
   // Fetching the profile info from an API endpoint using the user prop
   const [activeTab, setActiveTab] = useState<IActiveTab>(selectedTab);
@@ -89,10 +90,6 @@ const UserProfilePage = ({ user }: UserProfilePageProps) => {
   useMemo(() => {
     searchProfileModal(user, 'overview');
   }, [user]);
-
-  useEffect(() => {
-    setActiveTab(selectedTab);
-  }, [selectedTab]);
 
   const changeTab = (newTab: IActiveTab) => {
     mixpanel.reportEvent({
@@ -128,29 +125,17 @@ const UserProfilePage = ({ user }: UserProfilePageProps) => {
       align="center"
       flex="1"
     >
-      <Flex
+      <Box
+        maxW={{ base: '400px', md: '820px', lg: '944px', xl: '1360px' }}
+        w={{ base: 'auto', lg: 'full' }}
+        borderRadius="12px"
         bgColor={theme.modal.background}
-        w="full"
-        h="full"
-        flexDir="column"
-        align="center"
+        mx="1rem"
+        py="6"
       >
-        <Box
-          maxW={{ base: '400px', md: '820px', lg: '944px', xl: '1360px' }}
-          w={{ base: 'auto', lg: 'full' }}
-          borderRadius="12px"
-          bgColor={theme.modal.background}
-          mx="1rem"
-          py="6"
-        >
-          <Header
-            changeTab={changeTab}
-            activeTab={activeTab}
-            profile={profile}
-          />
-          <Tab activeTab={activeTab} profile={profile} />
-        </Box>
-      </Flex>
+        <Header changeTab={changeTab} activeTab={activeTab} profile={profile} />
+        <Tab activeTab={activeTab} profile={profile} />
+      </Box>
     </Flex>
   );
 };

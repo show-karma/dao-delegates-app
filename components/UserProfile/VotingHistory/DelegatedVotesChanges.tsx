@@ -165,7 +165,9 @@ export const DelegatedVotesChanges: FC = () => {
         fill: true,
         label: 'Total',
         data: dataset,
-        borderColor: 'transparent',
+        borderColor:
+          theme.modal.votingHistory.modules?.chart.point || '#4A5568',
+        borderWidth: 2,
         pointBorderColor: theme.modal.votingHistory.modules?.chart.point,
         pointBackgroundColor: theme.modal.votingHistory.modules?.chart.point,
         backgroundColor: (context: ScriptableContext<'line'>) => {
@@ -173,11 +175,17 @@ export const DelegatedVotesChanges: FC = () => {
           const gradient = ctx.createLinearGradient(0, 0, 0, 200);
           gradient.addColorStop(
             0,
-            `${theme.modal.votingHistory.modules?.chart.openGradient}`
+            `${
+              theme.modal.votingHistory.modules?.chart.openGradient ||
+              'rgba(74, 85, 104, 0.5)'
+            }`
           );
           gradient.addColorStop(
             1,
-            `${theme.modal.votingHistory.modules?.chart.endGradient}`
+            `${
+              theme.modal.votingHistory.modules?.chart.endGradient ||
+              'rgba(74, 85, 104, 0.1)'
+            }`
           );
           return gradient;
         },
@@ -194,6 +202,7 @@ export const DelegatedVotesChanges: FC = () => {
         hoverRadius: 6,
       },
     },
+    color: 'red',
     scales: {
       // eslint-disable-next-line id-length
       y: {
