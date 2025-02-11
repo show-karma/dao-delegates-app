@@ -617,7 +617,6 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
       });
       const { data } = axiosClient.data;
       const { delegate: fetchedDelegate } = data;
-      console.log('fetchedDelegate', fetchedDelegate);
 
       const fetchedPeriod = (fetchedDelegate as IDelegateFromAPI).stats.find(
         fetchedStat => fetchedStat.period === (selectedPeriod || period)
