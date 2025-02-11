@@ -312,8 +312,16 @@ export const DelegateCompensationAdmin = () => {
           bg={theme.compensation?.card.bg}
           py="3"
           px="2"
-          isDisabled={actionsLoading.calls || !monthlyCalls || !biweeklyCalls}
-          disabled={actionsLoading.calls || !monthlyCalls || !biweeklyCalls}
+          isDisabled={
+            actionsLoading.calls ||
+            monthlyCalls === undefined ||
+            biweeklyCalls === undefined
+          }
+          disabled={
+            actionsLoading.calls ||
+            monthlyCalls === undefined ||
+            biweeklyCalls === undefined
+          }
           isLoading={actionsLoading.calls}
         >
           Save
