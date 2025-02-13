@@ -1,6 +1,10 @@
 import moment from 'moment';
 
-type IFormat = 'MMM YYYY' | 'MMMM D, YYYY' | 'MMM D, YYYY';
+type IFormat =
+  | 'MMM YYYY'
+  | 'MMMM D, YYYY'
+  | 'MMM D, YYYY'
+  | 'MMM D, YYYY HH:mm';
 
 export const formatDate = (
   dateToFormat: string,
