@@ -153,7 +153,7 @@ const DelegateTable = React.memo(
               <Td
                 borderColor={theme.compensation?.card.divider}
                 maxW={{ base: '180px', md: 'none' }}
-                minW={{ base: '180px', md: 'auto' }}
+                minW={{ base: '180px', md: 'none' }}
                 pr={2}
               >
                 <HStack spacing={2} width="100%">
@@ -168,7 +168,7 @@ const DelegateTable = React.memo(
                     color={theme.compensation?.card.text}
                     fontSize="md"
                     isTruncated
-                    flex="1"
+                    flex={{ base: '1', md: 'none' }}
                   >
                     {isMobile ? truncateAddress(item.address) : item.address}
                   </Text>
