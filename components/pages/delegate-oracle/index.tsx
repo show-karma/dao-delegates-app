@@ -23,7 +23,12 @@ import {
 import { FiSearch, FiCheck, FiX } from 'react-icons/fi';
 import { IoCopy } from 'react-icons/io5';
 import { useRouter } from 'next/router';
-import { formatDate, truncateAddress } from 'utils';
+import {
+  formatDate,
+  formatNumber,
+  formatSimpleNumber,
+  truncateAddress,
+} from 'utils';
 import {
   IDelegateOracleResponse,
   IDelegateOracleScore,
@@ -203,21 +208,21 @@ const DelegateTable = React.memo(
                 color={theme.compensation?.card.text}
                 textAlign="center"
               >
-                {item.onChainParticipation}
+                {formatSimpleNumber(item.onChainParticipation)}
               </Td>
               <Td
                 borderColor={theme.compensation?.card.divider}
                 color={theme.compensation?.card.text}
                 textAlign="center"
               >
-                {item.offChainParticipation}
+                {formatSimpleNumber(item.offChainParticipation)}
               </Td>
               <Td
                 borderColor={theme.compensation?.card.divider}
                 color={theme.compensation?.card.text}
                 textAlign="center"
               >
-                {item.finalScore}
+                {formatSimpleNumber(item.finalScore)}
               </Td>
               <Td
                 borderColor={theme.compensation?.card.divider}
@@ -439,7 +444,8 @@ const DelegateOraclePage = () => {
         gap={{ base: 4, md: 0 }}
       >
         <Heading as="h2" size="lg" textAlign={{ base: 'center', md: 'left' }}>
-          Delegate Oracle Scores {totalItems ? `(${totalItems})` : undefined}
+          Delegate Oracle Scores{' '}
+          {totalItems ? `(${formatNumber(totalItems)})` : undefined}
         </Heading>
         <InputGroup maxW={{ base: '100%', md: '300px' }} size="md">
           <Input
