@@ -1,0 +1,19 @@
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.searchContainer {
+  margin: 24px 0;
+}
+
+.table {
+  margin-bottom: 24px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}

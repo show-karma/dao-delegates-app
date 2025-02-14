@@ -1,0 +1,8 @@
+# Guidelines
+- Always add helpful comments to the code explaining what you are doing.
+- Never delete old comments, unless they are no longer relevant because the code has been rewritten or deleted.
+- When you learn something new and update the cursorrules file.
+
+# General
+- When you are suggesting something that can use URL, please always consider rootPathname of useDAO hook.
+- We should always first consider using react-query to fetch data.
