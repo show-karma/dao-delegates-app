@@ -70,7 +70,7 @@ const schema = yup.object({
         proposal: yup.string().optional(),
         voted: yup.bool().optional(),
         modified: yup.bool().optional(),
-        post: yup.string().url().optional(),
+        post: yup.string().optional(),
         validRationale: yup.bool().optional(),
       })
     ),
