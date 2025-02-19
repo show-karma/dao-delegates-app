@@ -33,7 +33,7 @@ export const Step1: React.FC<IModal> = ({
     }
     const usernameFormatted = sanitizeUsername(event.target.value);
     if (usernameFormatted) {
-      setUsername(usernameFormatted);
+      setUsername(usernameFormatted?.toLowerCase());
     }
   };
   const { name: daoName, logoUrl } = daoInfo;
