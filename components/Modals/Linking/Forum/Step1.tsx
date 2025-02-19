@@ -23,8 +23,19 @@ export const Step1: React.FC<IModal> = ({
   daoInfo,
 }) => {
   const nextStep = () => setStep(ESteps.SIGN);
-  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setUsername(event.target.value);
+
+  const sanitizeUsername = (usernameToSanitize: string) =>
+    usernameToSanitize.match(/[A-Za-z0-9_]{1,40}$/gim)?.[0];
+
+  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.value.length) {
+      setUsername('');
+    }
+    const usernameFormatted = sanitizeUsername(event.target.value);
+    if (usernameFormatted) {
+      setUsername(usernameFormatted);
+    }
+  };
   const { name: daoName, logoUrl } = daoInfo;
 
   return (
