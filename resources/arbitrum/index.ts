@@ -25,7 +25,7 @@ const config: IDAOConfig = {
   DAO_CHAINS: [arbitrum],
   DAO_DEFAULT_SETTINGS: {
     TIMEPERIOD: '90d',
-    ORDERSTAT: 'votingWeight',
+    ORDERSTAT: 'karmaScore',
   },
   DAO_TOKEN_CONTRACT: [
     {
