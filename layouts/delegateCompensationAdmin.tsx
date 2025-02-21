@@ -1,6 +1,6 @@
 import { Flex, Heading, Image } from '@chakra-ui/react';
 import { ChakraLink } from 'components';
-import { AdminGuard } from 'components/pages/delegate-compensation/Admin/AdminGuard';
+import { AdminGuard } from 'components/pages/delegate-compensation/v1.5/Admin/AdminGuard';
 import { useDAO } from 'contexts';
 import { useRouter } from 'next/router';
 

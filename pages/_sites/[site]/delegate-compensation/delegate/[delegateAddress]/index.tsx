@@ -1,4 +1,4 @@
-import { DelegateCompensationAdminDelegates } from 'components/pages/delegate-compensation/Admin/Delegates';
+import { DelegateCompensationAdminDelegatesVersioning } from 'components/pages/delegate-compensation/Admin/Delegates';
 import { DelegateCompensationAdminContainer } from 'containers/delegate-compensation-admin';
 import { DAOProvider } from 'contexts/dao';
 import { daosDictionary } from 'helpers';
@@ -52,7 +52,10 @@ interface IFAQ {
 const DelegateCompesationAdminPage = ({ dao }: IFAQ) => (
   <DAOProvider selectedDAO={dao} shouldFetchInfo={false}>
     <DelegateCompensationAdminContainer>
-      <DelegateCompensationAdminDelegates isPublic shouldShowDelegate="block" />
+      <DelegateCompensationAdminDelegatesVersioning
+        isPublic
+        shouldShowDelegate="block"
+      />
     </DelegateCompensationAdminContainer>
   </DAOProvider>
 );

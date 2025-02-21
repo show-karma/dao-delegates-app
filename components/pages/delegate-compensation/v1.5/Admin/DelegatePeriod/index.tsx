@@ -1,6 +1,6 @@
 import { Flex, Text } from '@chakra-ui/react';
 import { useDAO } from 'contexts';
-import { MonthDropdown } from '../../MonthDropdown';
+import { MonthDropdown } from '../../../MonthDropdown';
 import { DelegateBlock } from '../Delegates/DelegateBlock';
 import { DelegatesDropdown } from '../Delegates/DelegatesDropdown';
 

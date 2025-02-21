@@ -4,7 +4,6 @@ import { useDAO } from 'contexts';
 import { useDelegateCompensation } from 'contexts/delegateCompensation';
 import { useRouter } from 'next/router';
 import { FC } from 'react';
-import { compensation } from 'utils/compensation';
 
 interface IMonthDropdown {
   minimumPeriod: Date;
@@ -23,27 +22,18 @@ export const MonthDropdown: FC<IMonthDropdown> = ({
 
   const renderMonthList = () => {
     const supportedDates = [];
-    const startYear = 2024;
-    const currentDate = maximumPeriod || new Date();
+    const startYear = minimumPeriod.getFullYear();
+    const endYear = maximumPeriod.getFullYear();
+    const startMonth = minimumPeriod.getMonth();
+    const endMonth = maximumPeriod.getMonth();
 
-    // Get the latest available date from compensation config
-    const latestAvailableDate = daoInfo.config.DAO_KARMA_ID
-      ? compensation.compensationDates[daoInfo.config.DAO_KARMA_ID]
-          .AVAILABLE_MAX
-      : new Date();
+    for (let year = startYear; year <= endYear; year += 1) {
+      const monthStart = year === startYear ? startMonth : 0;
+      const monthEnd = year === endYear ? endMonth : 11;
 
-    for (
-      let year = startYear;
-      year <= latestAvailableDate.getFullYear();
-      year += 1
-    ) {
-      for (let month = 0; month < 12; month += 1) {
+      for (let month = monthStart; month <= monthEnd; month += 1) {
         const dateToCheck = new Date(year, month, 1);
-
-        if (maximumPeriod && dateToCheck > maximumPeriod) {
-          break;
-        }
-        if (dateToCheck > minimumPeriod && dateToCheck <= latestAvailableDate) {
+        if (dateToCheck >= minimumPeriod && dateToCheck <= maximumPeriod) {
           supportedDates.push({
             name: dateToCheck.toLocaleString('en-US', {
               month: 'long',
@@ -126,6 +116,7 @@ export const MonthDropdown: FC<IMonthDropdown> = ({
       </MenuItem>
     ));
   };
+
   return (
     <Menu>
       <MenuButton

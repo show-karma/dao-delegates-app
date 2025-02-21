@@ -1,4 +1,4 @@
-import { DelegateCompensationAdminForumActivity } from 'components/pages/delegate-compensation/Admin/ForumActivity';
+import { DelegateCompensationAdminForumActivityVersioning } from 'components/pages/delegate-compensation/Admin/ForumActivity';
 import { DelegateCompensationAdminContainer } from 'containers/delegate-compensation-admin';
 import { DAOProvider } from 'contexts/dao';
 import { daosDictionary } from 'helpers';
@@ -56,7 +56,7 @@ const DelegateCompesationForumActivityPage = ({
 }: IFAQ) => (
   <DAOProvider selectedDAO={dao} shouldFetchInfo={false}>
     <DelegateCompensationAdminContainer>
-      <DelegateCompensationAdminForumActivity
+      <DelegateCompensationAdminForumActivityVersioning
         delegateAddress={delegateAddress}
       />
     </DelegateCompensationAdminContainer>

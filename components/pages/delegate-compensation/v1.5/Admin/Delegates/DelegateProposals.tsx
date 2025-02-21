@@ -43,7 +43,7 @@ import { formatDate } from 'utils';
 import { getPRBreakdown } from 'utils/delegate-compensation/getPRBreakdown';
 import { getProposals } from 'utils/delegate-compensation/getProposals';
 import * as yup from 'yup';
-import { MonthNotFinishedTooltip } from '../../MonthNotFinishedTooltip';
+import { MonthNotFinishedTooltip } from '../../../MonthNotFinishedTooltip';
 import { Expandable } from './Expandable';
 
 // eslint-disable-next-line import/no-extraneous-dependencies

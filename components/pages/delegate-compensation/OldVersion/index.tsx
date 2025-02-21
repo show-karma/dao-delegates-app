@@ -6,9 +6,9 @@ import { useEffect, useState } from 'react';
 import { DelegateCompensationStats, DelegateStatsFromAPI } from 'types';
 import { formatSimpleNumber } from 'utils';
 import { compensation } from 'utils/compensation';
-import { ContactUs } from '../ContactUs';
 import { MonthDropdown } from '../MonthDropdown';
 import { Table } from './Table';
+import { ContactUs } from '../ContactUs';
 
 export const DelegateCompensationOld = () => {
   const { theme, daoInfo } = useDAO();
@@ -259,8 +259,8 @@ export const DelegateCompensationOld = () => {
             </Text>
             <MonthDropdown
               minimumPeriod={
-                COMPENSATION_DATES.OLD_VERSION_MIN ||
-                COMPENSATION_DATES.NEW_VERSION_MIN
+                COMPENSATION_DATES.versions.find(v => v.version === 'old')
+                  ?.startDate || COMPENSATION_DATES.versions[0].startDate
               }
               maximumPeriod={COMPENSATION_DATES.AVAILABLE_MAX}
             />

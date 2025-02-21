@@ -28,6 +28,7 @@ export type DelegateStatsFromAPI = {
   incentiveOptedIn: boolean;
   votingPower: string;
   stats: {
+    votingPowerAverage?: string;
     bonusPoint: number;
     commentingProposal: CompensationStatBreakdown;
     communicatingRationale: CompensationStatBreakdown;

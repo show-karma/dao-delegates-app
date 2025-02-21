@@ -6,7 +6,7 @@ import { useDAO } from 'contexts';
 import * as React from 'react';
 import { DelegateCompensationStats } from 'types';
 import { formatNumber, formatSimpleNumber, truncateAddress } from 'utils';
-import { MonthNotFinishedTooltip } from '../MonthNotFinishedTooltip';
+import { MonthNotFinishedTooltip } from '../../MonthNotFinishedTooltip';
 import { DataTable } from './DataTable';
 
 const columnHelper = createColumnHelper<DelegateCompensationStats>();

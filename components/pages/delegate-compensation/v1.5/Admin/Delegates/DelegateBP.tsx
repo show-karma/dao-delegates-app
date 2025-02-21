@@ -31,7 +31,7 @@ import { useToasty } from 'hooks';
 import { useEffect, useState } from 'react';
 import { formatSimpleNumber } from 'utils';
 import { getProposals } from 'utils/delegate-compensation/getProposals';
-import { MonthNotFinishedTooltip } from '../../MonthNotFinishedTooltip';
+import { MonthNotFinishedTooltip } from '../../../MonthNotFinishedTooltip';
 
 export const DelegateBP = ({
   isMonthFinished,
