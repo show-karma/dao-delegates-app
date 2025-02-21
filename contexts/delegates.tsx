@@ -20,6 +20,7 @@ import {
   IFilterOrder,
   IFilterPeriod,
   IStatOptions,
+  IStats,
   IStatsID,
   IStatusOptions,
   ITracks,
@@ -142,6 +143,12 @@ const defaultStatuses: IStatusOptions[] = [
   'withdrawn',
   'recognized',
 ];
+
+// Helper function to convert stat ID to API field
+const getApiField = (statId: IStatsID): string => {
+  if (statId === 'score') return 'score';
+  return statDefaultOptions.find((opt: IStatOptions) => opt.id === statId)?.stat || statId;
+};
 
 export const DelegatesProvider: React.FC<ProviderProps> = ({
   children,
@@ -315,7 +322,7 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
           name: config.DAO_KARMA_ID,
           offset: _offset,
           order,
-          field: stat,
+          field: getApiField(stat),
           period,
           pageSize: 10,
           tos: undefined,
@@ -403,6 +410,7 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
           offset,
           period,
           order,
+          field: getApiField(stat),
           dao: config.DAO_KARMA_ID,
         },
       });
@@ -777,7 +785,7 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
           name: config.DAO_KARMA_ID,
           offset: newOffset,
           order,
-          field: stat,
+          field: getApiField(stat),
           period,
           pageSize: 10,
           tos: undefined,
@@ -859,7 +867,7 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
           pageSize: 10,
           offset: 0,
           order: 'desc',
-          field: 'score',
+          field: statOptions.find(opt => opt.id === 'score')?.stat || 'score',
           period: 'lifetime',
         },
       });
@@ -891,9 +899,13 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
     const queries = router.query;
     delete queries.site;
 
+    // If we're setting up sortby parameter and the value matches a stat field,
+    // we should use the corresponding id from statOptions
     const query = {
       ...queries,
-      [paramToSetup]: paramValue,
+      [paramToSetup]: paramToSetup === 'sortby' 
+        ? statOptions.find(opt => opt.stat === paramValue)?.id || paramValue
+        : paramValue,
     };
 
     router.push(
