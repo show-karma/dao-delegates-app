@@ -2,7 +2,7 @@ import { Button, Flex, Icon, Image, Text } from '@chakra-ui/react';
 import { useDAO } from 'contexts';
 import { useState } from 'react';
 import { BiChevronDown, BiChevronRight } from 'react-icons/bi';
-import { ScoringSystemCarousel } from '../../../Carousels';
+import { ScoringSystemCarousel } from '../../../../Carousels';
 import { scoringStats } from './helper';
 
 export const ScoringSystemAccordion = () => {

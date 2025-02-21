@@ -16,7 +16,7 @@ import { FaTelegram } from 'react-icons/fa';
 import { DelegateCompensationStats } from 'types';
 import { formatSimpleNumber } from 'utils';
 import { fetchDelegates } from 'utils/delegate-compensation/fetchDelegates';
-import { HeaderCarousel } from '../../../Carousels';
+import { HeaderCarousel } from '../../../../Carousels';
 import { ScoringSystemAccordion } from './Accordion';
 import { ScoringSystemModal } from './ScoringSystemModal';
 
@@ -99,7 +99,7 @@ export const DelegatePerformanceOverviewHeader = () => {
           true,
           selectedDate?.value.month as number,
           selectedDate?.value.year as number,
-          false
+          'v1.5'
         ),
       enabled:
         !!daoInfo.config.DAO_KARMA_ID &&
@@ -124,7 +124,7 @@ export const DelegatePerformanceOverviewHeader = () => {
         false,
         selectedDate?.value.month as number,
         selectedDate?.value.year as number,
-        false
+        'v1.5'
       ),
     enabled:
       !!daoInfo.config.DAO_KARMA_ID &&

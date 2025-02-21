@@ -9,7 +9,7 @@ import { FaExternalLinkAlt } from 'react-icons/fa';
 import { formatSimpleNumber } from 'utils';
 import { getPRBreakdown } from 'utils/delegate-compensation/getPRBreakdown';
 import { getProposals } from 'utils/delegate-compensation/getProposals';
-import { MonthNotFinishedTooltip } from '../../MonthNotFinishedTooltip';
+import { MonthNotFinishedTooltip } from '../../../MonthNotFinishedTooltip';
 import { DelegateBP } from './DelegateBP';
 import { DelegateFeedback } from './DelegateFeedback';
 import { DelegateFinalScoreModal } from './DelegateFinalScore';

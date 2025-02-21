@@ -61,14 +61,21 @@ export const DelegateCompensationProvider: React.FC<ProviderProps> = ({
     let targetDate = new Date();
 
     // Handle old version path
-    if (isOldVersion && DATES.OLD_VERSION_MAX) {
-      targetDate =
-        targetDate > DATES.OLD_VERSION_MAX ? DATES.OLD_VERSION_MAX : targetDate;
+    if (isOldVersion) {
+      const oldVersion = DATES.versions.find(v => v.version === 'old');
+      if (oldVersion?.endDate) {
+        targetDate =
+          targetDate > oldVersion.endDate ? oldVersion.endDate : targetDate;
+      }
     }
     // Handle admin path
     else if (isAdmin) {
+      const currentVersion =
+        DATES.versions.find(v => !v.endDate) || DATES.versions[0];
       targetDate =
-        targetDate < DATES.NEW_VERSION_MIN ? DATES.NEW_VERSION_MIN : targetDate;
+        targetDate < currentVersion.startDate
+          ? currentVersion.startDate
+          : targetDate;
     }
     // Handle delegate paths
     else if (isDelegatePages) {
@@ -87,20 +94,19 @@ export const DelegateCompensationProvider: React.FC<ProviderProps> = ({
         10
       );
 
-      if (
-        isOldVersion &&
-        DATES.OLD_VERSION_MAX &&
-        queryDate > DATES.OLD_VERSION_MAX
-      ) {
-        targetDate = DATES.OLD_VERSION_MAX;
-        router.push(
-          {
-            pathname: `${rootPathname}/delegate-compensation-old`,
-            query: { month: 'october', year: 2024 },
-          },
-          undefined,
-          { shallow: true }
-        );
+      if (isOldVersion) {
+        const oldVersion = DATES.versions.find(v => v.version === 'old');
+        if (oldVersion?.endDate && queryDate > oldVersion.endDate) {
+          targetDate = oldVersion.endDate;
+          router.push(
+            {
+              pathname: `${rootPathname}/delegate-compensation-old`,
+              query: { month: 'october', year: 2024 },
+            },
+            undefined,
+            { shallow: true }
+          );
+        }
       } else if (queryDate > DATES.AVAILABLE_MAX) {
         // If selected date is beyond available data, default to latest available
         targetDate = DATES.AVAILABLE_MAX;

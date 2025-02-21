@@ -236,7 +236,10 @@ export const DelegateCompensationAdmin = () => {
       <DelegatePeriod
         delegate="none"
         period
-        minimumPeriod={new Date(COMPENSATION_DATES.NEW_VERSION_MIN)}
+        minimumPeriod={
+          COMPENSATION_DATES.versions.find(v => v.version === 'v1.6')
+            ?.startDate || new Date(COMPENSATION_DATES.versions[1].startDate)
+        }
         maximumPeriod={new Date()}
       />
       <Flex my="8" flexDir="row" align="center" gap="4">
