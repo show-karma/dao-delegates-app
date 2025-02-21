@@ -55,32 +55,7 @@ export const DelegateCompensationProvider: React.FC<ProviderProps> = ({
     const isDelegatePages =
       router.asPath.includes('delegate/') ||
       (router.asPath.includes('delegate-compensation') && !isOldVersion);
-    const lastPath = router.asPath.split('/')?.at(-1);
-    const delegateCompensationPage =
-      lastPath?.includes('delegate-compensation') && !isOldVersion;
     let targetDate = new Date();
-
-    // Handle old version path
-    if (isOldVersion) {
-      const oldVersion = DATES.versions.find(v => v.version === 'old');
-      if (oldVersion?.endDate) {
-        targetDate =
-          targetDate > oldVersion.endDate ? oldVersion.endDate : targetDate;
-      }
-    }
-    // Handle admin path
-    else if (isAdmin) {
-      const currentVersion =
-        DATES.versions.find(v => !v.endDate) || DATES.versions[0];
-      targetDate =
-        targetDate < currentVersion.startDate
-          ? currentVersion.startDate
-          : targetDate;
-    }
-    // Handle delegate paths
-    else if (isDelegatePages) {
-      targetDate = DATES.DEFAULT_SELECTED;
-    }
 
     // Handle query params if present
     if (monthQuery || yearQuery) {
@@ -94,25 +69,33 @@ export const DelegateCompensationProvider: React.FC<ProviderProps> = ({
         10
       );
 
+      // Only enforce date limits for specific cases
       if (isOldVersion) {
         const oldVersion = DATES.versions.find(v => v.version === 'old');
         if (oldVersion?.endDate && queryDate > oldVersion.endDate) {
           targetDate = oldVersion.endDate;
-          router.push(
-            {
-              pathname: `${rootPathname}/delegate-compensation-old`,
-              query: { month: 'october', year: 2024 },
-            },
-            undefined,
-            { shallow: true }
-          );
+        } else {
+          targetDate = queryDate;
         }
-      } else if (queryDate > DATES.AVAILABLE_MAX) {
-        // If selected date is beyond available data, default to latest available
-        targetDate = DATES.AVAILABLE_MAX;
       } else {
-        targetDate = queryDate;
+        targetDate =
+          queryDate > DATES.AVAILABLE_MAX ? DATES.AVAILABLE_MAX : queryDate;
       }
+    } else if (isOldVersion) {
+      const oldVersion = DATES.versions.find(v => v.version === 'old');
+      if (oldVersion?.endDate) {
+        targetDate =
+          targetDate > oldVersion.endDate ? oldVersion.endDate : targetDate;
+      }
+    } else if (isAdmin) {
+      const currentVersion =
+        DATES.versions.find(v => !v.endDate) || DATES.versions[0];
+      targetDate =
+        targetDate < currentVersion.startDate
+          ? currentVersion.startDate
+          : targetDate;
+    } else if (isDelegatePages) {
+      targetDate = DATES.DEFAULT_SELECTED;
     }
 
     return {
