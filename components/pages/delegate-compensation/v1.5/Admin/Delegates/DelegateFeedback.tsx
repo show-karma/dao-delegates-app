@@ -66,7 +66,7 @@ export const DelegateFeedback = ({
     depthOfAnalysis:
       'It evaluates the depth of analysis provided by the delegate concerning the proposals or discussions. This serves as a metric to assess whether the delegate takes the time to thoroughly meditate on the discussion and demonstrates attention to the details. Key elements include solid arguments, relevant questions, and thorough reasoning.',
     timing:
-      'Considers when the delegate provides feedback, rewarding those who provide feedback earlier, as long as they meet the above criteria. Note that feedback will be considered as provided before on-chain/off-chain voting if it was published before the day voting starts at 00:00 UTC.',
+      'Considers when the delegate provides feedback, rewarding those who provide feedback earlier, as long as they meet the above criteria.',
     clarityAndCommunication:
       'This is a review of the clarity, structured communication, and overall readability of the delegate’s feedback. Clear and well-written feedback is rewarded.',
     impactOnDecisionMaking:
