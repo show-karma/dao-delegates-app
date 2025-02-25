@@ -20,7 +20,6 @@ import {
   IFilterOrder,
   IFilterPeriod,
   IStatOptions,
-  IStats,
   IStatsID,
   IStatusOptions,
   ITracks,
@@ -147,7 +146,10 @@ const defaultStatuses: IStatusOptions[] = [
 // Helper function to convert stat ID to API field
 const getApiField = (statId: IStatsID): string => {
   if (statId === 'score') return 'score';
-  return statDefaultOptions.find((opt: IStatOptions) => opt.id === statId)?.stat || statId;
+  return (
+    statDefaultOptions.find((opt: IStatOptions) => opt.id === statId)?.stat ||
+    statId
+  );
 };
 
 export const DelegatesProvider: React.FC<ProviderProps> = ({
@@ -903,9 +905,10 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
     // we should use the corresponding id from statOptions
     const query = {
       ...queries,
-      [paramToSetup]: paramToSetup === 'sortby' 
-        ? statOptions.find(opt => opt.stat === paramValue)?.id || paramValue
-        : paramValue,
+      [paramToSetup]:
+        paramToSetup === 'sortby'
+          ? statOptions.find(opt => opt.stat === paramValue)?.id || paramValue
+          : paramValue,
     };
 
     router.push(
