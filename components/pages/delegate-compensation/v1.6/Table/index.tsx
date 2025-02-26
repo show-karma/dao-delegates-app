@@ -166,21 +166,6 @@ export const Table: React.FC<TableProps> = ({
       },
       header: 'Delegates Feedback',
     }),
-    columnHelper.accessor('totalParticipation', {
-      cell: info => {
-        if (!isMonthFinished && !isAuthorized) {
-          return <MonthNotFinishedTooltip />;
-        }
-        if (info.getValue()) {
-          return formatSimpleNumber(info.getValue());
-        }
-        if (info.getValue() === '0') {
-          return 0;
-        }
-        return null;
-      },
-      header: 'Total Participation',
-    }),
     columnHelper.accessor('bonusPoint', {
       cell: info => {
         if (!isMonthFinished && !isAuthorized) {
@@ -196,6 +181,22 @@ export const Table: React.FC<TableProps> = ({
       },
       header: 'Bonus Points',
     }),
+    columnHelper.accessor('totalParticipation', {
+      cell: info => {
+        if (!isMonthFinished && !isAuthorized) {
+          return <MonthNotFinishedTooltip />;
+        }
+        if (info.getValue()) {
+          return formatSimpleNumber(info.getValue());
+        }
+        if (info.getValue() === '0') {
+          return 0;
+        }
+        return null;
+      },
+      header: 'Total Participation',
+    }),
+
     // columnHelper.accessor('payment', {
     //   cell: info => {
     //     if (info.getValue()) {
