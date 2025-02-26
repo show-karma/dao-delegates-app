@@ -81,8 +81,11 @@ export const DelegatePerformanceOverviewHeader = () => {
   const { selectedDate } = useDelegateCompensation();
   const { theme, daoInfo } = useDAO();
   const { isOpen, onToggle } = useDisclosure();
-  const [averageParticipationRate, setAverageParticipationRate] = useState(0);
-  const [averagePRCalculating, setAveragePRCalculating] = useState(true);
+  const [avgTotalParticipation, setAvgTotalParticipation] = useState(0);
+  const [
+    avgTotalParticipationCalculating,
+    setAvgTotalParticipationCalculating,
+  ] = useState(true);
 
   const { data: optInDelegates, isLoading: isLoadingOptInDelegates } = useQuery(
     {
@@ -163,18 +166,18 @@ export const DelegatePerformanceOverviewHeader = () => {
     });
 
   useEffect(() => {
-    setAveragePRCalculating(true);
-    const averageParticipationRateCalculated = optedInDelegates?.length
+    setAvgTotalParticipationCalculating(true);
+    const avgTotalParticipationCalculated = optedInDelegates?.length
       ? optedInDelegates.reduce((acc: any, delegate: any) => {
-          const participationRate = delegate?.participationRate
-            ? parseFloat(delegate?.participationRate)
+          const totalParticipation = delegate?.totalParticipation
+            ? parseFloat(delegate?.totalParticipation)
             : 0;
-          return acc + participationRate;
+          return acc + totalParticipation;
         }, 0) / optedInDelegates.length
       : 0;
 
-    setAverageParticipationRate(averageParticipationRateCalculated);
-    setAveragePRCalculating(false);
+    setAvgTotalParticipation(avgTotalParticipationCalculated);
+    setAvgTotalParticipationCalculating(false);
   }, [optedInDelegates, isOptedInDelegatesLoading]);
 
   const dataPoints = [
@@ -198,9 +201,9 @@ export const DelegatePerformanceOverviewHeader = () => {
       iconBg:
         theme.compensation?.performanceOverview.header.bg
           .averageParticipationRate,
-      title: 'Average Participation Rate',
-      value: formatSimpleNumber(averageParticipationRate || 0),
-      isLoading: isOptedInDelegatesLoading || averagePRCalculating,
+      title: 'Average Total Participation',
+      value: formatSimpleNumber(avgTotalParticipation || 0),
+      isLoading: isOptedInDelegatesLoading || avgTotalParticipationCalculating,
     },
   ];
   return (
