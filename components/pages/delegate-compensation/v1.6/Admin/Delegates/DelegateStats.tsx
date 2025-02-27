@@ -6,19 +6,22 @@ import { useDelegateCompensation } from 'contexts/delegateCompensation';
 import pluralize from 'pluralize';
 import { useState } from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';
-import { formatSimpleNumber } from 'utils';
+import { formatNumber, formatSimpleNumber } from 'utils';
 import { getPRBreakdown } from 'utils/delegate-compensation/getPRBreakdown';
 import { getProposals } from 'utils/delegate-compensation/getProposals';
+import { DelegateStatsFromAPI } from 'types';
 import { MonthNotFinishedTooltip } from '../../../MonthNotFinishedTooltip';
 import { DelegateBP } from './DelegateBP';
 import { DelegateFeedback } from './DelegateFeedback';
-import { DelegateFinalScoreModal } from './DelegateFinalScore';
+import { DelegateFinalScoreModal, InfoTooltip } from './DelegateFinalScore';
 import { DelegatePeriodIndicator } from './DelegatePeriodIndicator';
+import { VotingPowerBreakdownModal } from './VotingPowerBreakdownModal';
 
 export const DelegateStats = () => {
   const { delegateInfo, selectedDate } = useDelegateCompensation();
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isFinalScoreModalOpen, setIsFinalScoreModalOpen] = useState(false);
+  const [isVotingPowerModalOpen, setIsVotingPowerModalOpen] = useState(false);
   const { theme, daoInfo } = useDAO();
   const { isDaoAdmin: isAuthorized } = useAuth();
 
@@ -85,6 +88,15 @@ export const DelegateStats = () => {
           setIsModalOpen={setIsFinalScoreModalOpen}
         />
       ) : null}
+      {/* New Voting Power Breakdown Modal */}
+      <VotingPowerBreakdownModal
+        isOpen={isVotingPowerModalOpen}
+        onClose={() => setIsVotingPowerModalOpen(false)}
+        votingPowerBreakdown={delegateInfo?.stats?.votingPowerBreakdown || []}
+        votingPowerAverage={
+          Number(delegateInfo?.stats?.votingPowerAverage) || 0
+        }
+      />
       {/* 3 blocks */}
       <Flex
         flexDir={['column', 'column', 'row']}
@@ -154,16 +166,21 @@ export const DelegateStats = () => {
             >
               Score
             </Text>
-
-            <Text
-              fontSize="24px"
-              fontWeight={700}
-              color={theme.compensation?.card.secondaryText}
-            >
-              {formatSimpleNumber(
-                delegateInfo?.stats?.snapshotVoting.score || 0
-              )}
-            </Text>
+            <Flex flexDir="row" gap="2" align="center">
+              <Text
+                fontSize="24px"
+                fontWeight={700}
+                color={theme.compensation?.card.secondaryText}
+              >
+                {formatSimpleNumber(
+                  delegateInfo?.stats?.snapshotVoting.score || 0
+                )}
+              </Text>
+              <InfoTooltip
+                stat="snapshotVoting"
+                stats={delegateInfo?.stats as DelegateStatsFromAPI['stats']}
+              />
+            </Flex>
             <Flex flexDir="row" gap="2">
               <Text
                 fontSize="14px"
@@ -249,16 +266,22 @@ export const DelegateStats = () => {
             >
               Score
             </Text>
+            <Flex flexDir="row" gap="2" align="center">
+              <Text
+                fontSize="24px"
+                fontWeight={700}
+                color={theme.compensation?.card.secondaryText}
+              >
+                {formatSimpleNumber(
+                  delegateInfo?.stats?.onChainVoting.score || 0
+                )}
+              </Text>
+              <InfoTooltip
+                stat="onChainVoting"
+                stats={delegateInfo?.stats as DelegateStatsFromAPI['stats']}
+              />
+            </Flex>
 
-            <Text
-              fontSize="24px"
-              fontWeight={700}
-              color={theme.compensation?.card.secondaryText}
-            >
-              {formatSimpleNumber(
-                delegateInfo?.stats?.onChainVoting.score || 0
-              )}
-            </Text>
             <Flex flexDir="row" gap="2">
               <Text
                 fontSize="14px"
@@ -385,16 +408,23 @@ export const DelegateStats = () => {
               Delegate Feedback
             </Button>
             {isMonthFinished || isAuthorized ? (
-              <Text
-                fontSize="24px"
-                fontWeight={700}
-                color={theme.compensation?.card.secondaryText}
-                lineHeight="32px"
-              >
-                {formatSimpleNumber(
-                  delegateInfo?.stats?.delegateFeedback?.finalScore || 0
-                )}
-              </Text>
+              <Flex flexDir="row" gap="2" align="center">
+                <Text
+                  fontSize="24px"
+                  fontWeight={700}
+                  color={theme.compensation?.card.secondaryText}
+                  lineHeight="32px"
+                >
+                  {formatSimpleNumber(
+                    delegateInfo?.stats?.delegateFeedback?.finalScore || 0
+                  )}
+                </Text>
+
+                <InfoTooltip
+                  stat="delegateFeedback"
+                  stats={delegateInfo?.stats as DelegateStatsFromAPI['stats']}
+                />
+              </Flex>
             ) : (
               <MonthNotFinishedTooltip />
             )}
@@ -448,6 +478,69 @@ export const DelegateStats = () => {
             align="center"
           >
             <Img
+              src="/icons/delegate-compensation/flexArm.png"
+              w="24px"
+              h="24px"
+            />
+          </Flex>
+          <Flex flexDir="column" gap="0" justify="center" align="flex-start">
+            <Text
+              fontSize="16px"
+              fontWeight="600"
+              color={theme.compensation?.card.text}
+            >
+              Average Voting Power
+            </Text>
+            {isMonthFinished || isAuthorized ? (
+              <Flex
+                flexDir="column"
+                gap="0"
+                justify="center"
+                align="flex-start"
+                onClick={() => setIsVotingPowerModalOpen(true)}
+                cursor="pointer"
+                _hover={{ opacity: 0.8 }}
+              >
+                <Flex flexDir="row" gap="2" align="center">
+                  <Text
+                    fontSize="24px"
+                    fontWeight={700}
+                    color={theme.compensation?.card.secondaryText}
+                    textDecoration="underline"
+                  >
+                    {formatNumber(delegateInfo?.stats?.votingPowerAverage || 0)}
+                  </Text>
+
+                  <InfoTooltip
+                    stat="votingPowerAverage"
+                    stats={delegateInfo?.stats as DelegateStatsFromAPI['stats']}
+                  />
+                </Flex>
+              </Flex>
+            ) : (
+              <MonthNotFinishedTooltip />
+            )}
+          </Flex>
+        </Flex>
+        <Flex
+          flexDir="row"
+          bg={theme.compensation?.card.bg}
+          flex="1"
+          borderRadius="8px"
+          p="3"
+          gap="3"
+          justify="flex-start"
+          align="flex-start"
+        >
+          <Flex
+            borderRadius="4px"
+            bg={theme.compensation?.icons.participationRate}
+            w="40px"
+            h="40px"
+            justify="center"
+            align="center"
+          >
+            <Img
               src="/icons/delegate-compensation/participationRate.png"
               w="24px"
               h="24px"
@@ -468,15 +561,22 @@ export const DelegateStats = () => {
                 justify="center"
                 align="flex-start"
               >
-                <Text
-                  fontSize="24px"
-                  fontWeight={700}
-                  color={theme.compensation?.card.secondaryText}
-                >
-                  {formatSimpleNumber(
-                    delegateInfo?.stats?.participationRate || 0
-                  )}
-                </Text>
+                <Flex flexDir="row" gap="2" align="center">
+                  <Text
+                    fontSize="24px"
+                    fontWeight={700}
+                    color={theme.compensation?.card.secondaryText}
+                  >
+                    {formatSimpleNumber(
+                      delegateInfo?.stats?.participationRate || 0
+                    )}
+                  </Text>
+
+                  <InfoTooltip
+                    stat="participationRate"
+                    stats={delegateInfo?.stats as DelegateStatsFromAPI['stats']}
+                  />
+                </Flex>
                 <Flex flexDir="row" gap="2">
                   <Text
                     fontSize="14px"

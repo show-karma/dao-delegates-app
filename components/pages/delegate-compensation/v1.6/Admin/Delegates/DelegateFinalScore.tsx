@@ -20,7 +20,202 @@ import {
 import { useDAO } from 'contexts';
 import { useDelegateCompensation } from 'contexts/delegateCompensation';
 import { BsFillInfoCircleFill } from 'react-icons/bs';
+import { DelegateStatsFromAPI } from 'types';
 import { formatSimpleNumber } from 'utils';
+
+type Stats = DelegateStatsFromAPI['stats'];
+
+const statsLabel = {
+  participationRate: 'Participation Rate (PR)',
+  snapshotVoting: 'Snapshot Voting (SV)',
+  onChainVoting: 'On-Chain Voting (TV)',
+  bonusPoint: 'Bonus Point (BP)',
+  delegateFeedback: 'Delegate Feedback (DF)',
+  votingPowerMultiplier: 'Voting Power Multiplier (VP)',
+};
+
+const statsFormula = (delegateStats: Stats) => ({
+  participationRate: (
+    <Flex flexDir="column" py="1" gap="2">
+      <Text fontWeight={600}>Participation Rate (PR) - Weight 15</Text>
+      <Text fontWeight="normal">
+        Percentage of the total participation of the member in votes in the last
+        90 days. Karma pulls the participation activity directly from onchain
+        transactions. This parameter will be calculated at the end of each
+        month.
+      </Text>
+      <Code fontWeight="normal">PR90 formula: (PR90 * 15) / 100</Code>
+      <Code fontWeight="normal">
+        PR90 = ({delegateStats?.participationRatePercent} * 15) / 100
+        <br />
+        PR90 = {delegateStats?.participationRate}
+      </Code>
+    </Flex>
+  ),
+  snapshotVoting: (
+    <Flex flexDir="column" py="1" gap="2">
+      <Text fontWeight={600}>Snapshot Voting (SV) - Weight 20</Text>
+      <Text fontWeight="normal">
+        Percentage of delegate participation in snapshot voting. This parameter
+        is reset at the beginning of each month.
+      </Text>
+      <List fontWeight="normal">
+        <ListItem>
+          <b>Tn</b>: Number of total proposals that were sent to snapshots for
+          voting in the month.
+        </ListItem>
+        <ListItem>
+          <b>Rn:</b> Number of proposals the delegate voted on in the month.
+        </ListItem>
+      </List>
+      <Code fontWeight="normal">SV formula: (SV(Rn) / SV(Tn)) * 20</Code>
+      <Code fontWeight="normal">
+        SV = ({delegateStats?.snapshotVoting.rn} /{' '}
+        {delegateStats?.snapshotVoting.tn}) * 20
+        <br />
+        SV = {delegateStats.snapshotVoting.score}
+      </Code>
+    </Flex>
+  ),
+  onChainVoting: (
+    <Flex flexDir="column" py="1" gap="2">
+      <Text fontWeight={600}>Onchain Voting (TV) - Weight 25</Text>
+      <Text fontWeight="normal">
+        Percentage of delegate participation in onchain voting. This parameter
+        is reset at the beginning of each month.
+      </Text>
+      <List fontWeight="normal">
+        <ListItem>
+          <b>Tn</b>: Number of total proposals that were sent onchain for voting
+          in the month.
+        </ListItem>
+        <ListItem>
+          <b>Rn:</b> Number of proposals the delegate voted onchain in the
+          month.
+        </ListItem>
+      </List>
+      <Code fontWeight="normal">TV formula: (TV(Rn) / TV(Tn)) * 25</Code>
+      <Code fontWeight="normal">
+        TV = ({delegateStats?.onChainVoting.rn} /{' '}
+        {delegateStats?.onChainVoting.tn}) * 25
+        <br />
+        TV = {delegateStats.onChainVoting.score}
+      </Code>
+    </Flex>
+  ),
+  votingPowerAverage: (
+    <Flex flexDir="column" py="1" gap="2">
+      <Text fontWeight={600}>Average Voting Power</Text>
+      <Text fontWeight="normal">
+        Average of the voting power of the delegate in the last month.
+      </Text>
+    </Flex>
+  ),
+  bonusPoint: (
+    <Flex flexDir="column" py="1" gap="2">
+      <Text fontWeight={600}>Bonus Point (BP) - Extra +30% TP</Text>
+      <Text fontWeight="normal">
+        Determined by attendance at monthly calls (Biweekly and GRC) - 5% of
+        earned TP and extraordinary contributions. A delegate can only get a
+        total of 30 points between both concepts. This parameter is reset at the
+        beginning of each month.
+      </Text>
+
+      <Code fontWeight="normal">
+        BP formula: (Biweekly calls * 0.0125 + Monthly calls * 0.0125) +
+        Contributions
+      </Code>
+      <Code fontWeight="normal">
+        BP = ({delegateStats.biweeklyCalls} * 0.0125 +{' '}
+        {delegateStats.monthlyCalls} * 0.0125) + {delegateStats.contributions}
+        <br />
+        BP = {delegateStats.bonusPoint}
+      </Code>
+    </Flex>
+  ),
+  votingPowerMultiplier: (
+    <Flex flexDir="column" py="1" gap="2">
+      <Text fontWeight={600}>Voting Power Multiplier (VP) - Weight 1</Text>
+      <Text fontWeight="normal">
+        This multiplier adjusts the Voting Score based on a delegate&apos;s
+        Voting Power (VP). Delegates with 50,000 VP receive a multiplier of 0.8
+        (minimum), while those with 4,000,000+ VP receive a multiplier of 1.0
+        (maximum). The VP used is a daily weighted average throughout the month.
+      </Text>
+      <Code fontWeight="normal">
+        VP multiplier formula: 0.00000005063 * VP + 0.7974685
+      </Code>
+      <Code fontWeight="normal">
+        VP = 0.00000005063 * {delegateStats.votingPowerAverage} + 0.7974685
+        <br />
+        VP = {delegateStats.votingPowerMultiplier}
+      </Code>
+    </Flex>
+  ),
+  delegateFeedback: (
+    <Flex flexDir="column" py="1" gap="2">
+      <Text fontWeight={600}>Delegates Feedback (DF) - Weight 40</Text>
+      <Text fontWeight="normal">
+        This is the score given by the program administrator regarding the
+        feedback and contributions provided by the delegate during the month.
+        The scoring range in the rubric for each comment is 0 to 10. This
+        includes the former Communication Rationale parameter and considers all
+        forms of participation within the DAO.
+      </Text>
+      <Code fontWeight="normal">
+        DF formula: (Σ qualitative criteria) / 50 * 100 * Presence in
+        discussions multiplier * 40 (DF weight)
+      </Code>
+      <Code fontWeight="normal">
+        DF = ({delegateStats.delegateFeedback?.relevance} +{' '}
+        {delegateStats.delegateFeedback?.depthOfAnalysis} +{' '}
+        {delegateStats.delegateFeedback?.timing} +{' '}
+        {delegateStats.delegateFeedback?.clarityAndCommunication} +{' '}
+        {delegateStats.delegateFeedback?.impactOnDecisionMaking}) / 50 * 100 *{' '}
+        {delegateStats.delegateFeedback?.presenceMultiplier} * 40
+        <br />
+        DF = {delegateStats.delegateFeedback?.finalScore}
+      </Code>
+    </Flex>
+  ),
+});
+
+export const InfoTooltip = ({
+  stat,
+  stats,
+}: {
+  stat:
+    | 'participationRate'
+    | 'snapshotVoting'
+    | 'onChainVoting'
+    | 'bonusPoint'
+    | 'votingPowerMultiplier'
+    | 'votingPowerAverage'
+    | 'delegateFeedback';
+  stats: Stats;
+}) => {
+  const { theme } = useDAO();
+
+  const label = statsFormula(stats)[stat as keyof typeof statsFormula];
+
+  return (
+    <Tooltip
+      placement="top"
+      label={label}
+      hasArrow
+      bgColor={theme.compensation?.card.bg}
+      color={theme.compensation?.card.text}
+      fontWeight="normal"
+      fontSize="sm"
+      borderRadius={10}
+      p="3"
+    >
+      <Text as="span">
+        <Icon boxSize="12px" as={BsFillInfoCircleFill} cursor="help" />
+      </Text>
+    </Tooltip>
+  );
+};
 
 export const DelegateFinalScoreModal = ({
   isModalOpen,
@@ -33,123 +228,12 @@ export const DelegateFinalScoreModal = ({
   const { delegateInfo } = useDelegateCompensation();
 
   const stats = {
-    participationRate: delegateInfo?.stats?.participationRate || 0,
-    snapshotVoting: delegateInfo?.stats?.snapshotVoting.score || 0,
-    onChainVoting: delegateInfo?.stats?.onChainVoting.score || 0,
-    communicatingRationale:
-      delegateInfo?.stats?.communicatingRationale.score || 0,
-    delegateFeedback: delegateInfo?.stats?.delegateFeedback?.finalScore || 0,
-    bonusPoint: delegateInfo?.stats?.bonusPoint || 0,
-  };
-
-  const statsLabel = {
-    participationRate: 'Participation Rate (PR)',
-    snapshotVoting: 'Snapshot Voting (SV)',
-    onChainVoting: 'On-Chain Voting (TV)',
-    bonusPoint: 'Bonus Point (BP)',
-    communicatingRationale: 'Communicating Rationale (CR)',
-    delegateFeedback: 'Delegate Feedback (DF)',
-  };
-
-  const statsFormula = {
-    participationRate: (
-      <Flex flexDir="column" py="1" gap="2">
-        <Text fontWeight={600}>Participation Rate (PR) - Weight 15</Text>
-        <Text fontWeight="normal">
-          Percentage of the total participation of the member in votes in the
-          last 90 days. Karma pulls the participation activity directly from
-          onchain transactions. This parameter will be calculated at the end of
-          each month.
-        </Text>
-        <Code fontWeight="normal">PR90 formula: (PR90 * 15) / 100</Code>
-      </Flex>
-    ),
-    snapshotVoting: (
-      <Flex flexDir="column" py="1" gap="2">
-        <Text fontWeight={600}>Snapshot Voting (SV) - Weight 20</Text>
-        <Text fontWeight="normal">
-          Percentage of delegate participation in snapshot voting. This
-          parameter is reset at the beginning of each month.
-        </Text>
-        <List fontWeight="normal">
-          <ListItem>
-            <b>Tn</b>: Number of total proposals that were sent to snapshots for
-            voting in the month.
-          </ListItem>
-          <ListItem>
-            <b>Rn:</b> Number of proposals the delegate voted on in the month.
-          </ListItem>
-        </List>
-        <Code fontWeight="normal">SV formula: (SV(Rn) / SV(Tn)) * 20</Code>
-      </Flex>
-    ),
-    onChainVoting: (
-      <Flex flexDir="column" py="1" gap="2">
-        <Text fontWeight={600}>Onchain Voting (TV) - Weight 25</Text>
-        <Text fontWeight="normal">
-          Percentage of delegate participation in onchain voting. This parameter
-          is reset at the beginning of each month.
-        </Text>
-        <List fontWeight="normal">
-          <ListItem>
-            <b>Tn</b>: Number of total proposals that were sent onchain for
-            voting in the month.
-          </ListItem>
-          <ListItem>
-            <b>Rn:</b> Number of proposals the delegate voted onchain in the
-            month.
-          </ListItem>
-        </List>
-        <Code fontWeight="normal">TV formula: (TV(Rn) / TV(Tn)) * 25</Code>
-      </Flex>
-    ),
-    bonusPoint: (
-      <Flex flexDir="column" py="1" gap="2">
-        <Text fontWeight={600}>Bonus Point (BP) - Extra +30% TP</Text>
-        <Text fontWeight="normal">
-          This parameter is extra. If the delegate makes a significant
-          contribution to the DAO, he/she is automatically granted +30% extra
-          TP. This parameter is at the discretion of the program administrator.
-          This parameter is reset at the beginning of each month
-        </Text>
-      </Flex>
-    ),
-    communicatingRationale: (
-      <Flex flexDir="column" py="1" gap="2">
-        <Text fontWeight={600}>Communication Rationale (CR) - Weight 10</Text>
-        <Text fontWeight="normal">
-          Percentage of communication threads with the justification of the
-          delegate’s vote on the proposals sent to snapshots and onchain (if
-          necessary if the vote does not change). This parameter is reset at the
-          beginning of each month.
-        </Text>
-        <List fontWeight="normal">
-          <ListItem>
-            <b>Tn</b>: Total number of proposals that were submitted to a vote.
-          </ListItem>
-          <ListItem>
-            <b>Rn:</b> Number of real communication rational threads where the
-            delegate communicated and justified his/her decision.
-          </ListItem>
-        </List>
-        <Code fontWeight="normal">CR formula: (CR(Rn) / CR(Tn)) * 10</Code>
-      </Flex>
-    ),
-    delegateFeedback: (
-      <Flex flexDir="column" py="1" gap="2">
-        <Text fontWeight={600}>Delegates Feedback (DF) - Weight 40</Text>
-        <Text fontWeight="normal">
-          This is the score given by the program administrator regarding the
-          feedback provided by the delegate during the month. Since version
-          v1.5, we use a rubric with a scoring system detailed.
-        </Text>
-
-        <Code fontWeight="normal">
-          DF formula: (Σ qualitative criteria) / 20 * 100 * Presence in
-          discussions multiplier * 40 (DF weight)
-        </Code>
-      </Flex>
-    ),
+    participationRate: delegateInfo?.stats?.participationRate || '0',
+    snapshotVoting: delegateInfo?.stats?.snapshotVoting.score || '0',
+    onChainVoting: delegateInfo?.stats?.onChainVoting.score || '0',
+    delegateFeedback: delegateInfo?.stats?.delegateFeedback?.finalScore || '0',
+    votingPowerMultiplier: delegateInfo?.stats?.votingPowerMultiplier || '0',
+    bonusPoint: delegateInfo?.stats?.bonusPoint || '0',
   };
 
   return (
@@ -210,25 +294,12 @@ export const DelegateFinalScoreModal = ({
                         >
                           {statsLabel[key as keyof typeof statsLabel]}
                         </Text>
-                        <Tooltip
-                          placement="top"
-                          label={statsFormula[key as keyof typeof statsFormula]}
-                          hasArrow
-                          bgColor={theme.compensation?.card.bg}
-                          color={theme.compensation?.card.text}
-                          fontWeight="normal"
-                          fontSize="sm"
-                          borderRadius={10}
-                          p="3"
-                        >
-                          <Text as="span">
-                            <Icon
-                              boxSize="12px"
-                              as={BsFillInfoCircleFill}
-                              cursor="help"
-                            />
-                          </Text>
-                        </Tooltip>
+                        <InfoTooltip
+                          stat={key as keyof typeof statsFormula}
+                          stats={
+                            delegateInfo?.stats as DelegateStatsFromAPI['stats']
+                          }
+                        />
                       </Flex>
 
                       <Text
