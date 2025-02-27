@@ -29,6 +29,7 @@ export type DelegateStatsFromAPI = {
   votingPower: string;
   stats: {
     votingPowerAverage?: string;
+    votingPowerMultiplier?: number;
     bonusPoint: number;
     commentingProposal: CompensationStatBreakdown;
     communicatingRationale: CompensationStatBreakdown;
@@ -55,6 +56,7 @@ export type DelegateStatsFromAPI = {
       };
       posts: ForumActivityBreakdown[];
     };
+    votingPowerBreakdown: number[];
     totalParticipation: string;
     participationRatePercent: number;
     contributions: number;

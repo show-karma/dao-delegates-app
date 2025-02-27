@@ -190,7 +190,7 @@ export const DelegateCompensationAdminForumActivity = ({
       ).toFixed(1)
     );
     const finalScore = 1.5 * multiplier * initialScore;
-    return finalScore > 30 ? 30 : Number(finalScore.toFixed(2));
+    return finalScore > 40 ? 40 : Number(finalScore.toFixed(2));
   };
 
   const handleInputChange = (index: number, field: string, value: string) => {
@@ -799,7 +799,7 @@ export const DelegateCompensationAdminForumActivity = ({
                           fontWeight={600}
                           color={theme.compensation?.card.secondaryText}
                         >
-                          Final Score formula: Total * 30/20 * Presence
+                          Final Score formula: Total * 40/50 * Presence
                           Multiplier
                         </Text>
                       }
@@ -878,7 +878,7 @@ export const DelegateCompensationAdminForumActivity = ({
                         fontWeight={600}
                         color={theme.compensation?.card.secondaryText}
                       >
-                        30/20
+                        40/50
                       </Text>
                     </Tooltip>
                     <Text
