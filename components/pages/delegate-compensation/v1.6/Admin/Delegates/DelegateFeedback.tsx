@@ -232,22 +232,24 @@ export const DelegateFeedback = ({
                           color={theme.compensation?.card.text}
                         >
                           <Flex flexDir="row" gap="1">
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(score => {
-                              const starValue = Number(value) - (score - 1);
-                              return (
-                                <Icon
-                                  key={score + key}
-                                  color="yellow.400"
-                                  opacity={starValue <= 0 ? 0.1 : starValue}
-                                  data-key={key}
-                                  as={StarIcon}
-                                  w="32px"
-                                  h="32px"
-                                >
-                                  {starValue}
-                                </Icon>
-                              );
-                            })}
+                            {Array.from({ length: 10 }, (_, i) => i + 1).map(
+                              score => {
+                                const starValue = Number(value) - (score - 1);
+                                return (
+                                  <Icon
+                                    key={score + key}
+                                    color="yellow.400"
+                                    opacity={starValue <= 0 ? 0.1 : starValue}
+                                    data-key={key}
+                                    as={StarIcon}
+                                    w="32px"
+                                    h="32px"
+                                  >
+                                    {starValue}
+                                  </Icon>
+                                );
+                              }
+                            )}
                           </Flex>
                         </Tooltip>
                       ) : (

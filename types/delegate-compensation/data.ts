@@ -17,6 +17,43 @@ export type CompensationStatBreakdown = {
   breakdown?: Record<string, DelegateStatsBreakdown>;
 };
 
+export type DelegateInfoStats = {
+  votingPowerAverage?: string;
+  votingPowerMultiplier?: number;
+  bonusPoint: number;
+  commentingProposal: CompensationStatBreakdown;
+  communicatingRationale: CompensationStatBreakdown;
+  onChainVoting: CompensationStatBreakdown;
+  participationRate: string;
+  payment: number;
+  snapshotVoting: CompensationStatBreakdown;
+  delegateFeedback?: {
+    relevance: number;
+    depthOfAnalysis: number;
+    timing: number;
+    clarityAndCommunication: number;
+    impactOnDecisionMaking: number;
+    presenceMultiplier: number;
+    initialScore: number;
+    finalScore: number;
+    justification: {
+      relevance: string;
+      depthOfAnalysis: string;
+      timing: string;
+      clarityAndCommunication: string;
+      impactOnDecisionMaking: string;
+      presence: string;
+    };
+    posts: ForumActivityBreakdown[];
+  };
+  votingPowerBreakdown: number[];
+  totalParticipation: string;
+  participationRatePercent: number;
+  contributions: number;
+  biweeklyCalls: number;
+  monthlyCalls: number;
+};
+
 export type DelegateStatsFromAPI = {
   id: number;
   publicAddress: string;
@@ -27,47 +64,12 @@ export type DelegateStatsFromAPI = {
   profilePicture: string;
   incentiveOptedIn: boolean;
   votingPower: string;
-  stats: {
-    votingPowerAverage?: string;
-    votingPowerMultiplier?: number;
-    bonusPoint: number;
-    commentingProposal: CompensationStatBreakdown;
-    communicatingRationale: CompensationStatBreakdown;
-    onChainVoting: CompensationStatBreakdown;
-    participationRate: string;
-    payment: number;
-    snapshotVoting: CompensationStatBreakdown;
-    delegateFeedback?: {
-      relevance: number;
-      depthOfAnalysis: number;
-      timing: number;
-      clarityAndCommunication: number;
-      impactOnDecisionMaking: number;
-      presenceMultiplier: number;
-      initialScore: number;
-      finalScore: number;
-      justification: {
-        relevance: string;
-        depthOfAnalysis: string;
-        timing: string;
-        clarityAndCommunication: string;
-        impactOnDecisionMaking: string;
-        presence: string;
-      };
-      posts: ForumActivityBreakdown[];
-    };
-    votingPowerBreakdown: number[];
-    totalParticipation: string;
-    participationRatePercent: number;
-    contributions: number;
-    biweeklyCalls: number;
-    monthlyCalls: number;
-  };
+  stats: DelegateInfoStats;
 };
 
 export type DelegateCompensationStats = {
   id: number;
-  stats: DelegateStatsFromAPI['stats'];
+  stats: DelegateInfoStats;
   delegate: {
     name?: string;
     ensName?: string;

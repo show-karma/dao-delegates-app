@@ -20,10 +20,8 @@ import {
 import { useDAO } from 'contexts';
 import { useDelegateCompensation } from 'contexts/delegateCompensation';
 import { BsFillInfoCircleFill } from 'react-icons/bs';
-import { DelegateStatsFromAPI } from 'types';
+import { DelegateInfoStats } from 'types';
 import { formatSimpleNumber } from 'utils';
-
-type Stats = DelegateStatsFromAPI['stats'];
 
 const statsLabel = {
   participationRate: 'Participation Rate (PR)',
@@ -34,7 +32,7 @@ const statsLabel = {
   votingPowerMultiplier: 'Voting Power Multiplier (VP)',
 };
 
-const statsFormula = (delegateStats: Stats) => ({
+const statsFormula = (delegateStats: DelegateInfoStats) => ({
   participationRate: (
     <Flex flexDir="column" py="1" gap="2">
       <Text fontWeight={600}>Participation Rate (PR) - Weight 15</Text>
@@ -192,7 +190,7 @@ export const InfoTooltip = ({
     | 'votingPowerMultiplier'
     | 'votingPowerAverage'
     | 'delegateFeedback';
-  stats: Stats;
+  stats: DelegateInfoStats;
 }) => {
   const { theme } = useDAO();
 
@@ -226,14 +224,15 @@ export const DelegateFinalScoreModal = ({
 }) => {
   const { theme } = useDAO();
   const { delegateInfo } = useDelegateCompensation();
+  const delegateStats = delegateInfo?.stats as DelegateInfoStats;
 
   const stats = {
-    participationRate: delegateInfo?.stats?.participationRate || '0',
-    snapshotVoting: delegateInfo?.stats?.snapshotVoting.score || '0',
-    onChainVoting: delegateInfo?.stats?.onChainVoting.score || '0',
-    delegateFeedback: delegateInfo?.stats?.delegateFeedback?.finalScore || '0',
-    votingPowerMultiplier: delegateInfo?.stats?.votingPowerMultiplier || '0',
-    bonusPoint: delegateInfo?.stats?.bonusPoint || '0',
+    participationRate: delegateStats?.participationRate || '0',
+    snapshotVoting: delegateStats?.snapshotVoting.score || '0',
+    onChainVoting: delegateStats?.onChainVoting.score || '0',
+    delegateFeedback: delegateStats?.delegateFeedback?.finalScore || '0',
+    votingPowerMultiplier: delegateStats?.votingPowerMultiplier || '0',
+    bonusPoint: delegateStats?.bonusPoint || '0',
   };
 
   return (
@@ -296,9 +295,7 @@ export const DelegateFinalScoreModal = ({
                         </Text>
                         <InfoTooltip
                           stat={key as keyof typeof statsFormula}
-                          stats={
-                            delegateInfo?.stats as DelegateStatsFromAPI['stats']
-                          }
+                          stats={delegateStats}
                         />
                       </Flex>
 
@@ -395,7 +392,7 @@ export const DelegateFinalScoreModal = ({
                       textAlign="center"
                     >
                       {formatSimpleNumber(
-                        delegateInfo?.stats?.totalParticipation || 0
+                        delegateStats?.totalParticipation || 0
                       ) || '0'}
                     </Text>
                   </Flex>
