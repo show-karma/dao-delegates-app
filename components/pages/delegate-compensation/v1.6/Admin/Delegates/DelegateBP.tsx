@@ -31,7 +31,9 @@ import { useToasty } from 'hooks';
 import { useEffect, useState } from 'react';
 import { formatSimpleNumber } from 'utils';
 import { getProposals } from 'utils/delegate-compensation/getProposals';
+import { DelegateStatsFromAPI } from 'types';
 import { MonthNotFinishedTooltip } from '../../../MonthNotFinishedTooltip';
+import { InfoTooltip } from './DelegateFinalScore';
 
 export const DelegateBP = ({
   isMonthFinished,
@@ -417,256 +419,262 @@ export const DelegateBP = ({
         Bonus Points
       </Text>
       {isMonthFinished || isAuthorized ? (
-        <Flex gap="4" justify="space-between" flexDir="row" w="full">
-          <Popover>
-            <PopoverTrigger>
-              <Button
-                fontSize="24px"
-                fontWeight={700}
-                color={theme.compensation?.card.secondaryText}
-                lineHeight="32px"
-                cursor="pointer"
-                textDecor="underline"
-                bg="transparent"
-                border="2px solid"
-                borderColor={
-                  totalBonusPoints.toString() === ''
-                    ? theme.compensation?.card.link
-                    : 'transparent'
-                }
-                w={totalBonusPoints.toString() === '' ? '32px' : 'auto'}
-                h={totalBonusPoints.toString() === '' ? '40px' : 'auto'}
-                px="0"
-                py="0"
+        <Flex flexDir="row" gap="2" align="center">
+          <Flex gap="4" justify="space-between" flexDir="row" w="full">
+            <Popover>
+              <PopoverTrigger>
+                <Button
+                  fontSize="24px"
+                  fontWeight={700}
+                  color={theme.compensation?.card.secondaryText}
+                  lineHeight="32px"
+                  cursor="pointer"
+                  textDecor="underline"
+                  bg="transparent"
+                  border="2px solid"
+                  borderColor={
+                    totalBonusPoints.toString() === ''
+                      ? theme.compensation?.card.link
+                      : 'transparent'
+                  }
+                  w={totalBonusPoints.toString() === '' ? '32px' : 'auto'}
+                  h={totalBonusPoints.toString() === '' ? '40px' : 'auto'}
+                  px="0"
+                  py="0"
+                >
+                  <Flex flexDir="row" gap="3" align="center" justify="start">
+                    {totalBonusPoints.toString()}
+                    {isSaving ? <Spinner size="xs" /> : null}
+                  </Flex>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                w="max-content"
+                bg={theme.compensation?.modal.block}
               >
-                <Flex flexDir="row" gap="3" align="center" justify="start">
-                  {totalBonusPoints.toString()}
-                  {isSaving ? <Spinner size="xs" /> : null}
-                </Flex>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              w="max-content"
-              bg={theme.compensation?.modal.block}
-            >
-              <PopoverArrow />
-              <PopoverCloseButton />
-              <PopoverHeader
-                color={theme.compensation?.card.text}
-                fontSize="16px"
-              >
-                Bonus Points
-              </PopoverHeader>
-              <PopoverBody w="360px">
-                <Flex flexDir="column" gap="1">
-                  <Table>
-                    <Thead>
-                      <Tr>
-                        <Th borderColor={theme.compensation?.card.divider} />
-                        <Th
-                          px="2"
-                          borderColor={theme.compensation?.card.divider}
-                        >
-                          Value
-                        </Th>
-                        <Th
-                          px="2"
-                          borderColor={theme.compensation?.card.divider}
-                        >
-                          MAX
-                        </Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {renderBiWeekly()}
-                      {renderMonthly()}
-                      <Tr>
-                        <Td
-                          p="0"
-                          textAlign="left"
-                          borderBottomColor={theme.compensation?.card.divider}
-                          borderBottom="1px solid"
-                        >
-                          Contributions
-                        </Td>
-                        <Td
-                          p="0"
-                          textAlign="center"
-                          borderBottomColor={theme.compensation?.card.divider}
-                          borderBottom="1px solid"
-                        >
-                          {isAuthorized ? (
-                            <Editable
-                              defaultValue={contributionPoints.toString()}
-                              value={contributionPoints.toString()}
-                            >
-                              <EditablePreview
-                                fontSize="22px"
-                                fontWeight={700}
-                                color={theme.compensation?.card.secondaryText}
-                                lineHeight="32px"
-                                cursor="pointer"
-                                textDecor="underline"
-                                bg="transparent"
-                                border="2px solid"
-                                borderColor={
-                                  contributionPoints.toString() === ''
-                                    ? theme.compensation?.card.link
-                                    : 'transparent'
-                                }
-                                w={
-                                  contributionPoints.toString() === ''
-                                    ? '36px'
-                                    : 'auto'
-                                }
-                                h={
-                                  contributionPoints.toString() === ''
-                                    ? '40px'
-                                    : 'auto'
-                                }
-                              />
-                              <Input
-                                as={EditableInput}
-                                type="number"
-                                onChange={event => {
-                                  if (
-                                    Number(event.target.value) >
-                                    +maxContributionPossible
-                                  ) {
-                                    setContributionPoints(
-                                      maxContributionPossible.toString()
-                                    );
-                                  } else {
-                                    setContributionPoints(event.target.value);
-                                  }
-                                }}
-                                placeholder="Enter no. of attendances"
-                                bg="transparent"
-                                w="min-content"
-                                maxW="64px"
-                                fontSize="22px"
-                                fontWeight={700}
-                                color={theme.compensation?.card.secondaryText}
-                                lineHeight="32px"
-                                px="2"
-                                py="0"
-                                border="none"
-                              />
-                            </Editable>
-                          ) : (
-                            <Text
-                              fontSize="22px"
-                              fontWeight={700}
-                              color={theme.compensation?.card.secondaryText}
-                              lineHeight="32px"
-                              bg="transparent"
-                            >
-                              {contributionPoints}
-                            </Text>
-                          )}
-                        </Td>
-                        <Td
-                          p="0"
-                          textAlign="center"
-                          borderBottomColor={theme.compensation?.card.divider}
-                          borderBottom="1px solid"
-                        >
-                          {isRawBPLoading ? (
-                            <Skeleton w="32px" h="40px" />
-                          ) : (
-                            <Text
-                              fontSize="22px"
-                              fontWeight={700}
-                              color={theme.compensation?.card.secondaryText}
-                              lineHeight="32px"
-                              bg="transparent"
-                            >
-                              {maxContributionPossible}
-                            </Text>
-                          )}
-                        </Td>
-                      </Tr>
-                      <Tr>
-                        <Td
-                          p="0"
-                          textAlign="left"
-                          borderBottomColor={theme.compensation?.card.divider}
-                          borderBottom="1px solid"
-                        >
-                          Total Bonus Points
-                        </Td>
-
-                        <Td
-                          p="0"
-                          textAlign="center"
-                          borderBottomColor={theme.compensation?.card.divider}
-                          borderBottom="1px solid"
-                        >
-                          {isBPLoading ? (
-                            <Skeleton w="32px" h="40px" />
-                          ) : (
-                            <Text
-                              fontSize="22px"
-                              fontWeight={700}
-                              color={theme.compensation?.card.secondaryText}
-                              lineHeight="32px"
-                              bg="transparent"
-                            >
-                              {Math.min(
-                                +formatSimpleNumber(currentBP, {
-                                  mantissa: 3,
-                                }),
-                                30
-                              )}
-                            </Text>
-                          )}
-                        </Td>
-                        <Td
-                          p="0"
-                          textAlign="center"
-                          borderBottomColor={theme.compensation?.card.divider}
-                          borderBottom="1px solid"
-                        >
-                          <Text
-                            fontSize="22px"
-                            fontWeight={700}
-                            color={theme.compensation?.card.secondaryText}
-                            lineHeight="32px"
-                            bg="transparent"
+                <PopoverArrow />
+                <PopoverCloseButton />
+                <PopoverHeader
+                  color={theme.compensation?.card.text}
+                  fontSize="16px"
+                >
+                  Bonus Points
+                </PopoverHeader>
+                <PopoverBody w="360px">
+                  <Flex flexDir="column" gap="1">
+                    <Table>
+                      <Thead>
+                        <Tr>
+                          <Th borderColor={theme.compensation?.card.divider} />
+                          <Th
+                            px="2"
+                            borderColor={theme.compensation?.card.divider}
                           >
-                            {maxBonusPoints}
-                          </Text>
-                        </Td>
-                      </Tr>
-                    </Tbody>
-                  </Table>
+                            Value
+                          </Th>
+                          <Th
+                            px="2"
+                            borderColor={theme.compensation?.card.divider}
+                          >
+                            MAX
+                          </Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {renderBiWeekly()}
+                        {renderMonthly()}
+                        <Tr>
+                          <Td
+                            p="0"
+                            textAlign="left"
+                            borderBottomColor={theme.compensation?.card.divider}
+                            borderBottom="1px solid"
+                          >
+                            Contributions
+                          </Td>
+                          <Td
+                            p="0"
+                            textAlign="center"
+                            borderBottomColor={theme.compensation?.card.divider}
+                            borderBottom="1px solid"
+                          >
+                            {isAuthorized ? (
+                              <Editable
+                                defaultValue={contributionPoints.toString()}
+                                value={contributionPoints.toString()}
+                              >
+                                <EditablePreview
+                                  fontSize="22px"
+                                  fontWeight={700}
+                                  color={theme.compensation?.card.secondaryText}
+                                  lineHeight="32px"
+                                  cursor="pointer"
+                                  textDecor="underline"
+                                  bg="transparent"
+                                  border="2px solid"
+                                  borderColor={
+                                    contributionPoints.toString() === ''
+                                      ? theme.compensation?.card.link
+                                      : 'transparent'
+                                  }
+                                  w={
+                                    contributionPoints.toString() === ''
+                                      ? '36px'
+                                      : 'auto'
+                                  }
+                                  h={
+                                    contributionPoints.toString() === ''
+                                      ? '40px'
+                                      : 'auto'
+                                  }
+                                />
+                                <Input
+                                  as={EditableInput}
+                                  type="number"
+                                  onChange={event => {
+                                    if (
+                                      Number(event.target.value) >
+                                      +maxContributionPossible
+                                    ) {
+                                      setContributionPoints(
+                                        maxContributionPossible.toString()
+                                      );
+                                    } else {
+                                      setContributionPoints(event.target.value);
+                                    }
+                                  }}
+                                  placeholder="Enter no. of attendances"
+                                  bg="transparent"
+                                  w="min-content"
+                                  maxW="64px"
+                                  fontSize="22px"
+                                  fontWeight={700}
+                                  color={theme.compensation?.card.secondaryText}
+                                  lineHeight="32px"
+                                  px="2"
+                                  py="0"
+                                  border="none"
+                                />
+                              </Editable>
+                            ) : (
+                              <Text
+                                fontSize="22px"
+                                fontWeight={700}
+                                color={theme.compensation?.card.secondaryText}
+                                lineHeight="32px"
+                                bg="transparent"
+                              >
+                                {contributionPoints}
+                              </Text>
+                            )}
+                          </Td>
+                          <Td
+                            p="0"
+                            textAlign="center"
+                            borderBottomColor={theme.compensation?.card.divider}
+                            borderBottom="1px solid"
+                          >
+                            {isRawBPLoading ? (
+                              <Skeleton w="32px" h="40px" />
+                            ) : (
+                              <Text
+                                fontSize="22px"
+                                fontWeight={700}
+                                color={theme.compensation?.card.secondaryText}
+                                lineHeight="32px"
+                                bg="transparent"
+                              >
+                                {maxContributionPossible}
+                              </Text>
+                            )}
+                          </Td>
+                        </Tr>
+                        <Tr>
+                          <Td
+                            p="0"
+                            textAlign="left"
+                            borderBottomColor={theme.compensation?.card.divider}
+                            borderBottom="1px solid"
+                          >
+                            Total Bonus Points
+                          </Td>
 
-                  {isAuthorized ? (
-                    <Flex w="full" justify="center" mt="3">
-                      <Button
-                        isDisabled={
-                          attendancesBiWeekly.toString() === '' ||
-                          attendancesMonthly.toString() === '' ||
-                          contributionPoints.toString() === ''
-                        }
-                        disabled={
-                          attendancesBiWeekly.toString() === '' ||
-                          attendancesMonthly.toString() === '' ||
-                          contributionPoints.toString() === ''
-                        }
-                        onClick={handleSaveBonusPoints}
-                        color={theme.compensation?.card.secondaryText}
-                        bg={theme.compensation?.bg}
-                        isLoading={isSaving}
-                      >
-                        Save
-                      </Button>
-                    </Flex>
-                  ) : null}
-                </Flex>
-              </PopoverBody>
-            </PopoverContent>
-          </Popover>
+                          <Td
+                            p="0"
+                            textAlign="center"
+                            borderBottomColor={theme.compensation?.card.divider}
+                            borderBottom="1px solid"
+                          >
+                            {isBPLoading ? (
+                              <Skeleton w="32px" h="40px" />
+                            ) : (
+                              <Text
+                                fontSize="22px"
+                                fontWeight={700}
+                                color={theme.compensation?.card.secondaryText}
+                                lineHeight="32px"
+                                bg="transparent"
+                              >
+                                {Math.min(
+                                  +formatSimpleNumber(currentBP, {
+                                    mantissa: 3,
+                                  }),
+                                  30
+                                )}
+                              </Text>
+                            )}
+                          </Td>
+                          <Td
+                            p="0"
+                            textAlign="center"
+                            borderBottomColor={theme.compensation?.card.divider}
+                            borderBottom="1px solid"
+                          >
+                            <Text
+                              fontSize="22px"
+                              fontWeight={700}
+                              color={theme.compensation?.card.secondaryText}
+                              lineHeight="32px"
+                              bg="transparent"
+                            >
+                              {maxBonusPoints}
+                            </Text>
+                          </Td>
+                        </Tr>
+                      </Tbody>
+                    </Table>
+
+                    {isAuthorized ? (
+                      <Flex w="full" justify="center" mt="3">
+                        <Button
+                          isDisabled={
+                            attendancesBiWeekly.toString() === '' ||
+                            attendancesMonthly.toString() === '' ||
+                            contributionPoints.toString() === ''
+                          }
+                          disabled={
+                            attendancesBiWeekly.toString() === '' ||
+                            attendancesMonthly.toString() === '' ||
+                            contributionPoints.toString() === ''
+                          }
+                          onClick={handleSaveBonusPoints}
+                          color={theme.compensation?.card.secondaryText}
+                          bg={theme.compensation?.bg}
+                          isLoading={isSaving}
+                        >
+                          Save
+                        </Button>
+                      </Flex>
+                    ) : null}
+                  </Flex>
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
+          </Flex>
+          <InfoTooltip
+            stat="bonusPoint"
+            stats={delegateInfo?.stats as DelegateStatsFromAPI['stats']}
+          />
         </Flex>
       ) : (
         <MonthNotFinishedTooltip />
