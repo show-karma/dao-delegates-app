@@ -59,6 +59,7 @@ export type DelegateStatsFromAPI = {
   publicAddress: string;
   ensName: string;
   discourseHandle: string;
+  discourseHandles: string[];
   discussionThread: string;
   name: string;
   profilePicture: string;

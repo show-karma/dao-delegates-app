@@ -1,11 +1,22 @@
-import { Button, Flex, Icon, Img, Text } from '@chakra-ui/react';
+import {
+  Button,
+  Flex,
+  Icon,
+  Img,
+  Text,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
+} from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { ChakraLink } from 'components/ChakraLink';
 import { useAuth, useDAO } from 'contexts';
 import { useDelegateCompensation } from 'contexts/delegateCompensation';
 import pluralize from 'pluralize';
 import { useState } from 'react';
-import { FaExternalLinkAlt } from 'react-icons/fa';
+import { FaDiscourse, FaExternalLinkAlt } from 'react-icons/fa';
 import { formatNumber, formatSimpleNumber } from 'utils';
 import { getPRBreakdown } from 'utils/delegate-compensation/getPRBreakdown';
 import { getProposals } from 'utils/delegate-compensation/getProposals';
@@ -346,7 +357,6 @@ export const DelegateStats = () => {
           ) : (
             <MonthNotFinishedTooltip />
           )}
-          {/* </Tooltip> */}
         </Flex>
       </Flex>
       {/* 4 blocks */}
@@ -388,25 +398,100 @@ export const DelegateStats = () => {
             justify="center"
             align="flex-start"
             minW="120px"
+            w="full"
           >
-            <Button
-              p="0"
-              bg="transparent"
-              borderRadius="0"
-              h="24px"
-              _hover={{ opacity: 0.8 }}
-              _focus={{ opacity: 0.8 }}
-              _focusVisible={{ opacity: 0.8 }}
-              _focusWithin={{ opacity: 0.8 }}
-              fontSize="16px"
-              fontWeight="600"
-              color={theme.compensation?.card.text}
-              borderBottom="1px solid"
-              borderBottomColor={theme.compensation?.card.text}
-              onClick={() => setIsFeedbackModalOpen(true)}
+            <Flex
+              flexDir="row"
+              w="full"
+              gap="2"
+              align="center"
+              justify="space-between"
             >
-              Delegate Feedback
-            </Button>
+              <Button
+                p="0"
+                bg="transparent"
+                borderRadius="0"
+                h="24px"
+                _hover={{ opacity: 0.8 }}
+                _focus={{ opacity: 0.8 }}
+                _focusVisible={{ opacity: 0.8 }}
+                _focusWithin={{ opacity: 0.8 }}
+                fontSize="16px"
+                fontWeight="600"
+                color={theme.compensation?.card.text}
+                borderBottom="1px solid"
+                borderBottomColor={theme.compensation?.card.text}
+                onClick={() => setIsFeedbackModalOpen(true)}
+              >
+                Delegate Feedback
+              </Button>
+
+              <Flex flexDir="row" gap="2" align="center">
+                {delegateInfo?.discourseHandles &&
+                delegateInfo.discourseHandles?.length > 0 ? (
+                  <Popover placement="bottom" trigger="click">
+                    <PopoverTrigger>
+                      <Flex
+                        cursor="pointer"
+                        _hover={{ opacity: 0.8 }}
+                        align="center"
+                      >
+                        <Icon
+                          as={FaDiscourse}
+                          boxSize="24px"
+                          color={theme.compensation?.card.secondaryText}
+                        />
+                        {delegateInfo.discourseHandles.length > 1 && (
+                          <Text
+                            ml="1"
+                            fontSize="xs"
+                            color={theme.compensation?.card.secondaryText}
+                          >
+                            ({delegateInfo.discourseHandles.length})
+                          </Text>
+                        )}
+                      </Flex>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      width="auto"
+                      maxW="300px"
+                      bg={theme.compensation?.card.bg}
+                      borderColor={theme.compensation?.card.divider}
+                    >
+                      <PopoverArrow bg={theme.compensation?.card.bg} />
+                      <PopoverBody>
+                        <Flex flexDir="column" gap="2">
+                          {delegateInfo.discourseHandles.map(handle => (
+                            <ChakraLink
+                              key={handle}
+                              href={`${daoInfo.config.GOVERNANCE_FORUM}/u/${handle}/summary`}
+                              isExternal
+                              _hover={{
+                                textDecoration: 'underline',
+                                color: theme.compensation?.card.text,
+                              }}
+                              color={theme.compensation?.card.secondaryText}
+                              fontSize="14px"
+                              display="flex"
+                              alignItems="center"
+                              gap="2"
+                            >
+                              <Icon as={FaDiscourse} boxSize="16px" />
+                              <Text>{handle}</Text>
+                              <Icon
+                                as={FaExternalLinkAlt}
+                                boxSize="12px"
+                                ml="auto"
+                              />
+                            </ChakraLink>
+                          ))}
+                        </Flex>
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
+                ) : null}
+              </Flex>
+            </Flex>
             {isMonthFinished || isAuthorized ? (
               <Flex flexDir="row" gap="2" align="center">
                 <Text
@@ -647,7 +732,6 @@ export const DelegateStats = () => {
         ) : (
           <MonthNotFinishedTooltip />
         )}
-        {/* </Tooltip> */}
       </Flex>
     </Flex>
   );
