@@ -28,8 +28,8 @@ const statsLabel = {
   snapshotVoting: 'Snapshot Voting (SV)',
   onChainVoting: 'On-Chain Voting (TV)',
   bonusPoint: 'Bonus Point (BP)',
-  delegateFeedback: 'Delegate Feedback (DF)',
   votingPowerMultiplier: 'Voting Power Multiplier (VP)',
+  delegateFeedback: 'Delegate Feedback (DF)',
 };
 
 const statsFormula = (delegateStats: DelegateInfoStats) => ({
@@ -230,8 +230,8 @@ export const DelegateFinalScoreModal = ({
     participationRate: delegateStats?.participationRate || '0',
     snapshotVoting: delegateStats?.snapshotVoting.score || '0',
     onChainVoting: delegateStats?.onChainVoting.score || '0',
-    delegateFeedback: delegateStats?.delegateFeedback?.finalScore || '0',
     votingPowerMultiplier: delegateStats?.votingPowerMultiplier || '0',
+    delegateFeedback: delegateStats?.delegateFeedback?.finalScore || '0',
     bonusPoint: delegateStats?.bonusPoint || '0',
   };
 
@@ -363,7 +363,7 @@ export const DelegateFinalScoreModal = ({
                             </Text>
 
                             <Code fontWeight="normal">
-                              TP% formula: PR + SV + TV + CR + DF + BP
+                              TP% formula: (PR + SV + TV) * VP Multiplier + DF + BP
                             </Code>
                           </Flex>
                         }
