@@ -167,7 +167,9 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
       </Code>
       <Code fontWeight="normal">
         {delegateStats.delegateFeedback && (
-          <DelegateFeedbackCalculation delegateFeedback={delegateStats.delegateFeedback} />
+          <DelegateFeedbackCalculation
+            delegateFeedback={delegateStats.delegateFeedback}
+          />
         )}
       </Code>
     </Flex>
@@ -228,16 +230,16 @@ export const DelegateFinalScoreModal = ({
     onChainVoting: { score: onChainScore = '0' },
     votingPowerMultiplier = '0',
     delegateFeedback: { finalScore: delegateFeedbackScore = '0' } = {},
-    bonusPoint = '0'
+    bonusPoint = '0',
   } = delegateStats || {};
 
   const stats = {
     participationRate,
     snapshotVoting: snapshotScore,
-    onChainVoting: onChainScore, 
+    onChainVoting: onChainScore,
     votingPowerMultiplier,
     delegateFeedback: delegateFeedbackScore,
-    bonusPoint
+    bonusPoint,
   };
 
   return (
