@@ -161,8 +161,8 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
         forms of participation within the DAO.
       </Text>
       <Code fontWeight="normal">
-        DF formula: (Σ qualitative criteria) / 50 * Presence in
-        discussions multiplier * 40 (DF weight)
+        DF formula: (Σ qualitative criteria) / 50 * Presence in discussions
+        multiplier * 40 (DF weight)
       </Code>
       <Code fontWeight="normal">
         DF = ({delegateStats.delegateFeedback?.relevance} +{' '}
@@ -363,7 +363,8 @@ export const DelegateFinalScoreModal = ({
                             </Text>
 
                             <Code fontWeight="normal">
-                              TP% formula: (PR + SV + TV) * VP Multiplier + DF + BP
+                              TP% formula: (PR + SV + TV) * VP Multiplier + DF +
+                              BP
                             </Code>
                           </Flex>
                         }

@@ -189,7 +189,9 @@ export const DelegateCompensationAdminForumActivity = ({
         currentScores.impactOnDecisionMaking
       ).toFixed(2)
     );
-    const finalScore = Number(((initialScore / 50) * 40  * presenceMultiplier).toFixed(2));
+    const finalScore = Number(
+      ((initialScore / 50) * 40 * presenceMultiplier).toFixed(2)
+    );
     return Math.min(finalScore, 40);
   };
 
@@ -799,8 +801,8 @@ export const DelegateCompensationAdminForumActivity = ({
                           fontWeight={600}
                           color={theme.compensation?.card.secondaryText}
                         >
-                          Final Score formula: Total/50 * Presence
-                          Multiplier * 40
+                          Final Score formula: Total/50 * Presence Multiplier *
+                          40
                         </Text>
                       }
                       hasArrow
@@ -936,7 +938,6 @@ export const DelegateCompensationAdminForumActivity = ({
                         * 40
                       </Text>
                     </Tooltip>
-
                   </Flex>
                   <Text
                     fontSize="16px"
