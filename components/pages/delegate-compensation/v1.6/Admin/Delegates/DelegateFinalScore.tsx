@@ -22,14 +22,15 @@ import { useDelegateCompensation } from 'contexts/delegateCompensation';
 import { BsFillInfoCircleFill } from 'react-icons/bs';
 import { DelegateInfoStats } from 'types';
 import { formatSimpleNumber } from 'utils';
+import { DelegateFeedbackCalculation } from './DelegateFeedbackCalculation';
 
 const statsLabel = {
   participationRate: 'Participation Rate (PR)',
   snapshotVoting: 'Snapshot Voting (SV)',
   onChainVoting: 'On-Chain Voting (TV)',
   bonusPoint: 'Bonus Point (BP)',
-  delegateFeedback: 'Delegate Feedback (DF)',
   votingPowerMultiplier: 'Voting Power Multiplier (VP)',
+  delegateFeedback: 'Delegate Feedback (DF)',
 };
 
 const statsFormula = (delegateStats: DelegateInfoStats) => ({
@@ -161,18 +162,15 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
         forms of participation within the DAO.
       </Text>
       <Code fontWeight="normal">
-        DF formula: (Σ qualitative criteria) / 50 * 100 * Presence in
-        discussions multiplier * 40 (DF weight)
+        DF formula: (Σ qualitative criteria) / 50 * Presence in discussions
+        multiplier * 40 (DF weight)
       </Code>
       <Code fontWeight="normal">
-        DF = ({delegateStats.delegateFeedback?.relevance} +{' '}
-        {delegateStats.delegateFeedback?.depthOfAnalysis} +{' '}
-        {delegateStats.delegateFeedback?.timing} +{' '}
-        {delegateStats.delegateFeedback?.clarityAndCommunication} +{' '}
-        {delegateStats.delegateFeedback?.impactOnDecisionMaking}) / 50 * 100 *{' '}
-        {delegateStats.delegateFeedback?.presenceMultiplier} * 40
-        <br />
-        DF = {delegateStats.delegateFeedback?.finalScore}
+        {delegateStats.delegateFeedback && (
+          <DelegateFeedbackCalculation
+            delegateFeedback={delegateStats.delegateFeedback}
+          />
+        )}
       </Code>
     </Flex>
   ),
@@ -226,13 +224,22 @@ export const DelegateFinalScoreModal = ({
   const { delegateInfo } = useDelegateCompensation();
   const delegateStats = delegateInfo?.stats as DelegateInfoStats;
 
+  const {
+    participationRate = '0',
+    snapshotVoting: { score: snapshotScore = '0' },
+    onChainVoting: { score: onChainScore = '0' },
+    votingPowerMultiplier = '0',
+    delegateFeedback: { finalScore: delegateFeedbackScore = '0' } = {},
+    bonusPoint = '0',
+  } = delegateStats || {};
+
   const stats = {
-    participationRate: delegateStats?.participationRate || '0',
-    snapshotVoting: delegateStats?.snapshotVoting.score || '0',
-    onChainVoting: delegateStats?.onChainVoting.score || '0',
-    delegateFeedback: delegateStats?.delegateFeedback?.finalScore || '0',
-    votingPowerMultiplier: delegateStats?.votingPowerMultiplier || '0',
-    bonusPoint: delegateStats?.bonusPoint || '0',
+    participationRate,
+    snapshotVoting: snapshotScore,
+    onChainVoting: onChainScore,
+    votingPowerMultiplier,
+    delegateFeedback: delegateFeedbackScore,
+    bonusPoint,
   };
 
   return (
@@ -363,7 +370,8 @@ export const DelegateFinalScoreModal = ({
                             </Text>
 
                             <Code fontWeight="normal">
-                              TP% formula: PR + SV + TV + CR + DF + BP
+                              TP% formula: (PR + SV + TV) * VP Multiplier + DF +
+                              BP
                             </Code>
                           </Flex>
                         }

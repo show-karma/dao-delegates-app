@@ -187,10 +187,12 @@ export const DelegateCompensationAdminForumActivity = ({
         currentScores.timing +
         currentScores.clarityAndCommunication +
         currentScores.impactOnDecisionMaking
-      ).toFixed(1)
+      ).toFixed(2)
     );
-    const finalScore = 1.5 * multiplier * initialScore;
-    return finalScore > 40 ? 40 : Number(finalScore.toFixed(2));
+    const finalScore = Number(
+      ((initialScore / 50) * 40 * presenceMultiplier).toFixed(2)
+    );
+    return Math.min(finalScore, 40);
   };
 
   const handleInputChange = (index: number, field: string, value: string) => {
@@ -799,8 +801,8 @@ export const DelegateCompensationAdminForumActivity = ({
                           fontWeight={600}
                           color={theme.compensation?.card.secondaryText}
                         >
-                          Final Score formula: Total * 40/50 * Presence
-                          Multiplier
+                          Final Score formula: Total/50 * Presence Multiplier *
+                          40
                         </Text>
                       }
                       hasArrow
@@ -843,7 +845,7 @@ export const DelegateCompensationAdminForumActivity = ({
                       fontWeight={600}
                       color={theme.compensation?.card.secondaryText}
                     >
-                      *
+                      /
                     </Text>
                     <Tooltip
                       placement="top"
@@ -878,7 +880,7 @@ export const DelegateCompensationAdminForumActivity = ({
                         fontWeight={600}
                         color={theme.compensation?.card.secondaryText}
                       >
-                        40/50
+                        50
                       </Text>
                     </Tooltip>
                     <Text
@@ -905,6 +907,35 @@ export const DelegateCompensationAdminForumActivity = ({
                         color={theme.compensation?.card.text}
                       >
                         {presenceMultiplier}
+                      </Text>
+                    </Tooltip>
+                    <Tooltip
+                      placement="top"
+                      label={
+                        <Flex flexDir="column" gap="2">
+                          <Text
+                            fontSize="14px"
+                            fontWeight={400}
+                            color={theme.compensation?.card.text}
+                          >
+                            Delegates Feedback (DF) - Weight 40
+                          </Text>
+                        </Flex>
+                      }
+                      hasArrow
+                      bgColor={theme.compensation?.card.bg}
+                      color={theme.compensation?.card.text}
+                      fontWeight="normal"
+                      fontSize="sm"
+                      borderRadius={10}
+                      p="3"
+                    >
+                      <Text
+                        fontSize="16px"
+                        fontWeight={600}
+                        color={theme.compensation?.card.secondaryText}
+                      >
+                        * 40
                       </Text>
                     </Tooltip>
                   </Flex>
