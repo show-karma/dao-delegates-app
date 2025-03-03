@@ -161,7 +161,7 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
         forms of participation within the DAO.
       </Text>
       <Code fontWeight="normal">
-        DF formula: (Σ qualitative criteria) / 50 * 100 * Presence in
+        DF formula: (Σ qualitative criteria) / 50 * Presence in
         discussions multiplier * 40 (DF weight)
       </Code>
       <Code fontWeight="normal">
@@ -169,7 +169,7 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
         {delegateStats.delegateFeedback?.depthOfAnalysis} +{' '}
         {delegateStats.delegateFeedback?.timing} +{' '}
         {delegateStats.delegateFeedback?.clarityAndCommunication} +{' '}
-        {delegateStats.delegateFeedback?.impactOnDecisionMaking}) / 50 * 100 *{' '}
+        {delegateStats.delegateFeedback?.impactOnDecisionMaking}) / 50 *{' '}
         {delegateStats.delegateFeedback?.presenceMultiplier} * 40
         <br />
         DF = {delegateStats.delegateFeedback?.finalScore}
