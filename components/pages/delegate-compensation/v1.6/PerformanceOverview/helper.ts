@@ -37,21 +37,21 @@ export const scoringStats: ScoringStat[] = [
     abbreviation: 'TV',
   },
   {
-    title: 'Communication Rationale (CR)',
+    title: 'Voting Power Multiplier (VP)',
     iconUrl: '/icons/delegate-compensation/megaphone-bg.png',
     description:
-      'Tracks how often a delegate justifies their votes for proposals on Snapshot or onchain. Justifications aren’t required if the vote doesn’t change. Resets monthly.',
-    weight: 10,
-    formula: '(Rationales Provided ÷ Total Proposals) × 10',
-    abbreviation: 'CR',
+      'The Voting Power Multiplier is a linear formula that assigns a minimum value of 0.8 (50K VP avg) and a maximum of 1 (4M VP or more) to the delegates participating in the program. This Multiplier affects only the scoring of voting parameters.',
+    formula: ` VPM =  0.00000005063 * VP + 0.7974685`,
+    weight: 1,
+    abbreviation: 'VpM',
   },
   {
     title: 'Delegate Feedback (DF)',
     iconUrl: '/icons/delegate-compensation/star-bg.png',
     description:
       'A score reflecting the quality of feedback provided by a delegate, based on a rubric evaluated by the program administrator. Resets monthly.',
-    weight: 30,
-    formula: '(Qualitative Grade ÷ 5 × 100 × Presence Multiplier) × 30',
+    weight: 40,
+    formula: '(Σ qualitative criteria) / 50 * Presence in discussions multiplier * 40 (DF weight)',
     abbreviation: 'DF',
     updatedIn: 'v1.5',
   },
@@ -60,7 +60,7 @@ export const scoringStats: ScoringStat[] = [
     iconUrl: '/icons/delegate-compensation/target-bg.png',
     description:
       'The combined score of all activities by the delegate. A score of 100% means full participation.',
-    formula: 'PR + SV + TV + CR + DF + BP',
+    formula: '(PR + SV + TV) * VP Multiplier + DF + BP',
     abbreviation: 'TP',
   },
   {
