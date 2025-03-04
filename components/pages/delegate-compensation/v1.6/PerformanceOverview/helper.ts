@@ -37,7 +37,7 @@ export const scoringStats: ScoringStat[] = [
     abbreviation: 'TV',
   },
   {
-    title: 'Voting Power Multiplier (VP)',
+    title: 'Voting Power Multiplier (VpM)',
     iconUrl: '/icons/delegate-compensation/megaphone-bg.png',
     description:
       'The Voting Power Multiplier is a linear formula that assigns a minimum value of 0.8 (50K VP avg) and a maximum of 1 (4M VP or more) to the delegates participating in the program. This Multiplier affects only the scoring of voting parameters.',
