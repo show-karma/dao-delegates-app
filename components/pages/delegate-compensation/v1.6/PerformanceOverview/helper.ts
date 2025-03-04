@@ -51,7 +51,8 @@ export const scoringStats: ScoringStat[] = [
     description:
       'A score reflecting the quality of feedback provided by a delegate, based on a rubric evaluated by the program administrator. Resets monthly.',
     weight: 40,
-    formula: '(Σ qualitative criteria) / 50 * Presence in discussions multiplier * 40 (DF weight)',
+    formula:
+      '(Σ qualitative criteria) / 50 * Presence in discussions multiplier * 40 (DF weight)',
     abbreviation: 'DF',
     updatedIn: 'v1.5',
   },
