@@ -1,26 +1,16 @@
-import {
-  Button,
-  Flex,
-  Icon,
-  Img,
-  Text,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
-} from '@chakra-ui/react';
+import { Button, Flex, Icon, Img, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { ChakraLink } from 'components/ChakraLink';
 import { useAuth, useDAO } from 'contexts';
 import { useDelegateCompensation } from 'contexts/delegateCompensation';
 import pluralize from 'pluralize';
 import { useState } from 'react';
-import { FaDiscourse, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 import { formatNumber, formatSimpleNumber } from 'utils';
 import { getPRBreakdown } from 'utils/delegate-compensation/getPRBreakdown';
 import { getProposals } from 'utils/delegate-compensation/getProposals';
 import { DelegateStatsFromAPI } from 'types';
+import { HandlesTooltip } from 'components/HandlesTooltip';
 import { MonthNotFinishedTooltip } from '../../../MonthNotFinishedTooltip';
 import { DelegateBP } from './DelegateBP';
 import { DelegateFeedback } from './DelegateFeedback';
@@ -426,71 +416,9 @@ export const DelegateStats = () => {
                 Delegate Feedback
               </Button>
 
-              <Flex flexDir="row" gap="2" align="center">
-                {delegateInfo?.discourseHandles &&
-                delegateInfo.discourseHandles?.length > 0 ? (
-                  <Popover placement="bottom" trigger="click">
-                    <PopoverTrigger>
-                      <Flex
-                        cursor="pointer"
-                        _hover={{ opacity: 0.8 }}
-                        align="center"
-                      >
-                        <Icon
-                          as={FaDiscourse}
-                          boxSize="24px"
-                          color={theme.compensation?.card.secondaryText}
-                        />
-                        {delegateInfo.discourseHandles.length > 1 && (
-                          <Text
-                            ml="1"
-                            fontSize="xs"
-                            color={theme.compensation?.card.secondaryText}
-                          >
-                            ({delegateInfo.discourseHandles.length})
-                          </Text>
-                        )}
-                      </Flex>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      width="auto"
-                      maxW="300px"
-                      bg={theme.compensation?.card.bg}
-                      borderColor={theme.compensation?.card.divider}
-                    >
-                      <PopoverArrow bg={theme.compensation?.card.bg} />
-                      <PopoverBody>
-                        <Flex flexDir="column" gap="2">
-                          {delegateInfo.discourseHandles.map(handle => (
-                            <ChakraLink
-                              key={handle}
-                              href={`${daoInfo.config.GOVERNANCE_FORUM}/u/${handle}/summary`}
-                              isExternal
-                              _hover={{
-                                textDecoration: 'underline',
-                                color: theme.compensation?.card.text,
-                              }}
-                              color={theme.compensation?.card.secondaryText}
-                              fontSize="14px"
-                              display="flex"
-                              alignItems="center"
-                              gap="2"
-                            >
-                              <Icon as={FaDiscourse} boxSize="16px" />
-                              <Text>{handle}</Text>
-                              <Icon
-                                as={FaExternalLinkAlt}
-                                boxSize="12px"
-                                ml="auto"
-                              />
-                            </ChakraLink>
-                          ))}
-                        </Flex>
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Popover>
-                ) : null}
-              </Flex>
+              {delegateInfo?.discourseHandles ? (
+                <HandlesTooltip handles={delegateInfo?.discourseHandles} />
+              ) : null}
             </Flex>
             {isMonthFinished || isAuthorized ? (
               <Flex flexDir="row" gap="2" align="center">

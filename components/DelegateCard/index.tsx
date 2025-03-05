@@ -46,12 +46,12 @@ import {
   formatDate,
   formatNumber,
   formatNumberPercentage,
-  getUserForumUrl,
   truncateAddress,
 } from 'utils';
 import { ChakraLink } from 'components/ChakraLink';
+import { HandlesTooltip } from 'components/HandlesTooltip';
 import { DelegateButton } from '../DelegateButton';
-import { ForumIcon, ThreadIcon, WebsiteIcon } from '../Icons';
+import { ThreadIcon, WebsiteIcon } from '../Icons';
 import { ImgWithFallback } from '../ImgWithFallback';
 import { ExpandableCardText } from './ExpandableCardText';
 import { StatsCarousel } from './StatsCarousel';
@@ -506,9 +506,9 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
   const handleAddToDelegatePool = (delegate: IDelegate) => {
     setSelectedProfileData(delegate);
   };
-
   const shouldShowForumHandle =
-    data?.discourseHandle &&
+    data?.discourseHandles &&
+    data.discourseHandles.length > 0 &&
     daoData?.socialLinks.forum &&
     config.DAO_FORUM_TYPE;
 
@@ -1032,27 +1032,11 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
                     <TwitterIcon w="17px" h="17px" />
                   </Link>
                 )} */}
-                {data?.discourseHandle &&
+                {data?.discourseHandles &&
+                  data?.discourseHandles?.length > 0 &&
                   daoData?.socialLinks.forum &&
                   config.DAO_FORUM_TYPE && (
-                    <Link
-                      href={getUserForumUrl(
-                        data.discourseHandle,
-                        config.DAO_FORUM_TYPE,
-                        config.DAO_FORUM_URL || daoData.socialLinks.forum
-                      )}
-                      isExternal
-                      color={theme.card.socialMedia}
-                      _hover={{
-                        transform: 'scale(1.25)',
-                      }}
-                      h="max-content"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      <ForumIcon w="17px" h="17px" />
-                    </Link>
+                    <HandlesTooltip handles={data.discourseHandles} />
                   )}
 
                 {data.discordUsername && (

@@ -538,8 +538,10 @@ export const EditProfileProvider: React.FC<ProviderProps> = ({ children }) => {
             fetchDelegates(0);
           });
       } else {
-        const bodyParam =
-          media === 'twitter' || media === 'forum' ? `${media}Handle` : media;
+        let bodyParam = media === 'twitter' ? `${media}Handle` : media;
+        if (media === 'forum') {
+          bodyParam = 'forumHandles';
+        }
         await authorizedAPI
           .put(
             `${KARMA_API.base_url}/user/${daoInfo.config.DAO_KARMA_ID}/handles/${profileSelected?.address}`,

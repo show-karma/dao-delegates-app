@@ -1,4 +1,5 @@
 export * from './AbstainIcon';
+export * from './AddIcon';
 export * from './AgainstIcon';
 export * from './ArrowRightIcon';
 export * from './BurgerMenuIcon';

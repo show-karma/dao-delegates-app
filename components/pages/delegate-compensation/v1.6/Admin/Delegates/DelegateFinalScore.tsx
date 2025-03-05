@@ -72,7 +72,7 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
         SV = ({delegateStats?.snapshotVoting.rn} /{' '}
         {delegateStats?.snapshotVoting.tn}) * 20
         <br />
-        SV = {delegateStats.snapshotVoting.score}
+        SV = {delegateStats?.snapshotVoting?.score}
       </Code>
     </Flex>
   ),
@@ -98,7 +98,7 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
         TV = ({delegateStats?.onChainVoting.rn} /{' '}
         {delegateStats?.onChainVoting.tn}) * 25
         <br />
-        TV = {delegateStats.onChainVoting.score}
+        TV = {delegateStats?.onChainVoting?.score}
       </Code>
     </Flex>
   ),
@@ -125,10 +125,10 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
         Contributions
       </Code>
       <Code fontWeight="normal">
-        BP = ({delegateStats.biweeklyCalls} * 0.0125 +{' '}
-        {delegateStats.monthlyCalls} * 0.0125) + {delegateStats.contributions}
+        BP = ({delegateStats?.biweeklyCalls} * 0.0125 +{' '}
+        {delegateStats?.monthlyCalls} * 0.0125) + {delegateStats?.contributions}
         <br />
-        BP = {delegateStats.bonusPoint}
+        BP = {delegateStats?.bonusPoint}
       </Code>
     </Flex>
   ),
@@ -145,9 +145,9 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
         VP multiplier formula: 0.00000005063 * VP + 0.7974685
       </Code>
       <Code fontWeight="normal">
-        VP = 0.00000005063 * {delegateStats.votingPowerAverage} + 0.7974685
+        VP = 0.00000005063 * {delegateStats?.votingPowerAverage} + 0.7974685
         <br />
-        VP = {delegateStats.votingPowerMultiplier}
+        VP = {delegateStats?.votingPowerMultiplier}
       </Code>
     </Flex>
   ),
@@ -166,9 +166,9 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
         multiplier * 40 (DF weight)
       </Code>
       <Code fontWeight="normal">
-        {delegateStats.delegateFeedback && (
+        {delegateStats?.delegateFeedback && (
           <DelegateFeedbackCalculation
-            delegateFeedback={delegateStats.delegateFeedback}
+            delegateFeedback={delegateStats?.delegateFeedback}
           />
         )}
       </Code>
