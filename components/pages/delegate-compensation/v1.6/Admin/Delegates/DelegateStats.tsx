@@ -563,56 +563,47 @@ export const DelegateStats = () => {
             >
               Participation Rate
             </Text>
-            {isMonthFinished || isAuthorized ? (
-              <Flex
-                flexDir="column"
-                gap="0"
-                justify="center"
-                align="flex-start"
-              >
-                <Flex flexDir="row" gap="2" align="center">
-                  <Text
-                    fontSize="24px"
-                    fontWeight={700}
-                    color={theme.compensation?.card.secondaryText}
-                  >
-                    {formatSimpleNumber(
-                      delegateInfo?.stats?.participationRate || 0
-                    )}
-                  </Text>
+            <Flex flexDir="column" gap="0" justify="center" align="flex-start">
+              <Flex flexDir="row" gap="2" align="center">
+                <Text
+                  fontSize="24px"
+                  fontWeight={700}
+                  color={theme.compensation?.card.secondaryText}
+                >
+                  {formatSimpleNumber(
+                    delegateInfo?.stats?.participationRate || 0
+                  )}
+                </Text>
 
-                  <InfoTooltip
-                    stat="participationRate"
-                    stats={delegateInfo?.stats as DelegateStatsFromAPI['stats']}
-                  />
-                </Flex>
-                <Flex flexDir="row" gap="2">
-                  <Text
-                    fontSize="14px"
-                    fontWeight={400}
-                    color={theme.compensation?.card.secondaryText}
-                    as="span"
-                  >
-                    {prBreakdown?.proposals.length} Total{' '}
-                    {pluralize(
-                      'Proposals',
-                      +(prBreakdown?.proposals.length || 0)
-                    )}
-                    ,
-                  </Text>
-                  <Text
-                    fontSize="14px"
-                    fontWeight={400}
-                    color={theme.compensation?.card.success}
-                    as="span"
-                  >
-                    {prBreakdown?.votes.length} Voted On
-                  </Text>
-                </Flex>
+                <InfoTooltip
+                  stat="participationRate"
+                  stats={delegateInfo?.stats as DelegateStatsFromAPI['stats']}
+                />
               </Flex>
-            ) : (
-              <MonthNotFinishedTooltip />
-            )}
+              <Flex flexDir="row" gap="2">
+                <Text
+                  fontSize="14px"
+                  fontWeight={400}
+                  color={theme.compensation?.card.secondaryText}
+                  as="span"
+                >
+                  {prBreakdown?.proposals.length} Total{' '}
+                  {pluralize(
+                    'Proposals',
+                    +(prBreakdown?.proposals.length || 0)
+                  )}
+                  ,
+                </Text>
+                <Text
+                  fontSize="14px"
+                  fontWeight={400}
+                  color={theme.compensation?.card.success}
+                  as="span"
+                >
+                  {prBreakdown?.votes.length} Voted On
+                </Text>
+              </Flex>
+            </Flex>
           </Flex>
         </Flex>
       </Flex>
