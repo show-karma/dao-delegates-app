@@ -20,7 +20,7 @@ export interface IDelegateFromAPI {
   twitterHandle: string;
   discordHandle: string;
   discordUsername?: string;
-  discourseHandle: string;
+  discourseHandles: string[];
   userType: string;
   aboutMe?: string;
   realName?: string;

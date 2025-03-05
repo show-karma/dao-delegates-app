@@ -129,7 +129,8 @@ export const StatPopover: FC<IStatPopoverProps> = ({ stats, data }) => {
   const MotionPopoverContent = motion(PopoverContent);
 
   const shouldOpenScoreBreakdown =
-    !!data?.discourseHandle &&
+    !!data?.discourseHandles &&
+    data?.discourseHandles?.length > 0 &&
     !!daoData?.socialLinks.forum &&
     !!config.DAO_FORUM_TYPE;
 

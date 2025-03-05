@@ -51,11 +51,11 @@ export const compensation: ICompensationDates = {
         {
           version: 'v1.5',
           startDate: new Date('2024-10-11'),
-          endDate: new Date('2024-11-30'),
+          endDate: new Date('2025-01-30'),
         },
         {
           version: 'v1.6',
-          startDate: new Date('2024-12-01'),
+          startDate: new Date('2025-02-01'),
           // No endDate means it's the current version
         },
       ],

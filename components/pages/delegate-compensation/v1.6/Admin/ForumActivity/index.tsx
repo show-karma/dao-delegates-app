@@ -290,7 +290,10 @@ export const DelegateCompensationAdminForumActivity = ({
           queryClient.invalidateQueries({
             queryKey: [
               'delegate-compensation-forum-activity',
-              delegateInfo?.discourseHandle,
+              delegateInfo?.discourseHandles &&
+              delegateInfo?.discourseHandles.length > 0
+                ? delegateInfo?.discourseHandles[0]
+                : delegateInfo?.publicAddress,
               selectedDate?.value.month,
               selectedDate?.value.year,
             ],

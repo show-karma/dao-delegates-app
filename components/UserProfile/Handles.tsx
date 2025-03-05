@@ -6,6 +6,7 @@ import {
   Input,
   Text,
   Tooltip,
+  IconButton,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ChakraLink, DiscordIcon, ForumIcon, WebsiteIcon } from 'components';
@@ -20,8 +21,9 @@ import {
 import { YOUTUBE_LINKS } from 'helpers';
 import dynamic from 'next/dynamic';
 import { FC, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { GoCommentDiscussion } from 'react-icons/go';
+import { AddIcon, CloseIcon } from 'components/Icons';
 import { lessThanDays } from 'utils';
 import { getProfile } from 'utils/getProfile';
 import { useQuery } from 'wagmi';
@@ -37,12 +39,13 @@ const DiscourseModal = dynamic(() =>
 );
 
 interface IHandleCasesProps {
-  currentHandle?: string;
+  currentHandle?: string | string[];
   disabledCondition?: boolean;
   action?: () => void;
   mediaName: string;
   canAdminEdit?: boolean;
   actionType: string;
+  refreshProfile?: () => void;
 }
 
 const HandleCases: FC<IHandleCasesProps> = ({
@@ -52,6 +55,7 @@ const HandleCases: FC<IHandleCasesProps> = ({
   mediaName,
   canAdminEdit,
   actionType,
+  refreshProfile,
 }) => {
   const { theme, daoInfo } = useDAO();
   const { isDaoAdmin } = useAuth();
@@ -82,11 +86,39 @@ const HandleCases: FC<IHandleCasesProps> = ({
     })
     .required();
 
+  // Schema for multiple forum handles
+  const multipleHandlesSchema = yup
+    .object({
+      handles: yup
+        .array()
+        .of(
+          yup.object({
+            value: yup.string().required('Handle is required'),
+          })
+        )
+        .required(),
+    })
+    .required();
+
   type FormDataAdminEdit = yup.InferType<typeof simpleInputSchema>;
   type FormDataWebsiteEdit = yup.InferType<typeof websiteSchema>;
   type FormDataDiscussionThreadEdit = yup.InferType<
     typeof discussionThreadSchema
   >;
+  type FormDataMultipleHandles = yup.InferType<typeof multipleHandlesSchema>;
+
+  // Helper function to get initial handles for the form
+  function getInitialHandles() {
+    if (Array.isArray(currentHandle)) {
+      return currentHandle.map(handle => ({ value: handle }));
+    }
+
+    if (typeof currentHandle === 'string' && currentHandle) {
+      return [{ value: currentHandle }];
+    }
+
+    return [{ value: '' }];
+  }
 
   const {
     register: registerSimpleInput,
@@ -98,7 +130,7 @@ const HandleCases: FC<IHandleCasesProps> = ({
   } = useForm<FormDataAdminEdit>({
     resolver: yupResolver(simpleInputSchema),
     defaultValues: {
-      handle: currentHandle || '',
+      handle: typeof currentHandle === 'string' ? currentHandle : '',
     },
     reValidateMode: 'onChange',
     mode: 'onChange',
@@ -111,7 +143,7 @@ const HandleCases: FC<IHandleCasesProps> = ({
   } = useForm<FormDataWebsiteEdit>({
     resolver: yupResolver(websiteSchema),
     defaultValues: {
-      handle: currentHandle || '',
+      handle: typeof currentHandle === 'string' ? currentHandle : '',
     },
     reValidateMode: 'onChange',
     mode: 'onChange',
@@ -127,10 +159,34 @@ const HandleCases: FC<IHandleCasesProps> = ({
   } = useForm<FormDataDiscussionThreadEdit>({
     resolver: yupResolver(discussionThreadSchema),
     defaultValues: {
-      handle: currentHandle || '',
+      handle: typeof currentHandle === 'string' ? currentHandle : '',
     },
     reValidateMode: 'onChange',
     mode: 'onChange',
+  });
+
+  // Form for multiple handles
+  const {
+    control,
+    register: registerMultipleHandles,
+    handleSubmit: handleSubmitMultipleHandles,
+    formState: {
+      errors: errorsMultipleHandles,
+      isSubmitting: isSubmittingMultipleHandles,
+    },
+  } = useForm<FormDataMultipleHandles>({
+    resolver: yupResolver(multipleHandlesSchema) as any,
+    defaultValues: {
+      handles: getInitialHandles(),
+    },
+    reValidateMode: 'onChange',
+    mode: 'onChange',
+  });
+
+  // Field array for multiple handles
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'handles',
   });
 
   const onSubmitAdminEdit = (data: { handle: string }) => {
@@ -138,7 +194,26 @@ const HandleCases: FC<IHandleCasesProps> = ({
     if (!cleanNewHandle) return;
     setIsLoading(true);
     const media = mediaName.toLowerCase() as 'twitter' | 'forum';
-    changeHandle(cleanNewHandle, media).finally(() => setIsLoading(false));
+    changeHandle(cleanNewHandle, media).finally(() => {
+      setIsLoading(false);
+      refreshProfile?.();
+    });
+  };
+
+  // Submit handler for multiple forum handles
+  const onSubmitMultipleHandles = (data: FormDataMultipleHandles) => {
+    if (!data.handles || data.handles.length === 0) return;
+
+    const handles = data.handles.map(h => h.value).filter(Boolean);
+    if (handles.length === 0) return;
+
+    setIsLoading(true);
+    // Pass the array of handles to changeHandle
+    // Need to cast to any since the changeHandle function expects a string
+    changeHandle(handles as any, 'forum').finally(() => {
+      setIsLoading(false);
+      refreshProfile?.();
+    });
   };
 
   if (mediaName === 'Website') {
@@ -147,7 +222,10 @@ const HandleCases: FC<IHandleCasesProps> = ({
       if (!cleanNewHandle) return;
       setIsLoading(true);
       const media = mediaName.toLowerCase() as 'twitter' | 'forum' | 'website';
-      changeHandle(cleanNewHandle, media).finally(() => setIsLoading(false));
+      changeHandle(cleanNewHandle, media).finally(() => {
+        setIsLoading(false);
+        refreshProfile?.();
+      });
     };
 
     return (
@@ -216,6 +294,70 @@ const HandleCases: FC<IHandleCasesProps> = ({
             <Text color="red.200">
               {errorsDiscussionThread.handle?.message}
             </Text>
+          </Flex>
+        </FormControl>
+      </form>
+    );
+  }
+
+  // Special case for Forum with multiple handles
+  if (mediaName === 'Forum' && isDaoAdmin && isEditing && canAdminEdit) {
+    return (
+      <form onSubmit={handleSubmitMultipleHandles(onSubmitMultipleHandles)}>
+        <FormControl>
+          <Flex flexDir="column" gap="3">
+            {fields.map((field, index) => (
+              <Flex key={field.id} flexDir="column" gap="1">
+                <Flex
+                  flexDir={{ base: 'column', md: 'row' }}
+                  gap="2"
+                  alignItems="center"
+                >
+                  <Input
+                    px="4"
+                    py="2"
+                    borderWidth="1px"
+                    borderColor={theme.modal.statement.sidebar.item}
+                    minW="32"
+                    maxW="60"
+                    w={{ base: 'full', md: 'max-content' }}
+                    {...registerMultipleHandles(`handles.${index}.value`)}
+                  />
+                  {fields.length > 1 && (
+                    <IconButton
+                      aria-label="Remove handle"
+                      icon={<CloseIcon />}
+                      size="sm"
+                      onClick={() => remove(index)}
+                    />
+                  )}
+                </Flex>
+                {errorsMultipleHandles.handles?.[index]?.value && (
+                  <Text color="red.200">
+                    {errorsMultipleHandles.handles[index]?.value?.message}
+                  </Text>
+                )}
+              </Flex>
+            ))}
+
+            <Flex gap="4" align="center">
+              <Button
+                leftIcon={<AddIcon />}
+                onClick={() => append({ value: '' })}
+                size="sm"
+                variant="outline"
+              >
+                Add Handle
+              </Button>
+
+              <Button
+                type="submit"
+                isLoading={isSubmittingMultipleHandles || isLoading}
+                isDisabled={isLoading}
+              >
+                Save
+              </Button>
+            </Flex>
           </Flex>
         </FormControl>
       </form>
@@ -313,6 +455,42 @@ const HandleCases: FC<IHandleCasesProps> = ({
     }
   }
 
+  // Display multiple forum handles
+  if (Array.isArray(currentHandle) && mediaName === 'Forum') {
+    return (
+      <Flex direction="column" gap="2">
+        {currentHandle.length > 0 ? (
+          currentHandle.map((handle, index) => (
+            <Text
+              key={index}
+              px="4"
+              py="2"
+              borderWidth="1px"
+              borderColor={theme.modal.statement.sidebar.item}
+              minW="60"
+              w={{ base: 'full', md: 'max-content' }}
+            >
+              {handle}
+            </Text>
+          ))
+        ) : (
+          <Text
+            px="4"
+            py="2"
+            borderWidth="1px"
+            borderColor={theme.modal.statement.sidebar.item}
+            minW="60"
+            w={{ base: 'full', md: 'max-content' }}
+            color="gray.500"
+            fontStyle="italic"
+          >
+            No forum handles linked
+          </Text>
+        )}
+      </Flex>
+    );
+  }
+
   return (
     <Text
       px="4"
@@ -401,7 +579,7 @@ export const Handles: FC = () => {
       action: () => {
         forumOnOpen();
       },
-      handle: profileSelected?.discourseHandle,
+      handle: profileSelected?.discourseHandles,
       canAdminEdit: true,
     },
     {
@@ -488,6 +666,7 @@ export const Handles: FC = () => {
                     mediaName={media.name}
                     canAdminEdit={media.canAdminEdit}
                     actionType={media.actionType}
+                    refreshProfile={refetch}
                   />
                 </Flex>
               )

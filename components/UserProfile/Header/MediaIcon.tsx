@@ -9,6 +9,7 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import { HandlesTooltip } from 'components/HandlesTooltip';
 import { useDAO, useDelegates, useHandles, useWallet } from 'contexts';
 import { FC, ReactNode } from 'react';
 import { IActiveTab, IDelegate, IMedias } from 'types';
@@ -26,7 +27,7 @@ interface IMediaIcon {
 interface IMediasObj {
   [key: string]: {
     url: string;
-    value?: string;
+    value?: string | string[];
     disabledCondition?: boolean;
   };
 }
@@ -55,6 +56,30 @@ export const MediaIcon: FC<IMediaIcon> = ({
     }
   );
 
+  // Helper function to get the forum URL for the first handle
+  const getForumUrl = () => {
+    if (
+      !profile?.discourseHandles ||
+      !daoData?.socialLinks.forum ||
+      !config.DAO_FORUM_TYPE
+    ) {
+      return '';
+    }
+
+    // Get the first handle from the array or use the single handle
+    const firstHandle = Array.isArray(profile.discourseHandles)
+      ? profile.discourseHandles[0]
+      : profile.discourseHandles;
+
+    if (!firstHandle) return '';
+
+    return getUserForumUrl(
+      firstHandle,
+      config.DAO_FORUM_TYPE,
+      config.DAO_FORUM_URL || daoData?.socialLinks.forum
+    );
+  };
+
   const medias: IMediasObj = {
     // twitter: {
     //   url: `https://twitter.com/${profile.twitter}`,
@@ -73,17 +98,8 @@ export const MediaIcon: FC<IMediaIcon> = ({
         !daoInfo.config.ENABLE_HANDLES_EDIT?.includes('github'),
     },
     forum: {
-      url:
-        profile?.discourseHandle &&
-        daoData?.socialLinks.forum &&
-        config.DAO_FORUM_TYPE
-          ? getUserForumUrl(
-              profile?.discourseHandle,
-              config.DAO_FORUM_TYPE,
-              config.DAO_FORUM_URL || daoData?.socialLinks.forum
-            )
-          : '',
-      value: profile.discourseHandle,
+      url: getForumUrl(),
+      value: profile.discourseHandles,
       disabledCondition: !daoData?.forumTopicURL,
     },
     discord: {
@@ -158,6 +174,19 @@ export const MediaIcon: FC<IMediaIcon> = ({
           </PopoverContent>
         </Popover>
       );
+
+    if (media === 'forum') {
+      // Convert the value to an array for HandlesTooltip
+      let handles: string[] = [];
+
+      if (Array.isArray(chosenMedia.value)) {
+        handles = chosenMedia.value;
+      } else if (typeof chosenMedia.value === 'string' && chosenMedia.value) {
+        handles = [chosenMedia.value];
+      }
+
+      return <HandlesTooltip handles={handles} />;
+    }
 
     return (
       <Link
