@@ -504,35 +504,31 @@ export const DelegateStats = () => {
             >
               Average Voting Power
             </Text>
-            {isMonthFinished || isAuthorized ? (
-              <Flex
-                flexDir="column"
-                gap="0"
-                justify="center"
-                align="flex-start"
-                onClick={() => setIsVotingPowerModalOpen(true)}
-                cursor="pointer"
-                _hover={{ opacity: 0.8 }}
-              >
-                <Flex flexDir="row" gap="2" align="center">
-                  <Text
-                    fontSize="24px"
-                    fontWeight={700}
-                    color={theme.compensation?.card.secondaryText}
-                    textDecoration="underline"
-                  >
-                    {formatNumber(delegateInfo?.stats?.votingPowerAverage || 0)}
-                  </Text>
+            <Flex
+              flexDir="column"
+              gap="0"
+              justify="center"
+              align="flex-start"
+              onClick={() => setIsVotingPowerModalOpen(true)}
+              cursor="pointer"
+              _hover={{ opacity: 0.8 }}
+            >
+              <Flex flexDir="row" gap="2" align="center">
+                <Text
+                  fontSize="24px"
+                  fontWeight={700}
+                  color={theme.compensation?.card.secondaryText}
+                  textDecoration="underline"
+                >
+                  {formatNumber(delegateInfo?.stats?.votingPowerAverage || 0)}
+                </Text>
 
-                  <InfoTooltip
-                    stat="votingPowerAverage"
-                    stats={delegateInfo?.stats as DelegateStatsFromAPI['stats']}
-                  />
-                </Flex>
+                <InfoTooltip
+                  stat="votingPowerAverage"
+                  stats={delegateInfo?.stats as DelegateStatsFromAPI['stats']}
+                />
               </Flex>
-            ) : (
-              <MonthNotFinishedTooltip />
-            )}
+            </Flex>
           </Flex>
         </Flex>
         <Flex
