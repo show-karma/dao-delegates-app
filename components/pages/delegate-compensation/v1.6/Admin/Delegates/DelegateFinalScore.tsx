@@ -45,9 +45,8 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
       </Text>
       <Code fontWeight="normal">PR90 formula: (PR90 * 15) / 100</Code>
       <Code fontWeight="normal">
-        PR90 = ({delegateStats?.participationRatePercent} * 15) / 100
-        <br />
-        PR90 = {delegateStats?.participationRate}
+        PR90 = ({delegateStats?.participationRatePercent} * 15) / 100 ={' '}
+        {delegateStats?.participationRate}
       </Code>
     </Flex>
   ),
@@ -70,9 +69,8 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
       <Code fontWeight="normal">SV formula: (SV(Rn) / SV(Tn)) * 20</Code>
       <Code fontWeight="normal">
         SV = ({delegateStats?.snapshotVoting.rn} /{' '}
-        {delegateStats?.snapshotVoting.tn}) * 20
-        <br />
-        SV = {delegateStats?.snapshotVoting?.score}
+        {delegateStats?.snapshotVoting.tn}) * 20 ={' '}
+        {delegateStats?.snapshotVoting?.score}
       </Code>
     </Flex>
   ),
@@ -96,9 +94,8 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
       <Code fontWeight="normal">TV formula: (TV(Rn) / TV(Tn)) * 25</Code>
       <Code fontWeight="normal">
         TV = ({delegateStats?.onChainVoting.rn} /{' '}
-        {delegateStats?.onChainVoting.tn}) * 25
-        <br />
-        TV = {delegateStats?.onChainVoting?.score}
+        {delegateStats?.onChainVoting.tn}) * 25 ={' '}
+        {delegateStats?.onChainVoting?.score}
       </Code>
     </Flex>
   ),
@@ -125,10 +122,9 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
         Contributions
       </Code>
       <Code fontWeight="normal">
-        BP = ({delegateStats?.biweeklyCalls} * 0.0125 +{' '}
-        {delegateStats?.monthlyCalls} * 0.0125) + {delegateStats?.contributions}
-        <br />
-        BP = {delegateStats?.bonusPoint}
+        BP = ({delegateStats?.biweeklyCalls || 0} * 0.0125 +{' '}
+        {delegateStats?.monthlyCalls || 0} * 0.0125) +{' '}
+        {delegateStats?.contributions || 0} = {delegateStats?.bonusPoint}
       </Code>
     </Flex>
   ),
@@ -145,9 +141,8 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
         VP multiplier formula: 0.00000005063 * VP + 0.7974685
       </Code>
       <Code fontWeight="normal">
-        VP = 0.00000005063 * {delegateStats?.votingPowerAverage} + 0.7974685
-        <br />
-        VP = {delegateStats?.votingPowerMultiplier}
+        VP = 0.00000005063 * {delegateStats?.votingPowerAverage} + 0.7974685 ={' '}
+        {delegateStats?.votingPowerMultiplier}
       </Code>
     </Flex>
   ),
@@ -205,6 +200,7 @@ export const InfoTooltip = ({
       fontSize="sm"
       borderRadius={10}
       p="3"
+      minW={{ base: 'full', md: '380px' }}
     >
       <Text as="span">
         <Icon boxSize="12px" as={BsFillInfoCircleFill} cursor="help" />
