@@ -25,7 +25,8 @@ const styles: Record<string, CSSProperties> = {
   scroll: {
     position: 'relative',
     display: 'flex',
-    overflow: 'auto',
+    overflowX: 'auto',
+    overflowY: 'hidden',
     scrollSnapType: 'x mandatory',
   },
   item: {

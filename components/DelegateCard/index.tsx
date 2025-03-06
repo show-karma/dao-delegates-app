@@ -1036,7 +1036,12 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
                   data?.discourseHandles?.length > 0 &&
                   daoData?.socialLinks.forum &&
                   config.DAO_FORUM_TYPE && (
-                    <HandlesTooltip handles={data.discourseHandles} />
+                    <HandlesTooltip
+                      handles={data.discourseHandles}
+                      iconProps={{
+                        boxSize: '17px',
+                      }}
+                    />
                   )}
 
                 {data.discordUsername && (
