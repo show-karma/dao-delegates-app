@@ -24,9 +24,7 @@ export const DelegateFeedbackCalculation = ({
     <Text>
       DF = ({relevance} + {depthOfAnalysis} + {timing} +{' '}
       {clarityAndCommunication} + {impactOnDecisionMaking}) / 50 *{' '}
-      {presenceMultiplier} * 40
-      <br />
-      DF = {finalScore}
+      {presenceMultiplier} * 40 = {finalScore}
     </Text>
   );
 };
