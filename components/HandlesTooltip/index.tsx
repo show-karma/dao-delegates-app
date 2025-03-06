@@ -1,12 +1,14 @@
 import {
   Flex,
   Icon,
+  IconProps,
   Popover,
   PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
   Text,
+  TextProps,
 } from '@chakra-ui/react';
 import { ChakraLink } from 'components/ChakraLink';
 import { useDAO } from 'contexts';
@@ -14,8 +16,14 @@ import { FaDiscourse, FaExternalLinkAlt } from 'react-icons/fa';
 
 interface HandlesTooltipProps {
   handles: string[];
+  iconProps?: IconProps;
+  textProps?: TextProps;
 }
-export const HandlesTooltip = ({ handles }: HandlesTooltipProps) => {
+export const HandlesTooltip = ({
+  handles,
+  iconProps = {},
+  textProps = {},
+}: HandlesTooltipProps) => {
   const { theme, daoInfo } = useDAO();
   return (
     <Flex flexDir="row" gap="2" align="center">
@@ -25,14 +33,19 @@ export const HandlesTooltip = ({ handles }: HandlesTooltipProps) => {
             <Flex cursor="pointer" _hover={{ opacity: 0.8 }} align="center">
               <Icon
                 as={FaDiscourse}
-                boxSize="24px"
                 color={theme.compensation?.card.secondaryText}
+                _hover={{
+                  transform: 'scale(1.25)',
+                }}
+                boxSize="24px"
+                {...iconProps}
               />
               {handles.length > 1 && (
                 <Text
                   ml="1"
                   fontSize="xs"
                   color={theme.compensation?.card.secondaryText}
+                  {...textProps}
                 >
                   ({handles.length})
                 </Text>
