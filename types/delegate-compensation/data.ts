@@ -17,6 +17,11 @@ export type CompensationStatBreakdown = {
   breakdown?: Record<string, DelegateStatsBreakdown>;
 };
 
+export type VotingPowerBreakdown = {
+  date: number;
+  amount: number;
+};
+
 export type DelegateInfoStats = {
   votingPowerAverage?: string;
   votingPowerMultiplier?: number;
@@ -46,7 +51,7 @@ export type DelegateInfoStats = {
     };
     posts: ForumActivityBreakdown[];
   };
-  votingPowerBreakdown: number[];
+  votingPowerBreakdown: VotingPowerBreakdown[];
   totalParticipation: string;
   participationRatePercent: number;
   contributions: number;

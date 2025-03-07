@@ -33,7 +33,10 @@ import {
 import { formatNumber } from 'utils';
 import { useState } from 'react';
 import dayjs from 'dayjs';
-import { useDelegateCompensation } from 'contexts/delegateCompensation';
+import utc from 'dayjs/plugin/utc';
+import { VotingPowerBreakdown } from 'types';
+
+dayjs.extend(utc);
 
 // Register ChartJS components
 ChartJS.register(
@@ -50,7 +53,7 @@ ChartJS.register(
 interface VotingPowerBreakdownModalProps {
   isOpen: boolean;
   onClose: () => void;
-  votingPowerBreakdown: number[];
+  votingPowerBreakdown: VotingPowerBreakdown[];
   votingPowerAverage: number;
 }
 
@@ -62,28 +65,18 @@ export const VotingPowerBreakdownModal = ({
 }: VotingPowerBreakdownModalProps) => {
   const { theme } = useDAO();
   const [isTableExpanded, setIsTableExpanded] = useState(false);
-  const { selectedDate } = useDelegateCompensation();
 
   // Function to get the date for a specific day of the month
   const getDateForDay = (dayOfMonth: number) => {
-    if (!selectedDate?.value.month || !selectedDate?.value.year) return '';
-    return dayjs()
-      .year(Number(selectedDate.value.year))
-      .month(Number(selectedDate.value.month) - 1)
-      .date(dayOfMonth)
-      .format('MMM D, YYYY');
+    const dateUTC = dayjs.utc(new Date(dayOfMonth * 1000));
+    return dateUTC.format('MMM D, YYYY');
   };
 
   // Create array of objects with power and day for sorting
-  const tableData = votingPowerBreakdown.map((power, index) => ({
-    power,
-    day: index + 1,
-    date: getDateForDay(index + 1),
-    timestamp: dayjs()
-      .year(Number(selectedDate?.value.year))
-      .month(Number(selectedDate?.value.month) - 1)
-      .date(index + 1)
-      .valueOf(),
+  const tableData = votingPowerBreakdown.map(data => ({
+    power: data.amount,
+    date: getDateForDay(data.date),
+    timestamp: data.date,
   }));
 
   // Sort data in descending order by date
@@ -93,12 +86,12 @@ export const VotingPowerBreakdownModal = ({
 
   // Prepare data for the chart (keep original order for chart)
   const chartData = {
-    labels: votingPowerBreakdown.map((_, index) => getDateForDay(index + 1)),
+    labels: votingPowerBreakdown.map(data => getDateForDay(data.date)),
     datasets: [
       {
         fill: true,
         label: 'Total',
-        data: votingPowerBreakdown,
+        data: votingPowerBreakdown.map(data => data.amount),
         borderColor:
           theme.modal.votingHistory.modules?.chart.point || '#4A5568',
         borderWidth: 2,
