@@ -20,7 +20,7 @@ import {
 } from 'contexts';
 import { YOUTUBE_LINKS } from 'helpers';
 import dynamic from 'next/dynamic';
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { GoCommentDiscussion } from 'react-icons/go';
 import { AddIcon, CloseIcon } from 'components/Icons';
@@ -170,6 +170,7 @@ const HandleCases: FC<IHandleCasesProps> = ({
     control,
     register: registerMultipleHandles,
     handleSubmit: handleSubmitMultipleHandles,
+    setValue: setValueMultipleHandles,
     formState: {
       errors: errorsMultipleHandles,
       isSubmitting: isSubmittingMultipleHandles,
@@ -188,6 +189,23 @@ const HandleCases: FC<IHandleCasesProps> = ({
     control,
     name: 'handles',
   });
+
+  // Update form when currentHandle changes
+  useEffect(() => {
+    if (mediaName === 'Forum') {
+      // Reset the form with the current handles
+      if (Array.isArray(currentHandle)) {
+        setValueMultipleHandles(
+          'handles',
+          currentHandle.map(handle => ({ value: handle }))
+        );
+      } else if (typeof currentHandle === 'string' && currentHandle) {
+        setValueMultipleHandles('handles', [{ value: currentHandle }]);
+      } else {
+        setValueMultipleHandles('handles', [{ value: '' }]);
+      }
+    }
+  }, [currentHandle, mediaName, setValueMultipleHandles]);
 
   const onSubmitAdminEdit = (data: { handle: string }) => {
     const cleanNewHandle = data.handle.replace(/[|;$%@"<>()+,.]/g, '');
@@ -213,6 +231,13 @@ const HandleCases: FC<IHandleCasesProps> = ({
     changeHandle(handles as any, 'forum').finally(() => {
       setIsLoading(false);
       refreshProfile?.();
+
+      // Update the form state with the new handles
+      // This ensures the form reflects what was saved in the API
+      setValueMultipleHandles(
+        'handles',
+        handles.map(handle => ({ value: handle }))
+      );
     });
   };
 
