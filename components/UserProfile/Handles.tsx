@@ -579,7 +579,11 @@ export const Handles: FC = () => {
       action: () => {
         forumOnOpen();
       },
-      handle: profileSelected?.discourseHandles,
+      handle:
+        profileSelected?.discourseHandles &&
+        profileSelected.discourseHandles.length > 0
+          ? profileSelected.discourseHandles
+          : undefined,
       canAdminEdit: true,
     },
     {
