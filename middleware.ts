@@ -31,7 +31,7 @@ const DAO_CUSTOM_DOMAIN: Record<string, string | string[]> = {
   'cow.karmahq.xyz': 'cowswap',
   'delegate.moonbeam.network': ['moonriver', 'moonbase'],
 };
-//
+
 export default function middleware(req: NextRequest) {
   const url = req.nextUrl;
   const hostname = req.headers.get('host') || 'www.karmahq.xyz';

@@ -5,6 +5,7 @@ import { daosDictionary } from 'helpers';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import type { ParsedUrlQuery } from 'querystring';
 import { compensation } from 'utils/compensation';
+import { getAllDelegates } from 'utils/delegate-compensation/getAllDelegates';
 
 interface PathProps extends ParsedUrlQuery {
   site: string;
@@ -17,10 +18,20 @@ interface FAQProps {
 }
 
 export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
-  const paths = [{ params: { site: 'arbitrum', delegateAddress: '0x' } }];
+  const { daos } = compensation;
+
+  const paths = await Promise.all(
+    daos.map(async dao => {
+      const allDelegates = await getAllDelegates(dao);
+      return allDelegates.map(delegate => ({
+        params: { site: dao, delegateAddress: delegate },
+      }));
+    })
+  );
+  const flattenedPaths = paths.flat();
 
   return {
-    paths,
+    paths: flattenedPaths,
     fallback: 'blocking',
   };
 };
