@@ -2,7 +2,7 @@ import { DelegateCompensationAdminDelegatesVersioning } from 'components/pages/d
 import { DelegateCompensationAdminContainer } from 'containers/delegate-compensation-admin';
 import { DAOProvider } from 'contexts/dao';
 import { daosDictionary } from 'helpers';
-import { GetStaticPaths, GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import type { ParsedUrlQuery } from 'querystring';
 import { IDelegateFromAPI } from 'types';
 import { compensation } from 'utils/compensation';
@@ -17,7 +17,7 @@ interface FAQProps {
   delegateAddress: string | null;
 }
 
-export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
+export const getServerSidePaths = async () => {
   const paths = [
     {
       params: {
@@ -33,9 +33,11 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps<FAQProps, PathProps> = async ({
-  params,
-}) => {
+export const getServerSideProps: GetServerSideProps<
+  FAQProps,
+  PathProps
+> = async context => {
+  const { params, query } = context;
   if (!params) throw new Error('No path parameters found');
 
   const { site, delegateAddress } = params;
@@ -75,6 +77,8 @@ export const getStaticProps: GetStaticProps<FAQProps, PathProps> = async ({
       dao: site,
       delegateAddress: delegateAddress || null,
       delegateName: delegateName || null,
+      serverSideMonth: query?.month || null,
+      serverSideYear: query?.year || null,
     },
   };
 };
@@ -83,12 +87,16 @@ interface IFAQ {
   dao: string;
   delegateAddress: string;
   delegateName: string;
+  serverSideMonth: string | null;
+  serverSideYear: string | null;
 }
 
 const DelegateCompesationAdminPage = ({
   dao,
   delegateAddress,
   delegateName,
+  serverSideMonth,
+  serverSideYear,
 }: IFAQ) => (
   <DAOProvider selectedDAO={dao} shouldFetchInfo={false}>
     <DelegateCompensationAdminContainer
@@ -96,6 +104,8 @@ const DelegateCompesationAdminPage = ({
         type: 'delegate-stats',
         delegateName: delegateName || '',
         delegateAddress: delegateAddress || '',
+        serverSideMonth: serverSideMonth || undefined,
+        serverSideYear: serverSideYear || undefined,
       }}
     >
       <DelegateCompensationAdminDelegatesVersioning />
