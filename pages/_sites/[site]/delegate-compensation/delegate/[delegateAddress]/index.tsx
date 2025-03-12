@@ -3,11 +3,9 @@ import { DelegateCompensationAdminContainer } from 'containers/delegate-compensa
 import { DAOProvider } from 'contexts/dao';
 import { daosDictionary } from 'helpers';
 import { GetStaticPaths, GetStaticProps } from 'next';
-import { useRouter } from 'next/router';
 import type { ParsedUrlQuery } from 'querystring';
 import { IDelegateFromAPI } from 'types';
 import { compensation } from 'utils/compensation';
-import { getMonthName } from 'utils/getMonthName';
 
 interface PathProps extends ParsedUrlQuery {
   site: string;
