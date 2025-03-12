@@ -3,11 +3,9 @@ import { DelegateCompensationAdminContainer } from 'containers/delegate-compensa
 import { DAOProvider } from 'contexts/dao';
 import { daosDictionary } from 'helpers';
 import { GetStaticPaths, GetStaticProps } from 'next';
-import { useRouter } from 'next/router';
 import type { ParsedUrlQuery } from 'querystring';
 import { IDelegateFromAPI } from 'types';
 import { compensation } from 'utils/compensation';
-import { getMonthName } from 'utils/getMonthName';
 
 interface PathProps extends ParsedUrlQuery {
   site: string;
@@ -91,39 +89,20 @@ const DelegateCompesationForumActivityPage = ({
   dao,
   delegateAddress,
   delegateName,
-}: IFAQ) => {
-  const router = useRouter();
-  const queryString = router.asPath.split('?')[1] || undefined;
-
-  // Extract month parameter with a fallback
-  const monthMatch = queryString?.match(/(?<=month=)[^&]*/i);
-
-  // Get the numeric month (0-11)
-  const month = monthMatch
-    ? monthMatch[0]
-    : getMonthName(new Date().getMonth().toString());
-
-  // Extract year parameter with a fallback
-  const yearMatch = queryString?.match(/(?<=year=)[^&]*/i);
-  const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
-
-  const daoCapitalized = dao.charAt(0).toUpperCase() + dao.slice(1);
-  return (
-    <DAOProvider selectedDAO={dao} shouldFetchInfo={false}>
-      <DelegateCompensationAdminContainer
-        customMetatags={{
-          title: `${delegateName} ${daoCapitalized} DAO Forum Activity | ${month} ${year}`,
-          description: `Explore ${delegateName}'s ${daoCapitalized} forum activity for ${month} ${year}`,
-          image: `https://${dao}.karmahq.xyz/api/${dao}/delegate-compensation-stats?address=${delegateAddress}&month=${month}&year=${year}`,
-          url: `https://${dao}.karmahq.xyz/delegate-compensation/delegate/${delegateAddress}/forum-activity?month=${month}&year=${year}`,
-        }}
-      >
-        <DelegateCompensationAdminForumActivityVersioning
-          delegateAddress={delegateAddress}
-        />
-      </DelegateCompensationAdminContainer>
-    </DAOProvider>
-  );
-};
+}: IFAQ) => (
+  <DAOProvider selectedDAO={dao} shouldFetchInfo={false}>
+    <DelegateCompensationAdminContainer
+      customMetatagsInfo={{
+        type: 'forum-activity',
+        delegateName: delegateName || '',
+        delegateAddress: delegateAddress || '',
+      }}
+    >
+      <DelegateCompensationAdminForumActivityVersioning
+        delegateAddress={delegateAddress}
+      />
+    </DelegateCompensationAdminContainer>
+  </DAOProvider>
+);
 
 export default DelegateCompesationForumActivityPage;

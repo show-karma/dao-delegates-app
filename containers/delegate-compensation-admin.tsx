@@ -14,6 +14,8 @@ import Script from 'next/script';
 import dynamic from 'next/dynamic';
 import { HeaderHat } from 'components';
 import { DelegateCompensationProvider } from 'contexts/delegateCompensation';
+import { useRouter } from 'next/router';
+import { getMonthName } from 'utils/getMonthName';
 
 const RainbowWrapper = dynamic(() =>
   import('components').then(module => module.RainbowWrapper)
@@ -31,19 +33,91 @@ interface IDelegateCompensationAdminContainer {
   user?: string;
   shouldOpenDelegateToAnyone?: boolean;
   children: React.ReactNode;
-  customMetatags?: {
-    title?: string;
-    description?: string;
-    image?: string;
-    url?: string;
+  customMetatagsInfo?: {
+    type: 'delegate-stats' | 'forum-activity';
+    delegateName?: string;
+    delegateAddress: string;
   };
 }
 
+interface IMetatags {
+  title: string;
+  description: string;
+  image: string;
+  url: string;
+}
+
+const metatags = (
+  delegateName: string,
+  month: string,
+  year: string,
+  delegateAddress: string,
+  dao: string
+): {
+  delegateStats: IMetatags;
+  forumActivity: IMetatags;
+} => ({
+  delegateStats: {
+    title: `${delegateName} ${
+      dao.charAt(0).toUpperCase() + dao.slice(1)
+    } DAO Governance Stats | ${month} ${year}`,
+    description: `Explore ${delegateName}'s ${
+      dao.charAt(0).toUpperCase() + dao.slice(1)
+    } governance stats and activity for ${month} ${year}`,
+    image: `https://${dao}.karmahq.xyz/api/${dao}/delegate-compensation-stats?address=${delegateAddress}&month=${month}&year=${year}`,
+    url: `https://${dao}.karmahq.xyz/delegate-compensation/delegate/${delegateAddress}?month=${month}&year=${year}`,
+  },
+  forumActivity: {
+    title: `${delegateName} ${
+      dao.charAt(0).toUpperCase() + dao.slice(1)
+    } DAO Forum Activity | ${month} ${year}`,
+    description: `Explore ${delegateName}'s ${
+      dao.charAt(0).toUpperCase() + dao.slice(1)
+    } forum activity for ${month} ${year}`,
+    image: `https://${dao}.karmahq.xyz/api/${dao}/delegate-compensation-forum-activity?address=${delegateAddress}&month=${month}&year=${year}`,
+    url: `https://${dao}.karmahq.xyz/delegate-compensation/delegate/${delegateAddress}?month=${month}&year=${year}`,
+  },
+});
+
 export const DelegateCompensationAdminContainer: React.FC<
   IDelegateCompensationAdminContainer
-> = ({ user, shouldOpenDelegateToAnyone, children, customMetatags }) => {
+> = ({ user, shouldOpenDelegateToAnyone, children, customMetatagsInfo }) => {
   const { daoInfo, theme } = useDAO();
   const { config } = daoInfo;
+
+  const router = useRouter();
+  const queryString = router.asPath.split('?')[1] || undefined;
+
+  // Extract month parameter with a fallback
+  const monthMatch = queryString?.match(/(?<=month=)[^&]*/i);
+
+  // Get the numeric month (0-11)
+  const month = monthMatch
+    ? monthMatch[0]
+    : getMonthName(new Date().getMonth().toString());
+
+  // Extract year parameter with a fallback
+  const yearMatch = queryString?.match(/(?<=year=)[^&]*/i);
+  const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
+
+  const dao = daoInfo.config.DAO;
+
+  let customMetatags = null;
+
+  if (customMetatagsInfo?.type) {
+    customMetatags = metatags(
+      customMetatagsInfo?.delegateName || '',
+      month,
+      year,
+      customMetatagsInfo?.delegateAddress || '',
+      dao
+    );
+    if (customMetatagsInfo?.type === 'delegate-stats') {
+      customMetatags = customMetatags?.delegateStats;
+    } else {
+      customMetatags = customMetatags?.forumActivity;
+    }
+  }
 
   return (
     <>
