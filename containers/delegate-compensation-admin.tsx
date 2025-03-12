@@ -119,6 +119,8 @@ export const DelegateCompensationAdminContainer: React.FC<
     }
   }
 
+  console.log(router, queryString, customMetatagsInfo);
+
   return (
     <>
       <Head>
