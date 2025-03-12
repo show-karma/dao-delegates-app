@@ -8,6 +8,7 @@ import type { ParsedUrlQuery } from 'querystring';
 import { IDelegateFromAPI } from 'types';
 import { compensation } from 'utils/compensation';
 import { getAllDelegates } from 'utils/delegate-compensation/getAllDelegates';
+import { getMonthName } from 'utils/getMonthName';
 
 interface PathProps extends ParsedUrlQuery {
   site: string;
@@ -93,13 +94,19 @@ const DelegateCompensationAdminDelegatesPage = ({
   delegateName,
 }: DelegateCompensationProps) => {
   const router = useRouter();
-  const queryString = router.asPath.split('?')[1];
+  const queryString = router.asPath.split('?')[1] || undefined;
 
-  // Extract month parameter
-  const month = queryString.match(/(?<=month=)[^&]*/i);
+  // Extract month parameter with a fallback
+  const monthMatch = queryString?.match(/(?<=month=)[^&]*/i);
 
-  // Extract year parameter
-  const year = queryString.match(/(?<=year=)[^&]*/i);
+  // Get the numeric month (0-11)
+  const month = monthMatch
+    ? monthMatch[0]
+    : getMonthName(new Date().getMonth().toString());
+
+  // Extract year parameter with a fallback
+  const yearMatch = queryString?.match(/(?<=year=)[^&]*/i);
+  const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
 
   const daoCapitalized = dao.charAt(0).toUpperCase() + dao.slice(1);
 
