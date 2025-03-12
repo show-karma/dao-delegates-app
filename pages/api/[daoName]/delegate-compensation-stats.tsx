@@ -189,7 +189,7 @@ export default async function handler(req: NextRequest) {
       delegateStats.publicAddress;
 
     // Use SVG for Snapshot icon if possible for better quality
-    const BASE_URL = 'http://localhost:3000';
+    const BASE_URL = `https://${daoName}.karmahq.xyz`;
     const snapshotIconUrl = `${BASE_URL}/icons/delegate-compensation/thunder.png`;
     const onchainIconUrl = `${BASE_URL}/icons/delegate-compensation/chain.png`;
     const delegateFeedbackIconUrl = `${BASE_URL}/icons/delegate-compensation/star.svg`;
@@ -200,7 +200,7 @@ export default async function handler(req: NextRequest) {
     const finalScoreIconUrl = `${BASE_URL}/icons/delegate-compensation/rocket.png`;
     const checkIconUrl = `${BASE_URL}/icons/delegate-compensation/check-circle.svg`;
     const karmaLogoGreen = `${BASE_URL}/images/karma_logo_green.svg`;
-    const daoLogoUrl = `${BASE_URL}/daos/${daoName}/logo_black.svg`;
+    const daoLogoUrl = `${BASE_URL}/daos/${daoName.toLowerCase()}/logo_black.svg`;
 
     // Font optimization for better rendering
     const fontStyle = {
