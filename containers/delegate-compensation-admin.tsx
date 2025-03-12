@@ -14,7 +14,6 @@ import Script from 'next/script';
 import dynamic from 'next/dynamic';
 import { HeaderHat } from 'components';
 import { DelegateCompensationProvider } from 'contexts/delegateCompensation';
-import { useRouter } from 'next/router';
 import { getMonthName } from 'utils/getMonthName';
 
 const RainbowWrapper = dynamic(() =>
@@ -37,6 +36,8 @@ interface IDelegateCompensationAdminContainer {
     type: 'delegate-stats' | 'forum-activity';
     delegateName?: string;
     delegateAddress: string;
+    serverSideMonth?: string;
+    serverSideYear?: string;
   };
 }
 
@@ -85,20 +86,14 @@ export const DelegateCompensationAdminContainer: React.FC<
   const { daoInfo, theme } = useDAO();
   const { config } = daoInfo;
 
-  const router = useRouter();
-  const queryString = router.asPath.split('?')[1] || undefined;
-
-  // Extract month parameter with a fallback
-  const monthMatch = queryString?.match(/(?<=month=)[^&]*/i);
-
   // Get the numeric month (0-11)
-  const month = monthMatch
-    ? monthMatch[0]
-    : getMonthName(new Date().getMonth().toString());
+  const month =
+    customMetatagsInfo?.serverSideMonth ||
+    getMonthName(new Date().getMonth().toString());
 
   // Extract year parameter with a fallback
-  const yearMatch = queryString?.match(/(?<=year=)[^&]*/i);
-  const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
+  const year =
+    customMetatagsInfo?.serverSideYear || new Date().getFullYear().toString();
 
   const dao = daoInfo.config.DAO;
 
@@ -118,8 +113,6 @@ export const DelegateCompensationAdminContainer: React.FC<
       customMetatags = customMetatags?.forumActivity;
     }
   }
-
-  console.log(router, queryString, customMetatagsInfo);
 
   return (
     <>

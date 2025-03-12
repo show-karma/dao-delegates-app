@@ -38,7 +38,8 @@ export default function middleware(req: NextRequest) {
   const currentPathname = url.pathname;
   const rootUrl = hostname.replaceAll(/(www\.)|(:.+)/gi, '');
 
-  let dao = DAO_CUSTOM_DOMAIN[rootUrl] || getDAOName(hostname);
+  // let dao = DAO_CUSTOM_DOMAIN[rootUrl] || getDAOName(hostname);
+  let dao = 'arbitrum';
 
   const usePathname = Array.isArray(dao);
 
@@ -62,7 +63,8 @@ export default function middleware(req: NextRequest) {
   ) {
     if (rootUrl === devUrl && !Array.isArray(dao)) {
       const daoName = url.searchParams.get('dao');
-      dao = daoName ? getDAOName(daoName) : DAO_CUSTOM_DOMAIN[devUrl];
+      // dao = daoName ? getDAOName(daoName) : DAO_CUSTOM_DOMAIN[devUrl];
+      dao = 'arbitrum';
     }
 
     url.pathname = `/_sites/${dao}${currentPathname}`;

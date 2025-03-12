@@ -2,7 +2,7 @@ import { DelegateCompensationAdminDelegatesVersioning } from 'components/pages/d
 import { DelegateCompensationAdminContainer } from 'containers/delegate-compensation-admin';
 import { DAOProvider } from 'contexts/dao';
 import { daosDictionary } from 'helpers';
-import { GetStaticPaths, GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import type { ParsedUrlQuery } from 'querystring';
 import { IDelegateFromAPI } from 'types';
 import { compensation } from 'utils/compensation';
@@ -19,7 +19,7 @@ interface DelegateCompensationProps {
   delegateName: string | null;
 }
 
-export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
+export const getServerSidePaths = async () => {
   const paths = [
     {
       params: {
@@ -36,10 +36,11 @@ export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps<
+export const getServerSideProps: GetServerSideProps<
   DelegateCompensationProps,
   PathProps
-> = async ({ params }) => {
+> = async context => {
+  const { params, query } = context;
   if (!params) throw new Error('No path parameters found');
 
   const { site, delegateAddress } = params;
@@ -79,21 +80,35 @@ export const getStaticProps: GetStaticProps<
       dao: site,
       delegateAddress: delegateAddress || null,
       delegateName: delegateName || null,
+      serverSideMonth: query?.month || null,
+      serverSideYear: query?.year || null,
     },
   };
 };
+
+interface DelegateCompensationAdminDelegatesProps {
+  dao: string;
+  delegateAddress: string | null;
+  delegateName: string | null;
+  serverSideMonth: string | null;
+  serverSideYear: string | null;
+}
 
 const DelegateCompensationAdminDelegatesPage = ({
   dao,
   delegateAddress,
   delegateName,
-}: DelegateCompensationProps) => (
+  serverSideMonth,
+  serverSideYear,
+}: DelegateCompensationAdminDelegatesProps) => (
   <DAOProvider selectedDAO={dao} shouldFetchInfo={false}>
     <DelegateCompensationAdminContainer
       customMetatagsInfo={{
         type: 'delegate-stats',
         delegateName: delegateName || '',
         delegateAddress: delegateAddress || '',
+        serverSideMonth: serverSideMonth || undefined,
+        serverSideYear: serverSideYear || undefined,
       }}
     >
       <DelegateCompensationAdminDelegatesVersioning
