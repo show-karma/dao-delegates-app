@@ -7,7 +7,6 @@ import { useRouter } from 'next/router';
 import type { ParsedUrlQuery } from 'querystring';
 import { IDelegateFromAPI } from 'types';
 import { compensation } from 'utils/compensation';
-import { getAllDelegates } from 'utils/delegate-compensation/getAllDelegates';
 import { getMonthName } from 'utils/getMonthName';
 
 interface PathProps extends ParsedUrlQuery {
@@ -23,20 +22,18 @@ interface DelegateCompensationProps {
 }
 
 export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
-  const { daos } = compensation;
-
-  const paths = await Promise.all(
-    daos.map(async dao => {
-      const allDelegates = await getAllDelegates(dao);
-      return allDelegates.map(delegate => ({
-        params: { site: dao, delegateAddress: delegate, delegateName: '' },
-      }));
-    })
-  );
-  const flattenedPaths = paths.flat();
+  const paths = [
+    {
+      params: {
+        site: 'arbitrum',
+        delegateAddress: '0x0000000000000000000000000000000000000000',
+        delegateName: '',
+      },
+    },
+  ];
 
   return {
-    paths: flattenedPaths,
+    paths,
     fallback: 'blocking',
   };
 };
