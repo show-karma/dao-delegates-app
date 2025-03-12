@@ -1,11 +1,10 @@
 /* eslint-disable no-param-reassign */
-import { AxiosResponse } from 'axios';
-import { api } from 'helpers';
 import {
   ParticipationRateProposals,
   ParticipationRateRows,
   ParticipationRateVotes,
 } from 'types/delegate-compensation/votingHistory';
+import { KARMA_API } from 'helpers/karma';
 
 export const getPRBreakdown = async (
   address?: string,
@@ -16,21 +15,30 @@ export const getPRBreakdown = async (
 ) => {
   if (!address || !daoName) return { proposals: [], votes: [], rows: [] };
   try {
-    const response: AxiosResponse<{
-      data: {
-        proposals: ParticipationRateProposals[];
-        votes: ParticipationRateVotes[];
-      };
-    }> = await api.get(
-      `/delegate/${daoName}/${address}/voting-history?period=${period}&month=${month}&year=${year}`
-    );
-    const proposals = response?.data?.data?.proposals;
+    // Using fetch instead of axios api
+    const url = `${KARMA_API.base_url}/delegate/${daoName}/${address}/voting-history?period=${period}&month=${month}&year=${year}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    const proposals = responseData?.data
+      ?.proposals as ParticipationRateProposals[];
     if (!proposals) throw new Error('No proposals');
-    const votes = response?.data?.data?.votes;
+    const votes = responseData?.data?.votes as ParticipationRateVotes[];
     const rows: ParticipationRateRows[] = [];
-    proposals.forEach(proposal => {
+    proposals.forEach((proposal: ParticipationRateProposals) => {
       const voteFound = votes.find(
-        vote => vote.proposal.id.toLowerCase() === proposal.id.toLowerCase()
+        (vote: ParticipationRateVotes) =>
+          vote.proposal.id.toLowerCase() === proposal.id.toLowerCase()
       );
       rows.push({
         id: proposal.id,

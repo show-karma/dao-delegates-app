@@ -1,5 +1,6 @@
 interface IVersion {
   version: string;
+  versionNumber: number;
   startDate: Date;
   endDate?: Date;
 }
@@ -45,16 +46,19 @@ export const compensation: ICompensationDates = {
       versions: [
         {
           version: 'old',
+          versionNumber: 1,
           startDate: new Date('2024-02-11'),
           endDate: new Date('2024-10-10'),
         },
         {
           version: 'v1.5',
+          versionNumber: 1.5,
           startDate: new Date('2024-10-11'),
           endDate: new Date('2025-01-30'),
         },
         {
           version: 'v1.6',
+          versionNumber: 1.6,
           startDate: new Date('2025-02-01'),
           // No endDate means it's the current version
         },
@@ -66,6 +70,7 @@ export const compensation: ICompensationDates = {
       versions: [
         {
           version: 'v1.5',
+          versionNumber: 1.5,
           startDate: new Date('2024-12-31'),
           // No endDate means it's the current version
         },

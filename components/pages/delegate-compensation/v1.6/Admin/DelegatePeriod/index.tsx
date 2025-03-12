@@ -1,5 +1,6 @@
 import { Flex, Text } from '@chakra-ui/react';
 import { useDAO } from 'contexts';
+import { ShareDelegate } from 'components/pages/delegate-compensation/ShareDelegate';
 import { MonthDropdown } from '../../../MonthDropdown';
 import { DelegateBlock } from '../Delegates/DelegateBlock';
 import { DelegatesDropdown } from '../Delegates/DelegatesDropdown';
@@ -51,32 +52,41 @@ export const DelegatePeriod = ({
       maxW="full"
     >
       {renderDelegate()}
-      {period ? (
-        <Flex
-          flexDir="row"
-          gap="4"
-          justify="flex-start"
-          align="center"
-          bg={theme.compensation?.card.bg}
-          w="full"
-          px="4"
-          py="4"
-          borderRadius="8px"
-          maxW="max-content"
-        >
-          <Text
-            fontSize="16px"
-            fontWeight="600"
-            color={theme.compensation?.card.text}
+      <Flex
+        flexDir="row"
+        gap="4"
+        justify="flex-start"
+        align="center"
+        flexWrap="wrap"
+      >
+        {period ? (
+          <Flex
+            flexDir="row"
+            gap="4"
+            justify="flex-start"
+            align="center"
+            bg={theme.compensation?.card.bg}
+            w="full"
+            px="4"
+            py="4"
+            borderRadius="8px"
+            maxW={{ base: 'full', md: 'max-content' }}
           >
-            Period
-          </Text>
-          <MonthDropdown
-            minimumPeriod={minimumPeriod}
-            maximumPeriod={maximumPeriod}
-          />
-        </Flex>
-      ) : null}
+            <Text
+              fontSize="16px"
+              fontWeight="600"
+              color={theme.compensation?.card.text}
+            >
+              Period
+            </Text>
+            <MonthDropdown
+              minimumPeriod={minimumPeriod}
+              maximumPeriod={maximumPeriod}
+            />
+          </Flex>
+        ) : null}
+        <ShareDelegate />
+      </Flex>
     </Flex>
   );
 };
