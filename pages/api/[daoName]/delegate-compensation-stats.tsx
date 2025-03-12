@@ -2,9 +2,12 @@ import { ImageResponse } from '@vercel/og';
 import { NextRequest } from 'next/server';
 import { DelegateStatsFromAPI } from 'types';
 import { truncateAddress } from 'utils/truncateAddress';
-import { formatSimpleNumber } from 'utils/formatNumber';
+import { formatNumber, formatSimpleNumber } from 'utils/formatNumber';
 import { getPRBreakdown } from 'utils/delegate-compensation/getPRBreakdown';
 import pluralize from 'pluralize';
+import { blo } from 'blo';
+import { getProposals } from 'utils/delegate-compensation/getProposals';
+import { compensation } from 'utils/compensation';
 
 export const config = {
   runtime: 'experimental-edge',
@@ -18,15 +21,16 @@ export default async function handler(req: NextRequest) {
     const url = new URL(req.url);
     const pathSegments = url.pathname.split('/');
     const daoName = pathSegments[2]; // [0]='', [1]='api', [2]='[daoName]', etc.
-    console.log('daoName', daoName);
 
     // Get data from query params
     const delegateAddress = searchParams.get('address');
-    const month =
+    let month =
       searchParams.get('month') ||
-      new Date().toLocaleString('default', { month: 'short' });
+      new Date().toLocaleString('default', { month: 'long' });
     const year =
       searchParams.get('year') || new Date().getFullYear().toString();
+
+    month = (new Date(`${year}-${month}-10`).getMonth() + 1).toString();
 
     if (!delegateAddress) {
       return new Response(`Delegate address is required`, {
@@ -36,7 +40,7 @@ export default async function handler(req: NextRequest) {
 
     // Using fetch instead of axios for Edge runtime compatibility
     const apiUrl = new URL(
-      '/api/delegate/arbitrum/incentive-programs-stats',
+      `/api/delegate/${daoName}/incentive-programs-stats`,
       process.env.NEXT_PUBLIC_KARMA_API
     );
     apiUrl.searchParams.append('month', month);
@@ -61,7 +65,7 @@ export default async function handler(req: NextRequest) {
 
     const prBreakdown = await getPRBreakdown(
       delegateAddress,
-      'arbitrum',
+      daoName,
       month,
       year
     );
@@ -71,46 +75,118 @@ export default async function handler(req: NextRequest) {
       });
     }
 
+    const proposals = await getProposals(daoName, month, year);
+
+    const isScoreFinalized = proposals.finished;
+
     // Stats data
-    const snapshotStats =
-      formatSimpleNumber(delegateStats.stats.snapshotVoting.score) || '-';
-    const snapshotProposals = delegateStats.stats.snapshotVoting.tn || '-';
-    const snapshotVoted = delegateStats.stats.snapshotVoting.rn || '-';
+    let stats: {
+      snapshotStats: {
+        score: string;
+        tn: string;
+        rn: string;
+      };
+      onchainStats: {
+        score: string;
+        tn: string;
+        rn: string;
+      };
+      participationRate: {
+        score: string;
+        tn: string;
+        rn: string;
+      };
+      delegateFeedback: string;
+      communicationRationale?: string;
+      bonusPoints: string;
+      finalScore: string;
+      averageVotingPower?: string;
+    } = {
+      snapshotStats: {
+        score:
+          formatSimpleNumber(delegateStats.stats.snapshotVoting.score) || '-',
+        tn: delegateStats.stats.snapshotVoting.tn || '-',
+        rn: delegateStats.stats.snapshotVoting.rn || '-',
+      },
+      onchainStats: {
+        score:
+          formatSimpleNumber(delegateStats.stats.onChainVoting.score) || '-',
+        tn: delegateStats.stats.onChainVoting.tn || '-',
+        rn: delegateStats.stats.onChainVoting.rn || '-',
+      },
+      participationRate: {
+        score: '-',
+        tn: '-',
+        rn: '-',
+      },
+      delegateFeedback: '-',
+      communicationRationale: '-',
+      bonusPoints: '-',
+      finalScore: '-',
+    };
+    if (isScoreFinalized) {
+      stats = {
+        ...stats,
+        participationRate: {
+          score:
+            formatSimpleNumber(delegateStats.stats.participationRate) || '-',
+          tn: formatSimpleNumber(prBreakdown?.proposals?.length) || '-',
+          rn: formatSimpleNumber(prBreakdown?.votes?.length) || '-',
+        },
+        delegateFeedback:
+          formatSimpleNumber(
+            delegateStats.stats.delegateFeedback?.finalScore || 0
+          ) || '-',
 
-    const onchainStats =
-      formatSimpleNumber(delegateStats.stats.onChainVoting.score) || '-';
-    const onchainProposals = delegateStats.stats.onChainVoting.tn || '-';
-    const onchainVoted = delegateStats.stats.onChainVoting.rn || '-';
+        bonusPoints: formatSimpleNumber(delegateStats.stats.bonusPoint) || '-',
+        finalScore:
+          formatSimpleNumber(delegateStats.stats.totalParticipation) || '-',
+      };
+    }
+    const compensationConfigs = compensation.compensationDates[daoName];
+    // Check which version applies based on the selected month/year
+    const selectedDate = new Date(`${year}-${month}-11`);
 
-    const participationRate =
-      formatSimpleNumber(delegateStats.stats.participationRate) || '-';
-    const participationRateTn =
-      formatSimpleNumber(prBreakdown?.proposals?.length) || '-';
-    const participationRateRn =
-      formatSimpleNumber(prBreakdown?.votes?.length) || '-';
+    // Find the applicable version for the selected date
+    const applicableVersion = compensationConfigs?.versions.find(version => {
+      const startDate = new Date(version.startDate);
+      const endDate = version.endDate ? new Date(version.endDate) : new Date();
 
-    const delegateFeedback =
-      formatSimpleNumber(
-        delegateStats.stats.delegateFeedback?.finalScore || 0
-      ) || '-';
-    const communicationRationale =
-      formatSimpleNumber(delegateStats.stats.communicatingRationale.score) ||
-      '-';
-    const bonusPoints =
-      formatSimpleNumber(delegateStats.stats.bonusPoint) || '-';
-
-    const finalScore =
-      formatSimpleNumber(delegateStats.stats.totalParticipation) || '-';
+      // Check if the selected date falls within this version's date range
+      return selectedDate >= startDate && selectedDate <= endDate;
+    });
+    if (
+      // Use communicationRationale for old version, averageVotingPower for newer versions
+      applicableVersion?.versionNumber &&
+      applicableVersion?.versionNumber <= 1.5
+    ) {
+      stats = {
+        ...stats,
+        communicationRationale: isScoreFinalized
+          ? formatSimpleNumber(
+              delegateStats.stats.communicatingRationale.score
+            ) || '-'
+          : '-',
+      };
+    } else {
+      stats = {
+        ...stats,
+        averageVotingPower: isScoreFinalized
+          ? formatNumber(delegateStats.stats.votingPowerAverage || 0) || '-'
+          : '-',
+      };
+    }
 
     // Avatar URL (with fallback)
-    const avatarUrl = delegateStats.profilePicture || '';
+    const avatarUrl =
+      delegateStats.profilePicture ||
+      blo(delegateStats.publicAddress as `0x${string}`) ||
+      '';
 
     const delegateName =
       delegateStats.name ||
       delegateStats.ensName ||
       delegateStats.publicAddress;
-
-    // Try to use SVG versions of icons where possible for better quality
 
     // Use SVG for Snapshot icon if possible for better quality
     const BASE_URL = 'http://localhost:3000';
@@ -118,16 +194,17 @@ export default async function handler(req: NextRequest) {
     const onchainIconUrl = `${BASE_URL}/icons/delegate-compensation/chain.png`;
     const delegateFeedbackIconUrl = `${BASE_URL}/icons/delegate-compensation/star.svg`;
     const communicationRationaleIconUrl = `${BASE_URL}/icons/delegate-compensation/megaphone.png`;
+    const averageVotingPowerIconUrl = `${BASE_URL}/icons/delegate-compensation/flexArm2.png`;
     const bonusPointsIconUrl = `${BASE_URL}/icons/delegate-compensation/celebration.png`;
     const participationRateIconUrl = `${BASE_URL}/icons/delegate-compensation/up.png`;
     const finalScoreIconUrl = `${BASE_URL}/icons/delegate-compensation/rocket.png`;
     const checkIconUrl = `${BASE_URL}/icons/delegate-compensation/check-circle.svg`;
+    const karmaLogoGreen = `${BASE_URL}/images/karma_logo_green.svg`;
     const daoLogoUrl = `${BASE_URL}/daos/${daoName}/logo_black.svg`;
 
     // Font optimization for better rendering
     const fontStyle = {
-      // fontFamily:
-      //   'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontFamily: 'Inter',
       fontSmooth: 'always' as const,
       textRendering: 'optimizeLegibility' as const,
     };
@@ -191,24 +268,26 @@ export default async function handler(req: NextRequest) {
                       ...imageStyle,
                     }}
                   />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '0',
-                      right: '-10px',
-                      display: 'flex',
-                    }}
-                  >
-                    <img
-                      src={checkIconUrl}
-                      alt="Check icon"
-                      width="24"
-                      height="24"
+                  {delegateStats.incentiveOptedIn ? (
+                    <div
                       style={{
-                        ...imageStyle,
+                        position: 'absolute',
+                        top: '0',
+                        right: '-10px',
+                        display: 'flex',
                       }}
-                    />
-                  </div>
+                    >
+                      <img
+                        src={checkIconUrl}
+                        alt="Check icon"
+                        width="24"
+                        height="24"
+                        style={{
+                          ...imageStyle,
+                        }}
+                      />
+                    </div>
+                  ) : null}
                 </div>
               )}
               <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -322,16 +401,16 @@ export default async function handler(req: NextRequest) {
               <span
                 style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
               >
-                {snapshotStats}
+                {stats.snapshotStats.score}
               </span>
               <span style={{ fontSize: '14px', ...textStyle }}>
                 <span style={{ color: '#475467' }}>
-                  {snapshotProposals} Total{' '}
-                  {pluralize('Proposal', +snapshotProposals || 0)},
+                  {stats.snapshotStats.tn} Total{' '}
+                  {pluralize('Proposal', +stats.snapshotStats.tn || 0)},
                 </span>
                 {'  '}
                 <span style={{ color: '#079455', marginLeft: '4px' }}>
-                  {snapshotVoted} Voted On
+                  {stats.snapshotStats.rn} Voted On
                 </span>
               </span>
             </div>
@@ -390,16 +469,16 @@ export default async function handler(req: NextRequest) {
               <span
                 style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
               >
-                {onchainStats}
+                {stats.onchainStats.score}
               </span>
               <span style={{ fontSize: '14px', ...textStyle }}>
                 <span style={{ color: '#475467' }}>
-                  {onchainProposals} Total{' '}
-                  {pluralize('Proposal', +onchainProposals || 0)},
+                  {stats.onchainStats.tn} Total{' '}
+                  {pluralize('Proposal', +stats.onchainStats.tn || 0)},
                 </span>
                 {'  '}
                 <span style={{ color: '#079455', marginLeft: '4px' }}>
-                  {onchainVoted} Voted On
+                  {stats.onchainStats.rn} Voted On
                 </span>
               </span>
             </div>
@@ -458,7 +537,7 @@ export default async function handler(req: NextRequest) {
               <span
                 style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
               >
-                {delegateFeedback}
+                {stats.delegateFeedback}
               </span>
             </div>
           </div>
@@ -472,61 +551,120 @@ export default async function handler(req: NextRequest) {
               marginBottom: '16px',
             }}
           >
-            <div
-              style={{
-                width: '373.33px',
-                height: '170px',
-                padding: '16px',
-                backgroundColor: 'rgba(255, 230, 213, 0.38)',
-                borderRadius: '12px',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
+            {applicableVersion?.versionNumber &&
+            applicableVersion?.versionNumber <= 1.5 ? (
               <div
                 style={{
+                  width: '373.33px',
+                  height: '170px',
+                  padding: '16px',
+                  backgroundColor: 'rgba(255, 230, 213, 0.38)',
+                  borderRadius: '12px',
                   display: 'flex',
                   flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  justifyContent: 'flex-start',
                 }}
               >
                 <div
                   style={{
-                    width: '44px',
-                    height: '44px',
                     display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
                   }}
                 >
-                  <img
-                    src={communicationRationaleIconUrl}
-                    width="44"
-                    height="44"
-                    alt="Communication Rationale"
+                  <div
                     style={{
-                      ...imageStyle,
+                      width: '44px',
+                      height: '44px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
                     }}
-                  />
+                  >
+                    <img
+                      src={communicationRationaleIconUrl}
+                      width="44"
+                      height="44"
+                      alt="Communication Rationale"
+                      style={{
+                        ...imageStyle,
+                      }}
+                    />
+                  </div>
+                  <span
+                    style={{
+                      fontSize: '18px',
+                      fontWeight: '600',
+                      marginTop: '10px',
+                      ...textStyle,
+                    }}
+                  >
+                    Communication Rationale
+                  </span>
                 </div>
                 <span
-                  style={{
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    marginTop: '10px',
-                    ...textStyle,
-                  }}
+                  style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
                 >
-                  Communication Rationale
+                  {stats.communicationRationale}
                 </span>
               </div>
-              <span
-                style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
+            ) : (
+              <div
+                style={{
+                  width: '373.33px',
+                  height: '170px',
+                  padding: '16px',
+                  backgroundColor: 'rgba(255, 230, 213, 0.38)',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
               >
-                {communicationRationale}
-              </span>
-            </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '44px',
+                      height: '44px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <img
+                      src={averageVotingPowerIconUrl}
+                      width="44"
+                      height="44"
+                      alt="Average Voting Power"
+                      style={{
+                        ...imageStyle,
+                      }}
+                    />
+                  </div>
+                  <span
+                    style={{
+                      fontSize: '18px',
+                      fontWeight: '600',
+                      marginTop: '10px',
+                      ...textStyle,
+                    }}
+                  >
+                    Average Voting Power
+                  </span>
+                </div>
+                <span
+                  style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
+                >
+                  {stats.averageVotingPower}
+                </span>
+              </div>
+            )}
 
             {/* Onchain Stats */}
             <div
@@ -581,7 +719,7 @@ export default async function handler(req: NextRequest) {
               <span
                 style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
               >
-                {bonusPoints}
+                {stats.bonusPoints}
               </span>
             </div>
 
@@ -638,18 +776,20 @@ export default async function handler(req: NextRequest) {
               <span
                 style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
               >
-                {participationRate}
+                {stats.participationRate.score}
               </span>
-              <span style={{ fontSize: '14px', ...textStyle }}>
-                <span style={{ color: '#475467' }}>
-                  {participationRateTn} Total{' '}
-                  {pluralize('Proposal', +participationRateTn || 0)},
+              {isScoreFinalized ? (
+                <span style={{ fontSize: '14px', ...textStyle }}>
+                  <span style={{ color: '#475467' }}>
+                    {stats.participationRate.tn} Total{' '}
+                    {pluralize('Proposal', +stats.participationRate.tn || 0)},
+                  </span>
+                  {'  '}
+                  <span style={{ color: '#079455', marginLeft: '4px' }}>
+                    {stats.participationRate.rn} Voted On
+                  </span>
                 </span>
-                {'  '}
-                <span style={{ color: '#079455', marginLeft: '4px' }}>
-                  {participationRateRn} Voted On
-                </span>
-              </span>
+              ) : null}
             </div>
           </div>
 
@@ -672,6 +812,7 @@ export default async function handler(req: NextRequest) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
+                position: 'relative',
               }}
             >
               {/* Using the Snapshot icon and styling similar to the component */}
@@ -720,8 +861,37 @@ export default async function handler(req: NextRequest) {
                   height: '40px',
                 }}
               >
-                {finalScore}
+                {stats.finalScore}
               </p>
+              <div
+                style={{
+                  display: 'flex',
+                  position: 'absolute',
+                  bottom: '0',
+                  right: '0',
+                  alignItems: 'center',
+                  gap: '1px',
+                  flexDirection: 'column',
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: '16px',
+                    fontWeight: '500',
+                    marginBottom: '5px',
+                    ...textStyle,
+                  }}
+                >
+                  Powered by
+                </p>
+                <img
+                  src={karmaLogoGreen}
+                  width="132"
+                  height="32"
+                  alt="Karma Logo"
+                  style={{ ...imageStyle }}
+                />
+              </div>
             </div>
           </div>
         </div>

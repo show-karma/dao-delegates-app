@@ -1,5 +1,4 @@
-import { AxiosResponse } from 'axios';
-import { api } from 'helpers';
+import { KARMA_API } from 'helpers/karma';
 import { Proposal, ProposalsFromAPI } from 'types/proposals';
 
 export const getProposals = async (
@@ -13,9 +12,24 @@ export const getProposals = async (
   biweeklyCalls?: number;
 }> => {
   try {
-    const axiosClient: AxiosResponse<{ data: ProposalsFromAPI }> =
-      await api.get(`/incentive-settings/${daoName}/${month}/${year}`);
-    const data = axiosClient?.data?.data;
+    const response = await fetch(
+      `${KARMA_API.base_url}/incentive-settings/${daoName}/${month}/${year}`,
+      {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = (await response.json()) as { data: ProposalsFromAPI };
+    const data = responseData?.data;
+
     if (!data) throw new Error('No data');
     const { proposals } = data;
     const fetchedProposalsArray = Object.entries(proposals);

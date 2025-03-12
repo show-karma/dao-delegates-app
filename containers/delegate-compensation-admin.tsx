@@ -31,54 +31,82 @@ interface IDelegateCompensationAdminContainer {
   user?: string;
   shouldOpenDelegateToAnyone?: boolean;
   children: React.ReactNode;
+  customMetatags?: {
+    title?: string;
+    description?: string;
+    image?: string;
+    url?: string;
+  };
 }
 
 export const DelegateCompensationAdminContainer: React.FC<
   IDelegateCompensationAdminContainer
-> = ({ user, shouldOpenDelegateToAnyone, children }) => {
+> = ({ user, shouldOpenDelegateToAnyone, children, customMetatags }) => {
   const { daoInfo, theme } = useDAO();
   const { config } = daoInfo;
 
   return (
     <>
       <Head>
-        <title>{config.METATAGS.TITLE}</title>
-        <meta name="description" content={config.METATAGS.DESCRIPTION} />
+        <title>
+          {customMetatags?.title ||
+            `${config.DAO} Delegate Compensation Dashboard`}
+        </title>
+        <meta
+          name="description"
+          content={customMetatags?.description || config.METATAGS.DESCRIPTION}
+        />
 
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={config.METATAGS.URL} key="ogurl" />
+        <meta
+          property="og:url"
+          content={customMetatags?.url || config.METATAGS.URL}
+          key="ogurl"
+        />
         <meta
           property="og:image"
-          content={config.METATAGS.IMAGE_DISCORD}
+          content={customMetatags?.image || config.METATAGS.IMAGE_DISCORD}
           key="ogimage"
         />
         <meta
           property="og:site_name"
-          content={`Karma - ${config.DAO} delegate dashboard`}
+          content={
+            customMetatags?.title ||
+            `${config.DAO} Delegate Compensation Dashboard`
+          }
           key="ogsitename"
         />
         <meta
           property="og:title"
-          content={`Active delegates of ${config.DAO}`}
+          content={
+            customMetatags?.title ||
+            `${config.DAO} Delegate Compensation Dashboard`
+          }
           key="ogtitle"
         />
         <meta
           property="og:description"
-          content={config.METATAGS.DESCRIPTION}
+          content={customMetatags?.description || config.METATAGS.DESCRIPTION}
           key="ogdesc"
         />
         <link rel="icon" href={config.METATAGS.FAVICON} />
 
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content={config.METATAGS.URL} />
-        <meta property="twitter:title" content={config.METATAGS.DESCRIPTION} />
+        <meta
+          property="twitter:url"
+          content={customMetatags?.url || config.METATAGS.URL}
+        />
+        <meta
+          property="twitter:title"
+          content={customMetatags?.description || config.METATAGS.DESCRIPTION}
+        />
         <meta
           property="twitter:description"
-          content={config.METATAGS.DESCRIPTION}
+          content={customMetatags?.description || config.METATAGS.DESCRIPTION}
         />
         <meta
           property="twitter:image"
-          content={config.METATAGS.IMAGE_TWITTER}
+          content={customMetatags?.image || config.METATAGS.IMAGE_TWITTER}
         />
       </Head>
       <Script
