@@ -75,7 +75,7 @@ const metatags = (
     description: `Explore ${delegateName}'s ${
       dao.charAt(0).toUpperCase() + dao.slice(1)
     } forum activity for ${month} ${year}`,
-    image: `https://${dao}.karmahq.xyz/api/${dao}/delegate-compensation-forum-activity?address=${delegateAddress}&month=${month}&year=${year}`,
+    image: `https://${dao}.karmahq.xyz/api/${dao}/delegate-compensation-stats?address=${delegateAddress}&month=${month}&year=${year}`,
     url: `https://${dao}.karmahq.xyz/delegate-compensation/delegate/${delegateAddress}?month=${month}&year=${year}`,
   },
 });

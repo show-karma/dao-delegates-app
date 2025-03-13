@@ -38,23 +38,59 @@ export default async function handler(req: NextRequest) {
       });
     }
 
-    // Using fetch instead of axios for Edge runtime compatibility
-    const apiUrl = new URL(
-      `/api/delegate/${daoName}/incentive-programs-stats`,
-      process.env.NEXT_PUBLIC_KARMA_API
-    );
-    apiUrl.searchParams.append('month', month);
-    apiUrl.searchParams.append('year', year);
-    apiUrl.searchParams.append('addresses', delegateAddress);
+    // Prefetch fonts in parallel with API calls
+    const fontPromises = [
+      fetch(
+        new URL('./assets/fonts/Inter_Light.ttf', import.meta.url).toString()
+      ).then(res => res.arrayBuffer()),
+      fetch(
+        new URL('./assets/fonts/Inter_Regular.ttf', import.meta.url).toString()
+      ).then(res => res.arrayBuffer()),
+      fetch(
+        new URL('./assets/fonts/Inter_Medium.ttf', import.meta.url).toString()
+      ).then(res => res.arrayBuffer()),
+      fetch(
+        new URL('./assets/fonts/Inter_SemiBold.ttf', import.meta.url).toString()
+      ).then(res => res.arrayBuffer()),
+      fetch(
+        new URL('./assets/fonts/Inter_Bold.ttf', import.meta.url).toString()
+      ).then(res => res.arrayBuffer()),
+    ];
 
-    const response = await fetch(apiUrl.toString(), {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    // Create all API requests in parallel
+    const [delegateStatsResponse, prBreakdown, proposals, ...fontData] =
+      await Promise.all([
+        // Fetch delegate stats
+        (async () => {
+          const apiUrl = new URL(
+            `/api/delegate/${daoName}/incentive-programs-stats`,
+            process.env.NEXT_PUBLIC_KARMA_API
+          );
+          apiUrl.searchParams.append('month', month);
+          apiUrl.searchParams.append('year', year);
+          apiUrl.searchParams.append('addresses', delegateAddress);
 
-    const delegateStatsResponse = await response.json();
+          const response = await fetch(apiUrl.toString(), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          return response.json();
+        })(),
+
+        // Fetch PR breakdown
+        getPRBreakdown(delegateAddress, daoName, month, year),
+
+        // Fetch proposals
+        getProposals(daoName, month, year),
+
+        // Prefetch fonts
+        ...fontPromises,
+      ]);
+
+    // Process delegate stats
     const delegateStats = delegateStatsResponse.data
       .delegates[0] as DelegateStatsFromAPI;
     if (!delegateStats) {
@@ -63,24 +99,33 @@ export default async function handler(req: NextRequest) {
       });
     }
 
-    const prBreakdown = await getPRBreakdown(
-      delegateAddress,
-      daoName,
-      month,
-      year
-    );
+    // Check PR breakdown
     if (!prBreakdown) {
       return new Response(`Delegate not found`, {
         status: 404,
       });
     }
 
-    const proposals = await getProposals(daoName, month, year);
-
+    // Process proposals data
     const isScoreFinalized = proposals.finished;
 
-    // Stats data
-    let stats: {
+    // Create a formatting helper to avoid redundant formatting calls
+    const formatValue = (
+      value: number | string | undefined,
+      defaultValue = '-'
+    ) => {
+      if (value === undefined || value === null) return defaultValue;
+      if (value === 0 || value === '0') return '0';
+      return formatSimpleNumber(value) || defaultValue;
+    };
+
+    // Extract stats data once to avoid repeated property access
+    const delegateStatsData = delegateStats.stats;
+    const snapshotVoting = delegateStatsData.snapshotVoting || {};
+    const onChainVoting = delegateStatsData.onChainVoting || {};
+
+    // Define the stats type to include optional properties
+    type StatsType = {
       snapshotStats: {
         score: string;
         tn: string;
@@ -97,87 +142,72 @@ export default async function handler(req: NextRequest) {
         rn: string;
       };
       delegateFeedback: string;
-      communicationRationale?: string;
       bonusPoints: string;
       finalScore: string;
+      communicationRationale?: string;
       averageVotingPower?: string;
-    } = {
+    };
+
+    // Stats data - build directly with conditional logic to avoid object spread operations
+    const stats: StatsType = {
       snapshotStats: {
-        score:
-          formatSimpleNumber(delegateStats.stats.snapshotVoting.score) || '-',
-        tn: delegateStats.stats.snapshotVoting.tn || '-',
-        rn: delegateStats.stats.snapshotVoting.rn || '-',
+        score: formatValue(snapshotVoting.score),
+        tn: snapshotVoting.tn || '-',
+        rn: snapshotVoting.rn || '-',
       },
       onchainStats: {
-        score:
-          formatSimpleNumber(delegateStats.stats.onChainVoting.score) || '-',
-        tn: delegateStats.stats.onChainVoting.tn || '-',
-        rn: delegateStats.stats.onChainVoting.rn || '-',
+        score: formatValue(onChainVoting.score),
+        tn: onChainVoting.tn || '-',
+        rn: onChainVoting.rn || '-',
       },
       participationRate: {
-        score: '-',
-        tn: '-',
-        rn: '-',
+        score: isScoreFinalized
+          ? formatValue(delegateStatsData.participationRate)
+          : '-',
+        tn: isScoreFinalized
+          ? formatValue(prBreakdown?.proposals?.length)
+          : '-',
+        rn: isScoreFinalized ? formatValue(prBreakdown?.votes?.length) : '-',
       },
-      delegateFeedback: '-',
-      communicationRationale: '-',
-      bonusPoints: '-',
-      finalScore: '-',
+      delegateFeedback: isScoreFinalized
+        ? formatValue(delegateStatsData.delegateFeedback?.finalScore)
+        : '-',
+      bonusPoints: isScoreFinalized
+        ? formatValue(delegateStatsData.bonusPoint)
+        : '-',
+      finalScore: isScoreFinalized
+        ? formatValue(delegateStatsData.totalParticipation)
+        : '-',
     };
-    if (isScoreFinalized) {
-      stats = {
-        ...stats,
-        participationRate: {
-          score:
-            formatSimpleNumber(delegateStats.stats.participationRate) || '-',
-          tn: formatSimpleNumber(prBreakdown?.proposals?.length) || '-',
-          rn: formatSimpleNumber(prBreakdown?.votes?.length) || '-',
-        },
-        delegateFeedback:
-          formatSimpleNumber(
-            delegateStats.stats.delegateFeedback?.finalScore || 0
-          ) || '-',
 
-        bonusPoints: formatSimpleNumber(delegateStats.stats.bonusPoint) || '-',
-        finalScore:
-          formatSimpleNumber(delegateStats.stats.totalParticipation) || '-',
-      };
-    }
-    const compensationConfigs = compensation.compensationDates[daoName];
-    // Check which version applies based on the selected month/year
+    // Process compensation configuration
+    const compensationConfigs =
+      compensation.compensationDates[daoName.toLowerCase()];
     const selectedDate = new Date(`${year}-${month}-11`);
 
     // Find the applicable version for the selected date
     const applicableVersion = compensationConfigs?.versions.find(version => {
       const startDate = new Date(version.startDate);
       const endDate = version.endDate ? new Date(version.endDate) : new Date();
-
-      // Check if the selected date falls within this version's date range
       return selectedDate >= startDate && selectedDate <= endDate;
     });
-    if (
-      // Use communicationRationale for old version, averageVotingPower for newer versions
+
+    // Add version-specific stats
+    const isOldVersion =
       applicableVersion?.versionNumber &&
-      applicableVersion?.versionNumber <= 1.5
-    ) {
-      stats = {
-        ...stats,
-        communicationRationale: isScoreFinalized
-          ? formatSimpleNumber(
-              delegateStats.stats.communicatingRationale.score
-            ) || '-'
-          : '-',
-      };
+      applicableVersion.versionNumber <= 1.5;
+
+    if (isOldVersion) {
+      stats.communicationRationale = isScoreFinalized
+        ? formatValue(delegateStatsData.communicatingRationale?.score)
+        : '-';
     } else {
-      stats = {
-        ...stats,
-        averageVotingPower: isScoreFinalized
-          ? formatNumber(delegateStats.stats.votingPowerAverage || 0) || '-'
-          : '-',
-      };
+      stats.averageVotingPower = isScoreFinalized
+        ? formatNumber(delegateStatsData.votingPowerAverage || 0) || '-'
+        : '-';
     }
 
-    // Avatar URL (with fallback)
+    // Avatar URL (with fallback) - compute only once
     const avatarUrl =
       delegateStats.profilePicture ||
       blo(delegateStats.publicAddress as `0x${string}`) ||
@@ -190,35 +220,80 @@ export default async function handler(req: NextRequest) {
 
     // Use SVG for Snapshot icon if possible for better quality
     const BASE_URL = `https://${daoName}.karmahq.xyz`;
-    const snapshotIconUrl = `${BASE_URL}/icons/delegate-compensation/thunder.png`;
-    const onchainIconUrl = `${BASE_URL}/icons/delegate-compensation/chain.png`;
-    const delegateFeedbackIconUrl = `${BASE_URL}/icons/delegate-compensation/star.svg`;
-    const communicationRationaleIconUrl = `${BASE_URL}/icons/delegate-compensation/megaphone.png`;
-    const averageVotingPowerIconUrl = `${BASE_URL}/icons/delegate-compensation/flexArm2.png`;
-    const bonusPointsIconUrl = `${BASE_URL}/icons/delegate-compensation/celebration.png`;
-    const participationRateIconUrl = `${BASE_URL}/icons/delegate-compensation/up.png`;
-    const finalScoreIconUrl = `${BASE_URL}/icons/delegate-compensation/rocket.png`;
-    const checkIconUrl = `${BASE_URL}/icons/delegate-compensation/check-circle.svg`;
-    const karmaLogoGreen = `${BASE_URL}/images/karma_logo_green.svg`;
-    const daoLogoUrl = `${BASE_URL}/daos/${daoName.toLowerCase()}/logo_black.svg`;
 
-    // Font optimization for better rendering
-    const fontStyle = {
-      fontFamily: 'Inter',
-      fontSmooth: 'always' as const,
-      textRendering: 'optimizeLegibility' as const,
+    // Create a URL builder function to avoid repetition and enable easier caching
+    const getIconUrl = (path: string) => `${BASE_URL}${path}`;
+
+    // Define all icon URLs at once
+    const iconUrls = {
+      snapshot: getIconUrl('/icons/delegate-compensation/thunder.png'),
+      onchain: getIconUrl('/icons/delegate-compensation/chain.png'),
+      delegateFeedback: getIconUrl('/icons/delegate-compensation/star.svg'),
+      communicationRationale: getIconUrl(
+        '/icons/delegate-compensation/megaphone.png'
+      ),
+      averageVotingPower: getIconUrl(
+        '/icons/delegate-compensation/flexArm2.png'
+      ),
+      bonusPoints: getIconUrl('/icons/delegate-compensation/celebration.png'),
+      participationRate: getIconUrl('/icons/delegate-compensation/up.png'),
+      finalScore: getIconUrl('/icons/delegate-compensation/rocket.png'),
+      checkIcon: getIconUrl('/icons/delegate-compensation/check-circle.svg'),
+      karmaLogo: getIconUrl('/images/karma_logo_green.svg'),
+      daoLogo: getIconUrl(`/daos/${daoName.toLowerCase()}/logo_black.svg`),
     };
 
-    // Text style for better rendering
-    const textStyle = {
-      letterSpacing: '-0.02em',
-      color: '#1D2939',
-      ...fontStyle,
-    };
-
-    // Image optimization settings
-    const imageStyle = {
-      objectFit: 'contain' as const,
+    // Font and style optimization for better rendering - define once and reuse
+    const styles = {
+      font: {
+        fontFamily: 'Inter',
+        fontSmooth: 'always' as const,
+        textRendering: 'optimizeLegibility' as const,
+      },
+      text: {
+        letterSpacing: '-0.02em',
+        color: '#1D2939',
+        fontFamily: 'Inter',
+        fontSmooth: 'always' as const,
+        textRendering: 'optimizeLegibility' as const,
+      },
+      image: {
+        objectFit: 'contain' as const,
+      },
+      card: {
+        width: '373.33px',
+        height: '170px',
+        padding: '16px',
+        borderRadius: '12px',
+        display: 'flex',
+        flexDirection: 'column' as const,
+      },
+      iconContainer: {
+        width: '44px',
+        height: '44px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      cardTitle: {
+        fontSize: '18px',
+        fontWeight: '600',
+        marginTop: '10px',
+        letterSpacing: '-0.02em',
+        color: '#1D2939',
+        fontFamily: 'Inter',
+        fontSmooth: 'always' as const,
+        textRendering: 'optimizeLegibility' as const,
+      },
+      cardValue: {
+        fontSize: '30px',
+        fontWeight: 'bold',
+        letterSpacing: '-0.02em',
+        color: '#1D2939',
+        fontFamily: 'Inter',
+        fontSmooth: 'always' as const,
+        textRendering: 'optimizeLegibility' as const,
+      },
     };
 
     return new ImageResponse(
@@ -233,7 +308,7 @@ export default async function handler(req: NextRequest) {
             justifyContent: 'center',
             backgroundColor: 'white',
             padding: '24px',
-            ...fontStyle,
+            ...styles.font,
           }}
         >
           {/* Header */}
@@ -265,7 +340,7 @@ export default async function handler(req: NextRequest) {
                     height="64"
                     style={{
                       borderRadius: '50%',
-                      ...imageStyle,
+                      ...styles.image,
                     }}
                   />
                   {delegateStats.incentiveOptedIn ? (
@@ -278,12 +353,12 @@ export default async function handler(req: NextRequest) {
                       }}
                     >
                       <img
-                        src={checkIconUrl}
+                        src={iconUrls.checkIcon}
                         alt="Check icon"
                         width="24"
                         height="24"
                         style={{
-                          ...imageStyle,
+                          ...styles.image,
                         }}
                       />
                     </div>
@@ -295,7 +370,7 @@ export default async function handler(req: NextRequest) {
                   style={{
                     fontSize: '18px',
                     fontWeight: '700',
-                    ...textStyle,
+                    ...styles.text,
                   }}
                 >
                   {delegateName}
@@ -304,7 +379,7 @@ export default async function handler(req: NextRequest) {
                   style={{
                     fontSize: '14px',
                     fontWeight: '400',
-                    ...textStyle,
+                    ...styles.text,
                   }}
                 >
                   {truncateAddress(delegateAddress)}
@@ -319,19 +394,19 @@ export default async function handler(req: NextRequest) {
                 alignItems: 'center',
                 fontSize: '32px',
                 fontWeight: 'bold',
-                ...textStyle,
+                ...styles.text,
               }}
             >
               My {new Date(month).toLocaleString('en-US', { month: 'long' })}{' '}
               {year} Stats in
               <img
-                src={daoLogoUrl}
+                src={iconUrls.daoLogo}
                 alt={daoName}
                 width="150"
                 height="40"
                 style={{
                   marginLeft: '15px',
-                  ...imageStyle,
+                  ...styles.image,
                 }}
               />
             </div>
@@ -349,13 +424,8 @@ export default async function handler(req: NextRequest) {
             {/* Snapshot Stats */}
             <div
               style={{
-                width: '373.33px',
-                height: '170px',
-                padding: '16px',
+                ...styles.card,
                 backgroundColor: '#FFF9F0',
-                borderRadius: '12px',
-                display: 'flex',
-                flexDirection: 'column',
               }}
             >
               <div
@@ -369,41 +439,31 @@ export default async function handler(req: NextRequest) {
                 {/* Using the Snapshot icon and styling similar to the component */}
                 <div
                   style={{
-                    width: '44px',
-                    height: '44px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    ...styles.iconContainer,
                   }}
                 >
                   <img
-                    src={snapshotIconUrl}
-                    // src="http://localhost:3000/icons/delegate-compensation/thunder.png"
+                    src={iconUrls.snapshot}
                     width="44"
                     height="44"
                     alt="Snapshot"
                     style={{
-                      ...imageStyle,
+                      ...styles.image,
                     }}
                   />
                 </div>
                 <span
                   style={{
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    marginTop: '10px',
-                    ...textStyle,
+                    ...styles.cardTitle,
                   }}
                 >
                   Snapshot Stats
                 </span>
               </div>
-              <span
-                style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
-              >
+              <span style={{ ...styles.cardValue }}>
                 {stats.snapshotStats.score}
               </span>
-              <span style={{ fontSize: '14px', ...textStyle }}>
+              <span style={{ ...styles.text }}>
                 <span style={{ color: '#475467' }}>
                   {stats.snapshotStats.tn} Total{' '}
                   {pluralize('Proposal', +stats.snapshotStats.tn || 0)},
@@ -418,13 +478,8 @@ export default async function handler(req: NextRequest) {
             {/* Onchain Stats */}
             <div
               style={{
-                width: '373.33px',
-                height: '170px',
-                padding: '16px',
+                ...styles.card,
                 backgroundColor: '#F5F9FD',
-                borderRadius: '12px',
-                display: 'flex',
-                flexDirection: 'column',
               }}
             >
               <div
@@ -438,40 +493,31 @@ export default async function handler(req: NextRequest) {
                 {/* Using the Snapshot icon and styling similar to the component */}
                 <div
                   style={{
-                    width: '44px',
-                    height: '44px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    ...styles.iconContainer,
                   }}
                 >
                   <img
-                    src={onchainIconUrl}
+                    src={iconUrls.onchain}
                     width="44"
                     height="44"
                     alt="Snapshot"
                     style={{
-                      ...imageStyle,
+                      ...styles.image,
                     }}
                   />
                 </div>
                 <span
                   style={{
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    marginTop: '10px',
-                    ...textStyle,
+                    ...styles.cardTitle,
                   }}
                 >
                   Onchain Stats
                 </span>
               </div>
-              <span
-                style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
-              >
+              <span style={{ ...styles.cardValue }}>
                 {stats.onchainStats.score}
               </span>
-              <span style={{ fontSize: '14px', ...textStyle }}>
+              <span style={{ ...styles.text }}>
                 <span style={{ color: '#475467' }}>
                   {stats.onchainStats.tn} Total{' '}
                   {pluralize('Proposal', +stats.onchainStats.tn || 0)},
@@ -486,13 +532,8 @@ export default async function handler(req: NextRequest) {
             {/* Delegate Feedback */}
             <div
               style={{
-                width: '373.33px',
-                height: '170px',
-                padding: '16px',
+                ...styles.card,
                 backgroundColor: '#F4EFFF',
-                borderRadius: '12px',
-                display: 'flex',
-                flexDirection: 'column',
               }}
             >
               <div
@@ -506,37 +547,28 @@ export default async function handler(req: NextRequest) {
                 {/* Using the Snapshot icon and styling similar to the component */}
                 <div
                   style={{
-                    width: '44px',
-                    height: '44px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    ...styles.iconContainer,
                   }}
                 >
                   <img
-                    src={delegateFeedbackIconUrl}
+                    src={iconUrls.delegateFeedback}
                     width="44"
                     height="44"
                     alt="Snapshot"
                     style={{
-                      ...imageStyle,
+                      ...styles.image,
                     }}
                   />
                 </div>
                 <span
                   style={{
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    marginTop: '10px',
-                    ...textStyle,
+                    ...styles.cardTitle,
                   }}
                 >
                   Delegate Feedback
                 </span>
               </div>
-              <span
-                style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
-              >
+              <span style={{ ...styles.cardValue }}>
                 {stats.delegateFeedback}
               </span>
             </div>
@@ -551,17 +583,11 @@ export default async function handler(req: NextRequest) {
               marginBottom: '16px',
             }}
           >
-            {applicableVersion?.versionNumber &&
-            applicableVersion?.versionNumber <= 1.5 ? (
+            {isOldVersion ? (
               <div
                 style={{
-                  width: '373.33px',
-                  height: '170px',
-                  padding: '16px',
+                  ...styles.card,
                   backgroundColor: 'rgba(255, 230, 213, 0.38)',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  flexDirection: 'column',
                 }}
               >
                 <div
@@ -574,50 +600,36 @@ export default async function handler(req: NextRequest) {
                 >
                   <div
                     style={{
-                      width: '44px',
-                      height: '44px',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
+                      ...styles.iconContainer,
                     }}
                   >
                     <img
-                      src={communicationRationaleIconUrl}
+                      src={iconUrls.communicationRationale}
                       width="44"
                       height="44"
                       alt="Communication Rationale"
                       style={{
-                        ...imageStyle,
+                        ...styles.image,
                       }}
                     />
                   </div>
                   <span
                     style={{
-                      fontSize: '18px',
-                      fontWeight: '600',
-                      marginTop: '10px',
-                      ...textStyle,
+                      ...styles.cardTitle,
                     }}
                   >
                     Communication Rationale
                   </span>
                 </div>
-                <span
-                  style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
-                >
+                <span style={{ ...styles.cardValue }}>
                   {stats.communicationRationale}
                 </span>
               </div>
             ) : (
               <div
                 style={{
-                  width: '373.33px',
-                  height: '170px',
-                  padding: '16px',
+                  ...styles.card,
                   backgroundColor: 'rgba(255, 230, 213, 0.38)',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  flexDirection: 'column',
                 }}
               >
                 <div
@@ -630,37 +642,28 @@ export default async function handler(req: NextRequest) {
                 >
                   <div
                     style={{
-                      width: '44px',
-                      height: '44px',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
+                      ...styles.iconContainer,
                     }}
                   >
                     <img
-                      src={averageVotingPowerIconUrl}
+                      src={iconUrls.averageVotingPower}
                       width="44"
                       height="44"
                       alt="Average Voting Power"
                       style={{
-                        ...imageStyle,
+                        ...styles.image,
                       }}
                     />
                   </div>
                   <span
                     style={{
-                      fontSize: '18px',
-                      fontWeight: '600',
-                      marginTop: '10px',
-                      ...textStyle,
+                      ...styles.cardTitle,
                     }}
                   >
                     Average Voting Power
                   </span>
                 </div>
-                <span
-                  style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
-                >
+                <span style={{ ...styles.cardValue }}>
                   {stats.averageVotingPower}
                 </span>
               </div>
@@ -669,13 +672,8 @@ export default async function handler(req: NextRequest) {
             {/* Onchain Stats */}
             <div
               style={{
-                width: '373.33px',
-                height: '170px',
-                padding: '16px',
+                ...styles.card,
                 background: 'rgba(221, 249, 242, 0.40)',
-                borderRadius: '12px',
-                display: 'flex',
-                flexDirection: 'column',
               }}
             >
               <div
@@ -688,50 +686,34 @@ export default async function handler(req: NextRequest) {
               >
                 <div
                   style={{
-                    width: '44px',
-                    height: '44px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    ...styles.iconContainer,
                   }}
                 >
                   <img
-                    src={bonusPointsIconUrl}
+                    src={iconUrls.bonusPoints}
                     width="44"
                     height="44"
                     alt="Bonus Points"
                     style={{
-                      ...imageStyle,
+                      ...styles.image,
                     }}
                   />
                 </div>
                 <span
                   style={{
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    marginTop: '10px',
-                    ...textStyle,
+                    ...styles.cardTitle,
                   }}
                 >
                   Bonus Points
                 </span>
               </div>
-              <span
-                style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
-              >
-                {stats.bonusPoints}
-              </span>
+              <span style={{ ...styles.cardValue }}>{stats.bonusPoints}</span>
             </div>
 
             <div
               style={{
-                width: '373.33px',
-                height: '170px',
-                padding: '16px',
+                ...styles.card,
                 backgroundColor: '#FFEDFA',
-                borderRadius: '12px',
-                display: 'flex',
-                flexDirection: 'column',
               }}
             >
               <div
@@ -745,41 +727,32 @@ export default async function handler(req: NextRequest) {
                 {/* Using the Snapshot icon and styling similar to the component */}
                 <div
                   style={{
-                    width: '44px',
-                    height: '44px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    ...styles.iconContainer,
                   }}
                 >
                   <img
-                    src={participationRateIconUrl}
+                    src={iconUrls.participationRate}
                     width="44"
                     height="44"
                     alt="Participation Rate"
                     style={{
-                      ...imageStyle,
+                      ...styles.image,
                     }}
                   />
                 </div>
                 <span
                   style={{
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    marginTop: '10px',
-                    ...textStyle,
+                    ...styles.cardTitle,
                   }}
                 >
                   Participation Rate
                 </span>
               </div>
-              <span
-                style={{ fontSize: '30px', fontWeight: 'bold', ...textStyle }}
-              >
+              <span style={{ ...styles.cardValue }}>
                 {stats.participationRate.score}
               </span>
               {isScoreFinalized ? (
-                <span style={{ fontSize: '14px', ...textStyle }}>
+                <span style={{ ...styles.text }}>
                   <span style={{ color: '#475467' }}>
                     {stats.participationRate.tn} Total{' '}
                     {pluralize('Proposal', +stats.participationRate.tn || 0)},
@@ -818,37 +791,23 @@ export default async function handler(req: NextRequest) {
               {/* Using the Snapshot icon and styling similar to the component */}
               <div
                 style={{
-                  width: '44px',
-                  height: '44px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  ...styles.iconContainer,
                 }}
               >
                 <img
-                  src={finalScoreIconUrl}
+                  src={iconUrls.finalScore}
                   width="44"
                   height="44"
                   alt="Final Score"
                   style={{
-                    ...imageStyle,
+                    ...styles.image,
                   }}
                 />
               </div>
               <span
                 style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
+                  ...styles.text,
                   marginTop: '10px',
-                  ...textStyle,
-                }}
-              >
-                Final Score
-              </span>
-              <p
-                style={{
-                  ...textStyle,
-                  marginTop: '-2px',
                   fontSize: '36px',
                   fontWeight: 'bold',
                   textAlign: 'center',
@@ -862,7 +821,7 @@ export default async function handler(req: NextRequest) {
                 }}
               >
                 {stats.finalScore}
-              </p>
+              </span>
               <div
                 style={{
                   display: 'flex',
@@ -876,20 +835,18 @@ export default async function handler(req: NextRequest) {
               >
                 <p
                   style={{
-                    fontSize: '16px',
-                    fontWeight: '500',
+                    ...styles.text,
                     marginBottom: '5px',
-                    ...textStyle,
                   }}
                 >
                   Powered by
                 </p>
                 <img
-                  src={karmaLogoGreen}
+                  src={iconUrls.karmaLogo}
                   width="132"
                   height="32"
                   alt="Karma Logo"
-                  style={{ ...imageStyle }}
+                  style={{ ...styles.image }}
                 />
               </div>
             </div>
@@ -905,56 +862,31 @@ export default async function handler(req: NextRequest) {
         fonts: [
           {
             name: 'Inter',
-            data: await fetch(
-              new URL(
-                './assets/fonts/Inter_Light.ttf',
-                import.meta.url
-              ).toString()
-            ).then(res => res.arrayBuffer()),
+            data: fontData[0],
             weight: 300,
             style: 'normal',
           },
           {
             name: 'Inter',
-            data: await fetch(
-              new URL(
-                './assets/fonts/Inter_Regular.ttf',
-                import.meta.url
-              ).toString()
-            ).then(res => res.arrayBuffer()),
+            data: fontData[1],
             weight: 400,
             style: 'normal',
           },
           {
             name: 'Inter',
-            data: await fetch(
-              new URL(
-                './assets/fonts/Inter_Medium.ttf',
-                import.meta.url
-              ).toString()
-            ).then(res => res.arrayBuffer()),
+            data: fontData[2],
             weight: 500,
             style: 'normal',
           },
           {
             name: 'Inter',
-            data: await fetch(
-              new URL(
-                './assets/fonts/Inter_SemiBold.ttf',
-                import.meta.url
-              ).toString()
-            ).then(res => res.arrayBuffer()),
+            data: fontData[3],
             weight: 600,
             style: 'normal',
           },
           {
             name: 'Inter',
-            data: await fetch(
-              new URL(
-                './assets/fonts/Inter_Bold.ttf',
-                import.meta.url
-              ).toString()
-            ).then(res => res.arrayBuffer()),
+            data: fontData[4],
             weight: 700,
             style: 'normal',
           },
