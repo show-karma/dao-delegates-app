@@ -65,7 +65,7 @@ const metatags = (
     description: `Explore ${delegateName}'s ${
       dao.charAt(0).toUpperCase() + dao.slice(1)
     } governance stats and activity for ${month} ${year}`,
-    image: `https://${dao}.karmahq.xyz/api/${dao}/delegate-compensation-stats?address=${delegateAddress}&month=${month}&year=${year}`,
+    image: `https://${dao}.karmahq.xyz/api/${dao}/delegate-compensation-stats?address=${delegateAddress}&month=${month}&year=${year}&date=${new Date().getTime()}`,
     url: `https://${dao}.karmahq.xyz/delegate-compensation/delegate/${delegateAddress}?month=${month}&year=${year}`,
   },
   forumActivity: {
@@ -75,8 +75,8 @@ const metatags = (
     description: `Explore ${delegateName}'s ${
       dao.charAt(0).toUpperCase() + dao.slice(1)
     } forum activity for ${month} ${year}`,
-    image: `https://${dao}.karmahq.xyz/api/${dao}/delegate-compensation-stats?address=${delegateAddress}&month=${month}&year=${year}`,
-    url: `https://${dao}.karmahq.xyz/delegate-compensation/delegate/${delegateAddress}?month=${month}&year=${year}`,
+    image: `https://${dao}.karmahq.xyz/api/${dao}/delegate-compensation-stats?address=${delegateAddress}&month=${month}&year=${year}&date=${new Date().getTime()}`,
+    url: `https://${dao}.karmahq.xyz/delegate-compensation/delegate/${delegateAddress}/forum-activity?month=${month}&year=${year}`,
   },
 });
 
@@ -160,7 +160,7 @@ export const DelegateCompensationAdminContainer: React.FC<
         />
         <link rel="icon" href={config.METATAGS.FAVICON} />
 
-        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:card" content="summary" />
         <meta
           property="twitter:url"
           content={customMetatags?.url || config.METATAGS.URL}
