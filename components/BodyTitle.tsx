@@ -22,7 +22,8 @@ const DelegatesCounter: FC<{
   theme: IDAOTheme;
   delegateCount?: number;
 }> = ({ isLoading, theme, delegateCount = 0 }) => {
-  const { delegates, lastUpdate } = useDelegates();
+  const { delegates } = useDelegates();
+  const { daoData } = useDAO();
   if (isLoading) return <Skeleton w="40" h="6" />;
 
   return (
@@ -55,7 +56,7 @@ const DelegatesCounter: FC<{
                 00 hours ago
               </Skeleton>
             ) : (
-              <Text>{getTimeFromNow(lastUpdate)}</Text>
+              <Text>{getTimeFromNow(daoData?.lastUpdatedAt as unknown as Date)}</Text>
             )}
           </Flex>
         )}

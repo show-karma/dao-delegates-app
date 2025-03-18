@@ -46,6 +46,18 @@ export const DAOProvider: React.FC<ProviderProps> = ({
     await api
       .get(`/dao/delegates?name=${config.DAO_KARMA_ID}&pageSize=10&offset=0`)
       .then(res => setDAOData(res.data.data));
+
+    await api
+      .get(`/dao/${config.DAO_KARMA_ID}`)
+      .then(res => {
+        setDAOData(prevData => {
+          if (!prevData) return res.data.data;
+          return {
+            ...prevData,
+            lastUpdatedAt: res.data.data.lastUpdatedAt
+          };
+        });
+      });
   };
 
   useMemo(() => {
