@@ -159,8 +159,8 @@ export const DelegateCompensationAdminContainer: React.FC<
           key="ogdesc"
         />
         <link rel="icon" href={config.METATAGS.FAVICON} />
-
         <meta property="twitter:card" content="summary_large_image" />
+
         <meta
           property="twitter:url"
           content={customMetatags?.url || config.METATAGS.URL}
