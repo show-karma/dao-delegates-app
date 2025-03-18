@@ -59,7 +59,7 @@ const metatags = (
   forumActivity: IMetatags;
 } => ({
   delegateStats: {
-    title: `${delegateName} ${
+    title: `${delegateName}'s ${
       dao.charAt(0).toUpperCase() + dao.slice(1)
     } DAO Governance Stats | ${month} ${year}`,
     description: `Explore ${delegateName}'s ${
@@ -69,7 +69,7 @@ const metatags = (
     url: `https://${dao}.karmahq.xyz/delegate-compensation/delegate/${delegateAddress}?month=${month}&year=${year}`,
   },
   forumActivity: {
-    title: `${delegateName} ${
+    title: `${delegateName}'s ${
       dao.charAt(0).toUpperCase() + dao.slice(1)
     } DAO Forum Activity | ${month} ${year}`,
     description: `Explore ${delegateName}'s ${
