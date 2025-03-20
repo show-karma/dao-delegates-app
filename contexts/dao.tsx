@@ -43,21 +43,19 @@ export const DAOProvider: React.FC<ProviderProps> = ({
 
   const setupDaoInfo = async () => {
     const { config } = daoInfo;
-    await api
-      .get(`/dao/delegates?name=${config.DAO_KARMA_ID}&pageSize=10&offset=0`)
-      .then(res => setDAOData(res.data.data));
 
-    await api
-      .get(`/dao/${config.DAO_KARMA_ID}`)
-      .then(res => {
-        setDAOData(prevData => {
-          if (!prevData) return res.data.data;
-          return {
-            ...prevData,
-            lastUpdatedAt: res.data.data.lastUpdatedAt
-          };
-        });
-      });
+    // Using Promise.all to fetch data in parallel for better performance
+    const [delegatesResponse, daoResponse] = await Promise.all([
+      api.get(
+        `/dao/delegates?name=${config.DAO_KARMA_ID}&pageSize=10&offset=0`
+      ),
+      api.get(`/dao/${config.DAO_KARMA_ID}`),
+    ]);
+
+    setDAOData(() => ({
+      ...delegatesResponse.data.data,
+      lastUpdatedAt: daoResponse.data.data.lastUpdatedAt,
+    }));
   };
 
   useMemo(() => {
