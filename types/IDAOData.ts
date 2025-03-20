@@ -17,4 +17,5 @@ export interface IDAOData {
   onChainId: null;
   snapshotIds: string[];
   fullName: string;
+  lastUpdatedAt?: string;
 }
