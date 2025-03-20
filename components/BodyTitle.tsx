@@ -56,7 +56,9 @@ const DelegatesCounter: FC<{
                 00 hours ago
               </Skeleton>
             ) : (
-              <Text>{getTimeFromNow(daoData?.lastUpdatedAt as unknown as Date)}</Text>
+              <Text>
+                {getTimeFromNow(daoData?.lastUpdatedAt as unknown as Date)}
+              </Text>
             )}
           </Flex>
         )}
