@@ -12,10 +12,11 @@ export const useAnalytics = (daoName: string) =>
   useQuery<IDaoStats>(
     ['daoAnalytics', daoName],
     async () => {
-      const { data } = await axios.get<IDaoStats>(
-        `/api/dao/${daoName}/analytics`
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_KARMA_API}/dao/${daoName}/analytics`
       );
-      return data;
+      const responseData = response.data?.data || response.data;
+      return responseData as IDaoStats;
     },
     {
       refetchOnWindowFocus: false,
