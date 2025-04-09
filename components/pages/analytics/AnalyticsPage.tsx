@@ -1,10 +1,17 @@
-import { Box, Container, Grid, GridItem, Heading, Text, Flex } from '@chakra-ui/react';
+import {
+  Box,
+  Container,
+  Grid,
+  GridItem,
+  Heading,
+  Text,
+} from '@chakra-ui/react';
 import { useDAO } from 'contexts';
 import { useAnalytics } from 'hooks';
+import moment from 'moment';
 import { CirculatingSupplyCard } from './CirculatingSupplyCard';
 import { SummaryCard } from './SummaryCard';
 import { WeeklyMetricsChart } from './WeeklyMetricsChart';
-import moment from 'moment';
 
 /**
  * Main component for the DAO Analytics page
@@ -14,7 +21,9 @@ export const AnalyticsPage: React.FC = () => {
   const { data, isLoading, error } = useAnalytics(selectedDAO);
 
   // Get the DAO display name from the config or fallback to the selectedDAO
-  const daoDisplayName = daoInfo?.config?.DAO || selectedDAO.charAt(0).toUpperCase() + selectedDAO.slice(1);
+  const daoDisplayName =
+    daoInfo?.config?.DAO ||
+    selectedDAO.charAt(0).toUpperCase() + selectedDAO.slice(1);
 
   return (
     <Container maxW="container.xl" py={8}>
@@ -24,7 +33,8 @@ export const AnalyticsPage: React.FC = () => {
         </Heading>
         {data?.lastUpdated && (
           <Text color={theme.card.text.secondary} fontSize="sm">
-            Last updated: {moment(data.lastUpdated).format('MMMM D, YYYY [at] h:mm A')}
+            Last updated:{' '}
+            {moment(data.lastUpdated).format('MMMM D, YYYY [at] h:mm A')}
           </Text>
         )}
       </Box>
@@ -41,11 +51,16 @@ export const AnalyticsPage: React.FC = () => {
             Error Loading Data
           </Heading>
           <Text color={theme.text}>
-            There was an error loading the analytics data. Please try again later.
+            There was an error loading the analytics data. Please try again
+            later.
           </Text>
         </Box>
       ) : (
-        <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={6} mb={8}>
+        <Grid
+          templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
+          gap={6}
+          mb={8}
+        >
           {/* Circulating Supply Card */}
           <GridItem>
             <CirculatingSupplyCard
@@ -95,23 +110,35 @@ export const AnalyticsPage: React.FC = () => {
           About DAO Analytics
         </Heading>
         <Text color={theme.text} mb={4}>
-          This dashboard provides insights into the governance activities of the {daoDisplayName} DAO. 
-          The data is collected and analyzed on a weekly basis to help understand participation trends, 
-          delegate activities, and overall governance health.
+          This dashboard provides insights into the governance activities of the{' '}
+          {daoDisplayName} DAO. The data is collected and analyzed on a weekly
+          basis to help understand participation trends, delegate activities,
+          and overall governance health.
         </Text>
         <Heading size="sm" color={theme.title} mb={2}>
           Data Definitions
         </Heading>
         <Text color={theme.text} fontSize="sm">
-          <strong>Voting Power (VP):</strong> The total amount of voting power available in the DAO, representing the maximum possible influence all token holders could exert.
-          <br /><br />
-          <strong>VP Usage:</strong> The percentage of total voting power that has been used in voting (0-100%). This metric helps gauge overall engagement relative to the total possible participation.
-          <br /><br />
-          <strong>Active Delegates:</strong> The number of delegates who have been active during the reporting period. This indicates how many delegates are actively participating in governance.
-          <br /><br />
-          <strong>Unique Voters:</strong> The number of unique addresses that have participated in voting. This helps distinguish between total votes and the actual number of participants.
+          <strong>Voting Power (VP):</strong> The total amount of voting power
+          available in the DAO, representing the maximum possible influence all
+          token holders could exert.
+          <br />
+          <br />
+          <strong>VP Usage:</strong> The percentage of total voting power that
+          has been used in voting (0-100%). This metric helps gauge overall
+          engagement relative to the total possible participation.
+          <br />
+          <br />
+          <strong>Active Delegates:</strong> The number of delegates who have
+          been active during the reporting period. This indicates how many
+          delegates are actively participating in governance.
+          <br />
+          <br />
+          <strong>Unique Voters:</strong> The number of unique addresses that
+          have participated in voting. This helps distinguish between total
+          votes and the actual number of participants.
         </Text>
       </Box>
     </Container>
   );
-}; 
+};

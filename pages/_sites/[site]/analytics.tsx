@@ -10,19 +10,17 @@ interface AnalyticsProps {
 /**
  * Analytics page for the DAO (_sites version)
  */
-const Analytics = ({ daoName }: AnalyticsProps) => {
-  return (
-    <DAOProvider selectedDAO={daoName} withPathname>
-      <MainLayout>
-        <AnalyticsPage />
-      </MainLayout>
-    </DAOProvider>
-  );
-};
+const Analytics = ({ daoName }: AnalyticsProps) => (
+  <DAOProvider selectedDAO={daoName} withPathname>
+    <MainLayout>
+      <AnalyticsPage />
+    </MainLayout>
+  </DAOProvider>
+);
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async context => {
   const { site } = context.params || {};
-  
+
   if (!site || typeof site !== 'string') {
     return {
       notFound: true,
@@ -36,4 +34,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default Analytics; 
+export default Analytics;

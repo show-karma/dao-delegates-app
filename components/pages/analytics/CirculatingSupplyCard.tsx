@@ -66,4 +66,4 @@ export const CirculatingSupplyCard: React.FC<CirculatingSupplyCardProps> = ({
       </Flex>
     </Box>
   );
-}; 
+};

@@ -1,4 +1,13 @@
-import { Box, Flex, Grid, GridItem, Heading, Skeleton, Text, Tooltip } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Grid,
+  GridItem,
+  Heading,
+  Skeleton,
+  Text,
+  Tooltip,
+} from '@chakra-ui/react';
 import { useDAO } from 'contexts';
 import { FiInfo } from 'react-icons/fi';
 import { IDaoSummary, SUMMARY_TOOLTIPS } from 'types/analytics';
@@ -21,8 +30,8 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
   /**
    * Format a number value with numbro
    */
-  const formatNumber = (value: number) => {
-    return numbro(value).format({
+  const formatNumber = (value: number) =>
+    numbro(value).format({
       average: true,
       mantissa: 1,
       abbreviations: {
@@ -31,20 +40,17 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
         billion: 'B',
       },
     });
-  };
 
   /**
    * Format a percentage value
    */
-  const formatPercentage = (value: number) => {
-    return `${value.toFixed(1)}%`;
-  };
+  const formatPercentage = (value: number) => `${value.toFixed(1)}%`;
 
   /**
    * Format a string value that represents a number (like voting power)
    */
-  const formatStringNumber = (value: string) => {
-    return numbro(Number(value)).format({
+  const formatStringNumber = (value: string) =>
+    numbro(Number(value)).format({
       average: true,
       mantissa: 1,
       abbreviations: {
@@ -53,34 +59,35 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
         billion: 'B',
       },
     });
-  };
 
   /**
    * Render a summary stat item with a label and value
    */
-  const renderStat = (label: string, value: string | number, tooltipText: string) => {
-    return (
-      <Box>
-        <Flex alignItems="center" mb={1}>
-          <Text fontSize="sm" color={theme.card.text.secondary} mr={1}>
-            {label}
-          </Text>
-          <Tooltip label={tooltipText} placement="top" hasArrow>
-            <Box color={theme.card.text.secondary} cursor="help">
-              <FiInfo size={12} />
-            </Box>
-          </Tooltip>
-        </Flex>
-        {isLoading ? (
-          <Skeleton height="24px" width="80px" />
-        ) : (
-          <Text fontSize="lg" fontWeight="bold" color={theme.text}>
-            {value}
-          </Text>
-        )}
-      </Box>
-    );
-  };
+  const renderStat = (
+    label: string,
+    value: string | number,
+    tooltipText: string
+  ) => (
+    <Box>
+      <Flex alignItems="center" mb={1}>
+        <Text fontSize="sm" color={theme.card.text.secondary} mr={1}>
+          {label}
+        </Text>
+        <Tooltip label={tooltipText} placement="top" hasArrow>
+          <Box color={theme.card.text.secondary} cursor="help">
+            <FiInfo size={12} />
+          </Box>
+        </Tooltip>
+      </Flex>
+      {isLoading ? (
+        <Skeleton height="24px" width="80px" />
+      ) : (
+        <Text fontSize="lg" fontWeight="bold" color={theme.text}>
+          {value}
+        </Text>
+      )}
+    </Box>
+  );
 
   return (
     <Box
@@ -144,4 +151,4 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
       </Flex>
     </Box>
   );
-}; 
+};

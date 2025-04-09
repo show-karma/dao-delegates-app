@@ -3,7 +3,7 @@ import axios from 'axios';
 
 /**
  * API handler for fetching DAO analytics data for any DAO
- * 
+ *
  * @param req - Next.js API request
  * @param res - Next.js API response
  */
@@ -37,4 +37,4 @@ export default async function handler(
     console.error(`Error fetching analytics for DAO ${daoName}:`, error);
     return res.status(500).json({ message: 'Internal server error' });
   }
-} 
+}

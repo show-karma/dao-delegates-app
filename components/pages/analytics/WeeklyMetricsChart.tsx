@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Flex, Heading, Text } from '@chakra-ui/react';
 import { useDAO } from 'contexts';
 import { IWeeklyMetrics, WEEKLY_METRICS_TOOLTIPS } from 'types/analytics';
 import { Line } from 'react-chartjs-2';
@@ -42,37 +42,73 @@ export const WeeklyMetricsChart: React.FC<WeeklyMetricsChartProps> = ({
   isLoading,
 }) => {
   const { theme } = useDAO();
-  const [activeMetric, setActiveMetric] = useState<keyof IWeeklyMetrics>('vpUsagePercentage');
-  
+  const [activeMetric, setActiveMetric] =
+    useState<keyof IWeeklyMetrics>('vpUsagePercentage');
+
   // Define the metrics to display and their labels
-  const metricOptions: { value: keyof IWeeklyMetrics; label: string; tooltip: string }[] = [
-    { value: 'totalVotingPower', label: 'Total Voting Power', tooltip: WEEKLY_METRICS_TOOLTIPS.totalVotingPower },
-    { value: 'vpUsagePercentage', label: 'VP Usage', tooltip: WEEKLY_METRICS_TOOLTIPS.vpUsagePercentage },
-    { value: 'quorumAmount', label: 'Quorum Amount', tooltip: WEEKLY_METRICS_TOOLTIPS.quorumAmount },
-    { value: 'activeDelegates', label: 'Active Delegates', tooltip: WEEKLY_METRICS_TOOLTIPS.activeDelegates },
-    { value: 'uniqueVoters', label: 'Unique Voters', tooltip: WEEKLY_METRICS_TOOLTIPS.uniqueVoters },
-    { value: 'totalVotes', label: 'Total Votes', tooltip: WEEKLY_METRICS_TOOLTIPS.totalVotes },
-    { value: 'activeProposals', label: 'Active Proposals', tooltip: WEEKLY_METRICS_TOOLTIPS.activeProposals },
+  const metricOptions: {
+    value: keyof IWeeklyMetrics;
+    label: string;
+    tooltip: string;
+  }[] = [
+    {
+      value: 'totalVotingPower',
+      label: 'Total Voting Power',
+      tooltip: WEEKLY_METRICS_TOOLTIPS.totalVotingPower,
+    },
+    {
+      value: 'vpUsagePercentage',
+      label: 'VP Usage',
+      tooltip: WEEKLY_METRICS_TOOLTIPS.vpUsagePercentage,
+    },
+    {
+      value: 'quorumAmount',
+      label: 'Quorum Amount',
+      tooltip: WEEKLY_METRICS_TOOLTIPS.quorumAmount,
+    },
+    {
+      value: 'activeDelegates',
+      label: 'Active Delegates',
+      tooltip: WEEKLY_METRICS_TOOLTIPS.activeDelegates,
+    },
+    {
+      value: 'uniqueVoters',
+      label: 'Unique Voters',
+      tooltip: WEEKLY_METRICS_TOOLTIPS.uniqueVoters,
+    },
+    {
+      value: 'totalVotes',
+      label: 'Total Votes',
+      tooltip: WEEKLY_METRICS_TOOLTIPS.totalVotes,
+    },
+    {
+      value: 'activeProposals',
+      label: 'Active Proposals',
+      tooltip: WEEKLY_METRICS_TOOLTIPS.activeProposals,
+    },
   ];
 
   /**
    * Format a value based on its type
    */
-  const formatValue = (value: any, metricType: keyof IWeeklyMetrics): string => {
+  const formatValue = (
+    value: any,
+    metricType: keyof IWeeklyMetrics
+  ): string => {
     if (typeof value === 'undefined' || value === null) return 'N/A';
-    
+
     // Format based on metric type
     if (metricType === 'vpUsagePercentage') {
       return `${Number(value).toFixed(1)}%`;
-    } else if (
+    }
+    if (
       metricType === 'totalVotingPower' ||
       metricType === 'quorumAmount' ||
       metricType === 'votingPowerUsed'
     ) {
       return Number(value).toLocaleString();
-    } else {
-      return value.toString();
     }
+    return value.toString();
   };
 
   // Prepare chart data
@@ -83,54 +119,57 @@ export const WeeklyMetricsChart: React.FC<WeeklyMetricsChartProps> = ({
       const endDate = moment(week.endDate).format('MMM D, YYYY');
       return `${startDate} - ${endDate}`;
     }),
-    datasets: (activeMetric === 'totalVotingPower' as keyof IWeeklyMetrics)
-      ? [
-          // Primary dataset - Total Voting Power
-          {
-            label: 'Total Voting Power',
-            data: weeklyMetrics.map(week => Number(week.totalVotingPower)),
-            borderColor: theme.branding,
-            backgroundColor: `${theme.branding}80`, // Add transparency
-            tension: 0.4,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            yAxisID: 'y',
-          },
-          // Secondary dataset - Voting Power Used
-          {
-            label: 'Voting Power Used',
-            data: weeklyMetrics.map(week => Number(week.votingPowerUsed)),
-            borderColor: '#FF9800', // Orange color for contrast
-            backgroundColor: '#FF980080', // Semi-transparent orange
-            borderDash: [5, 5], // Dashed line for visual distinction
-            tension: 0.4,
-            pointRadius: 3,
-            pointHoverRadius: 5,
-            yAxisID: 'y',
-          }
-        ]
-      : [
-          // Default single dataset for other metrics
-          {
-            label: metricOptions.find(option => option.value === activeMetric)?.label || '',
-            data: weeklyMetrics.map(week => {
-              // Handle string values that need to be converted to numbers
-              if (
-                activeMetric === 'totalVotingPower' ||
-                activeMetric === 'quorumAmount' ||
-                activeMetric === 'votingPowerUsed'
-              ) {
-                return Number(week[activeMetric]);
-              }
-              return week[activeMetric];
-            }),
-            borderColor: theme.branding,
-            backgroundColor: `${theme.branding}80`, // Add transparency
-            tension: 0.4,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-          },
-        ],
+    datasets:
+      activeMetric === ('totalVotingPower' as keyof IWeeklyMetrics)
+        ? [
+            // Primary dataset - Total Voting Power
+            {
+              label: 'Total Voting Power',
+              data: weeklyMetrics.map(week => Number(week.totalVotingPower)),
+              borderColor: theme.branding,
+              backgroundColor: `${theme.branding}80`, // Add transparency
+              tension: 0.4,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              yAxisID: 'y',
+            },
+            // Secondary dataset - Voting Power Used
+            {
+              label: 'Voting Power Used',
+              data: weeklyMetrics.map(week => Number(week.votingPowerUsed)),
+              borderColor: '#FF9800', // Orange color for contrast
+              backgroundColor: '#FF980080', // Semi-transparent orange
+              borderDash: [5, 5], // Dashed line for visual distinction
+              tension: 0.4,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              yAxisID: 'y',
+            },
+          ]
+        : [
+            // Default single dataset for other metrics
+            {
+              label:
+                metricOptions.find(option => option.value === activeMetric)
+                  ?.label || '',
+              data: weeklyMetrics.map(week => {
+                // Handle string values that need to be converted to numbers
+                if (
+                  activeMetric === 'totalVotingPower' ||
+                  activeMetric === 'quorumAmount' ||
+                  activeMetric === 'votingPowerUsed'
+                ) {
+                  return Number(week[activeMetric]);
+                }
+                return week[activeMetric];
+              }),
+              borderColor: theme.branding,
+              backgroundColor: `${theme.branding}80`, // Add transparency
+              tension: 0.4,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+            },
+          ],
   };
 
   // Chart options
@@ -160,74 +199,109 @@ export const WeeklyMetricsChart: React.FC<WeeklyMetricsChartProps> = ({
         padding: 12,
         displayColors: false,
         callbacks: {
-          title: (tooltipItems) => {
-            return tooltipItems[0].label || '';
-          },
-          label: (context) => {
-            const dataIndex = context.dataIndex;
+          title: tooltipItems => tooltipItems[0].label || '',
+          label: context => {
+            const { dataIndex } = context;
             const weekData = weeklyMetrics[dataIndex];
-            
+
             // Create an array to hold all tooltip lines
             const tooltipLines = [];
-            
+
             // When viewing Total Voting Power chart, handle both datasets
             if (activeMetric === 'totalVotingPower') {
               // Check which dataset this tooltip is for
-              const isVotingPowerUsed = context.dataset.label === 'Voting Power Used';
-              
+              const isVotingPowerUsed =
+                context.dataset.label === 'Voting Power Used';
+
               if (isVotingPowerUsed) {
                 // This is the Voting Power Used dataset
                 const vpUsed = formatValue(context.parsed.y, 'votingPowerUsed');
                 tooltipLines.push(`Voting Power Used: ${vpUsed}`);
-                
+
                 // Also show Total Voting Power and Usage Percentage
-                const totalVP = formatValue(weekData.totalVotingPower, 'totalVotingPower');
-                const vpUsage = formatValue(weekData.vpUsagePercentage, 'vpUsagePercentage');
+                const totalVP = formatValue(
+                  weekData.totalVotingPower,
+                  'totalVotingPower'
+                );
+                const vpUsage = formatValue(
+                  weekData.vpUsagePercentage,
+                  'vpUsagePercentage'
+                );
                 tooltipLines.push(`Total Voting Power: ${totalVP}`);
                 tooltipLines.push(`VP Usage: ${vpUsage}`);
               } else {
                 // This is the Total Voting Power dataset
-                const totalVP = formatValue(context.parsed.y, 'totalVotingPower');
+                const totalVP = formatValue(
+                  context.parsed.y,
+                  'totalVotingPower'
+                );
                 tooltipLines.push(`Total Voting Power: ${totalVP}`);
-                
+
                 // Also show Voting Power Used and Usage Percentage
-                const vpUsed = formatValue(weekData.votingPowerUsed, 'votingPowerUsed');
-                const vpUsage = formatValue(weekData.vpUsagePercentage, 'vpUsagePercentage');
+                const vpUsed = formatValue(
+                  weekData.votingPowerUsed,
+                  'votingPowerUsed'
+                );
+                const vpUsage = formatValue(
+                  weekData.vpUsagePercentage,
+                  'vpUsagePercentage'
+                );
                 tooltipLines.push(`Voting Power Used: ${vpUsed}`);
                 tooltipLines.push(`VP Usage: ${vpUsage}`);
               }
             } else {
               // For other metrics, show the primary metric first
-              let primaryLabel = metricOptions.find(option => option.value === activeMetric)?.label || '';
-              let primaryValue = formatValue(context.parsed.y, activeMetric);
+              const primaryLabel =
+                metricOptions.find(option => option.value === activeMetric)
+                  ?.label || '';
+              const primaryValue = formatValue(context.parsed.y, activeMetric);
               tooltipLines.push(`${primaryLabel}: ${primaryValue}`);
-              
+
               // Add related metrics based on the active metric
               if (activeMetric === 'vpUsagePercentage') {
                 // When viewing VP Usage %, also show Total Voting Power and Voting Power Used
-                const totalVP = formatValue(weekData.totalVotingPower, 'totalVotingPower');
-                const vpUsed = formatValue(weekData.votingPowerUsed, 'votingPowerUsed');
+                const totalVP = formatValue(
+                  weekData.totalVotingPower,
+                  'totalVotingPower'
+                );
+                const vpUsed = formatValue(
+                  weekData.votingPowerUsed,
+                  'votingPowerUsed'
+                );
                 tooltipLines.push(`Total Voting Power: ${totalVP}`);
                 tooltipLines.push(`Voting Power Used: ${vpUsed}`);
-              }
-              else if (activeMetric === 'activeDelegates' || activeMetric === 'uniqueVoters') {
+              } else if (
+                activeMetric === 'activeDelegates' ||
+                activeMetric === 'uniqueVoters'
+              ) {
                 // For delegate/voter metrics, show related participation metrics
-                const totalVotes = formatValue(weekData.totalVotes, 'totalVotes');
+                const totalVotes = formatValue(
+                  weekData.totalVotes,
+                  'totalVotes'
+                );
                 tooltipLines.push(`Total Votes: ${totalVotes}`);
-                
+
                 // Show active proposals count
-                const activeProps = formatValue(weekData.activeProposals, 'activeProposals');
+                const activeProps = formatValue(
+                  weekData.activeProposals,
+                  'activeProposals'
+                );
                 tooltipLines.push(`Active Proposals: ${activeProps}`);
-              }
-              else if (activeMetric === 'activeProposals') {
+              } else if (activeMetric === 'activeProposals') {
                 // When viewing Active Proposals, show related metrics
-                const totalVotes = formatValue(weekData.totalVotes, 'totalVotes');
-                const uniqueVoters = formatValue(weekData.uniqueVoters, 'uniqueVoters');
+                const totalVotes = formatValue(
+                  weekData.totalVotes,
+                  'totalVotes'
+                );
+                const uniqueVoters = formatValue(
+                  weekData.uniqueVoters,
+                  'uniqueVoters'
+                );
                 tooltipLines.push(`Total Votes: ${totalVotes}`);
                 tooltipLines.push(`Unique Voters: ${uniqueVoters}`);
               }
             }
-            
+
             return tooltipLines;
           },
         },
@@ -248,7 +322,7 @@ export const WeeklyMetricsChart: React.FC<WeeklyMetricsChartProps> = ({
         },
         ticks: {
           color: theme.card.text.secondary,
-          callback: (value) => formatValue(value, activeMetric),
+          callback: value => formatValue(value, activeMetric),
         },
         beginAtZero: true,
       },
@@ -272,20 +346,29 @@ export const WeeklyMetricsChart: React.FC<WeeklyMetricsChartProps> = ({
 
         {/* Metric selector */}
         <Flex mb={6} flexWrap="wrap" gap={2}>
-          {metricOptions.map((option) => (
+          {metricOptions.map(option => (
             <Box
               key={option.value}
               as="button"
               px={3}
               py={2}
               borderRadius="md"
-              bg={activeMetric === option.value ? theme.branding : 'transparent'}
+              bg={
+                activeMetric === option.value ? theme.branding : 'transparent'
+              }
               color={activeMetric === option.value ? 'white' : theme.text}
               borderWidth="1px"
-              borderColor={activeMetric === option.value ? theme.branding : theme.card.border}
+              borderColor={
+                activeMetric === option.value
+                  ? theme.branding
+                  : theme.card.border
+              }
               onClick={() => setActiveMetric(option.value)}
               _hover={{
-                bg: activeMetric === option.value ? theme.branding : `${theme.card.border}30`,
+                bg:
+                  activeMetric === option.value
+                    ? theme.branding
+                    : `${theme.card.border}30`,
               }}
               title={option.tooltip}
             >
@@ -322,15 +405,19 @@ export const WeeklyMetricsChart: React.FC<WeeklyMetricsChartProps> = ({
             {activeMetric === 'totalVotingPower' ? (
               <>
                 {WEEKLY_METRICS_TOOLTIPS.totalVotingPower}
-                <br /><br />
-                <strong>Note:</strong> This chart also displays Voting Power Used (orange dashed line) to show how much of the total voting power is being utilized.
+                <br />
+                <br />
+                <strong>Note:</strong> This chart also displays Voting Power
+                Used (orange dashed line) to show how much of the total voting
+                power is being utilized.
               </>
             ) : (
-              metricOptions.find(option => option.value === activeMetric)?.tooltip
+              metricOptions.find(option => option.value === activeMetric)
+                ?.tooltip
             )}
           </Text>
         </Box>
       </Flex>
     </Box>
   );
-}; 
+};
