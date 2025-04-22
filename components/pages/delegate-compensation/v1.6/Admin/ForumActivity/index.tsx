@@ -143,7 +143,7 @@ export const DelegateCompensationAdminForumActivity = ({
             id: item.id,
             status:
               post?.status ||
-              (checkIfCommunicationThread(item?.topic) ? 'invalid' : 'valid'),
+              (checkIfCommunicationThread(item?.topic) ? 'invalid' : 'invalid'),
             relevance: post?.relevance || 0,
             depthOfAnalysis: post?.depthOfAnalysis || 0,
             timing: post?.timing || 0,

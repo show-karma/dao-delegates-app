@@ -92,9 +92,7 @@ export const DelegateBP = ({
         delegateInfo.stats?.monthlyCalls?.toString() || '0'
       );
       setContributionPoints(
-        delegateInfo.stats?.contributions?.toString() ||
-          delegateInfo.stats?.bonusPoint?.toString() ||
-          '0'
+        delegateInfo.stats?.contributions?.toString() || '0'
       );
       setTotalBonusPoints(delegateInfo.stats?.bonusPoint?.toString() || '0');
     }
