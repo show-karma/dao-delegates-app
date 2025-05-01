@@ -230,8 +230,6 @@ export const DelegateCompensationAdmin = () => {
       daoInfo.config.DAO_KARMA_ID as keyof typeof compensation.compensationDates
     ];
 
-  console.log(proposals);
-
   return (
     <DelegateCompensationAdminLayout>
       <DelegatePeriod

@@ -42,15 +42,15 @@ export const getProposals = async (
         return {
           id: key,
           name:
-            value.title.slice(0, 2) === '# '
-              ? value.title.slice(2)
-              : value.title,
+            value?.title?.slice(0, 2) === '# '
+              ? value?.title?.slice(2)
+              : value?.title,
           link: hasLink
             ? `https://www.tally.xyz/gov/${daoName}/proposal/${BigInt(
                 key?.split('-')[1]
               ).toString()}`
             : null,
-          isValid: value.isValid,
+          isValid: value?.isValid,
           type: 'onChain',
         };
       });
@@ -58,11 +58,11 @@ export const getProposals = async (
       .filter(([key, value]) => value.type === 'snapshot')
       .map(([key, value]) => ({
         id: key,
-        name: value.title,
+        name: value?.title,
         link: key
           ? `https://snapshot.org/#/arbitrumfoundation.eth/proposal/${key}`
           : null,
-        isValid: value.isValid,
+        isValid: value?.isValid,
         type: 'snapshot',
       }));
 
