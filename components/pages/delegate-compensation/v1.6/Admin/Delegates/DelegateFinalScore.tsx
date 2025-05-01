@@ -31,6 +31,7 @@ const statsLabel = {
   bonusPoint: 'Bonus Point (BP)',
   votingPowerMultiplier: 'Voting Power Multiplier (VP)',
   delegateFeedback: 'Delegate Feedback (DF)',
+  penaltyPoints: 'Penalty Points (PP)',
 };
 
 const statsFormula = (delegateStats: DelegateInfoStats) => ({
@@ -169,6 +170,18 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
       </Code>
     </Flex>
   ),
+  penaltyPoints: (
+    <Flex flexDir="column" py="1" gap="2">
+      <Text fontWeight={600}>
+        Penalty Points (PP) - Penalty for delayed votes
+      </Text>
+      <Text fontWeight="normal">
+        Penalty points applied when a delegate delays their vote on Security
+        Council proposals, calculated based on the time between proposal
+        creation and their vote.
+      </Text>
+    </Flex>
+  ),
 });
 
 export const InfoTooltip = ({
@@ -182,7 +195,8 @@ export const InfoTooltip = ({
     | 'bonusPoint'
     | 'votingPowerMultiplier'
     | 'votingPowerAverage'
-    | 'delegateFeedback';
+    | 'delegateFeedback'
+    | 'penaltyPoints';
   stats: DelegateInfoStats;
 }) => {
   const { theme } = useDAO();
@@ -227,6 +241,7 @@ export const DelegateFinalScoreModal = ({
     votingPowerMultiplier = '0',
     delegateFeedback: { finalScore: delegateFeedbackScore = '0' } = {},
     bonusPoint = '0',
+    securityCouncilVotePenalty = '0',
   } = delegateStats || {};
 
   const stats = {
@@ -236,6 +251,7 @@ export const DelegateFinalScoreModal = ({
     votingPowerMultiplier,
     delegateFeedback: delegateFeedbackScore,
     bonusPoint,
+    penaltyPoints: securityCouncilVotePenalty,
   };
 
   return (
@@ -366,8 +382,8 @@ export const DelegateFinalScoreModal = ({
                             </Text>
 
                             <Code fontWeight="normal">
-                              TP% formula: (PR + SV + TV) * VP Multiplier + DF +
-                              BP
+                              TP% formula: ((PR + SV + TV) * VP Multiplier + DF
+                              + BP) - PP
                             </Code>
                           </Flex>
                         }
