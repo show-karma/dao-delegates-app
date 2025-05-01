@@ -26,7 +26,7 @@ export type DelegateInfoStats = {
   votingPowerAverage?: string;
   votingPowerMultiplier?: number;
   bonusPoint: number;
-  securityCouncilVotePenalty: string;
+  securityCouncilVotePenalty?: string;
   commentingProposal: CompensationStatBreakdown;
   communicatingRationale: CompensationStatBreakdown;
   onChainVoting: CompensationStatBreakdown;
@@ -97,6 +97,6 @@ export type DelegateCompensationStats = {
   };
   bonusPoint: string;
   totalParticipation: string;
-  securityCouncilVotePenalty: string;
+  securityCouncilVotePenalty?: string;
   payment: string;
 };
