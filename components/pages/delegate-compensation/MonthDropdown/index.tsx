@@ -42,10 +42,13 @@ export const MonthDropdown: FC<IMonthDropdown> = ({
               month: month + 1,
               year,
             },
+            date: dateToCheck,
           });
         }
       }
     }
+
+    supportedDates.sort((a, b) => b.date.getTime() - a.date.getTime());
 
     return supportedDates.map(itemDate => (
       <MenuItem
