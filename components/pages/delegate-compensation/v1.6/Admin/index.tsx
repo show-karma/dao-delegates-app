@@ -88,7 +88,6 @@ export const DelegateCompensationAdmin = () => {
   );
 
   useEffect(() => {
-    console.log(monthlyCallsData, biweeklyCallsData);
     setMonthlyCalls(monthlyCallsData || 0);
     setBiWeeklyCalls(biweeklyCallsData || 0);
   }, [monthlyCallsData, biweeklyCallsData]);
@@ -230,6 +229,8 @@ export const DelegateCompensationAdmin = () => {
     compensation.compensationDates[
       daoInfo.config.DAO_KARMA_ID as keyof typeof compensation.compensationDates
     ];
+
+  console.log(proposals);
 
   return (
     <DelegateCompensationAdminLayout>
