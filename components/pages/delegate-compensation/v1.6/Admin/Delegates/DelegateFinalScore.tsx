@@ -249,7 +249,7 @@ export const DelegateFinalScoreModal = ({
     votingPowerMultiplier,
     delegateFeedback: delegateFeedbackScore,
     bonusPoint,
-    penaltyPoints: `-${securityCouncilVotePenalty}`,
+    penaltyPoints: securityCouncilVotePenalty,
   };
 
   return (
