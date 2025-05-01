@@ -88,7 +88,6 @@ export const DelegateCompensationAdmin = () => {
   );
 
   useEffect(() => {
-    console.log(monthlyCallsData, biweeklyCallsData);
     setMonthlyCalls(monthlyCallsData || 0);
     setBiWeeklyCalls(biweeklyCallsData || 0);
   }, [monthlyCallsData, biweeklyCallsData]);
