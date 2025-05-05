@@ -230,6 +230,8 @@ export const DelegateCompensationAdmin = () => {
       daoInfo.config.DAO_KARMA_ID as keyof typeof compensation.compensationDates
     ];
 
+  console.log(proposals);
+
   return (
     <DelegateCompensationAdminLayout>
       <DelegatePeriod
@@ -446,7 +448,9 @@ export const DelegateCompensationAdmin = () => {
                           borderColor={theme.card.border}
                         >
                           <Text w="max-content">
-                            {formatDate(item.endDate as string, 'MMM D, YYYY')}
+                            {item.endDate
+                              ? formatDate(item.endDate, 'MMM D, YYYY')
+                              : ''}
                           </Text>
                         </Td>
 
