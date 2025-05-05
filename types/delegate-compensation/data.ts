@@ -98,7 +98,7 @@ export type DelegateCompensationStats = {
   };
   bonusPoint: string;
   totalParticipation: string;
-  securityCouncilVotePenalty: string;
+  securityCouncilVotePenalty?: string;
   securityPenaltyBreakdown?: string;
   payment: string;
 };

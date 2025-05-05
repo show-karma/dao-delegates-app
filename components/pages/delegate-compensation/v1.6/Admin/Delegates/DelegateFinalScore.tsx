@@ -172,20 +172,23 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
   ),
   penaltyPoints: (
     <Flex flexDir="column" py="1" gap="2">
-      <Text fontWeight={600}>Penalty Points (PP) - Penalty for delayed votes</Text>
+      <Text fontWeight={600}>
+        Penalty Points (PP) - Penalty for delayed votes
+      </Text>
       <Text fontWeight="normal">
         Penalty points applied when a delegate delays their vote on Security
-        Council proposals, calculated based on the time between proposal creation
-        and their vote.
+        Council proposals, calculated based on the time between proposal
+        creation and their vote.
       </Text>
       {delegateStats?.securityPenaltyBreakdown && (
         <>
-        <Code fontWeight="normal">
-          PP Formula: (MaxPenalty - MinPenalty) / (LastDay - FirstDay) = points per day
-        </Code>
-        <Code fontWeight="normal">
-          PP: {delegateStats.securityPenaltyBreakdown}
-        </Code>
+          <Code fontWeight="normal">
+            PP Formula: (MaxPenalty - MinPenalty) / (LastDay - FirstDay) =
+            points per day
+          </Code>
+          <Code fontWeight="normal">
+            PP: {delegateStats.securityPenaltyBreakdown}
+          </Code>
         </>
       )}
     </Flex>
@@ -251,7 +254,6 @@ export const DelegateFinalScoreModal = ({
     bonusPoint = '0',
     securityCouncilVotePenalty = '0',
   } = delegateStats || {};
-
   const stats = {
     participationRate,
     snapshotVoting: snapshotScore,
@@ -390,8 +392,8 @@ export const DelegateFinalScoreModal = ({
                             </Text>
 
                             <Code fontWeight="normal">
-                              TP% formula: ((PR + SV + TV) * VP Multiplier + DF +
-                              BP) - PP
+                              TP% formula: ((PR + SV + TV) * VP Multiplier + DF
+                              + BP) - PP
                             </Code>
                           </Flex>
                         }

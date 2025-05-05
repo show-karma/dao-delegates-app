@@ -485,7 +485,11 @@ export const DelegateStats = () => {
         >
           <Flex
             borderRadius="4px"
-            bg={delegateInfo?.stats?.securityPenaltyBreakdown ? "green.500" : "red.500"}
+            bg={
+              delegateInfo?.stats?.securityPenaltyBreakdown
+                ? 'green.500'
+                : 'red.500'
+            }
             w="40px"
             h="40px"
             justify="center"
@@ -493,7 +497,7 @@ export const DelegateStats = () => {
             color="white"
             fontWeight="bold"
           >
-            {delegateInfo?.stats?.securityPenaltyBreakdown ? "✓" : "✗"}
+            {delegateInfo?.stats?.securityPenaltyBreakdown ? '✓' : '✗'}
           </Flex>
           {delegateInfo?.stats?.securityPenaltyBreakdown ? (
             <Flex flexDir="column" gap="0" justify="center" align="flex-start">
@@ -517,7 +521,9 @@ export const DelegateStats = () => {
                   fontWeight={700}
                   color={theme.compensation?.card.secondaryText}
                 >
-                  {formatSimpleNumber(delegateInfo?.stats?.securityCouncilVotePenalty || 0)}
+                  {formatSimpleNumber(
+                    delegateInfo?.stats?.securityCouncilVotePenalty || 0
+                  )}
                 </Text>
                 <InfoTooltip
                   stat="penaltyPoints"
@@ -532,7 +538,7 @@ export const DelegateStats = () => {
                 fontWeight={400}
                 color={theme.compensation?.card.text}
               >
-                Didn't vote on SC Elections
+                {`Didn't vote on SC Elections`}
               </Text>
               <Text
                 fontSize="14px"
