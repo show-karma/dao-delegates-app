@@ -180,6 +180,17 @@ const statsFormula = (delegateStats: DelegateInfoStats) => ({
         Council proposals, calculated based on the time between proposal
         creation and their vote.
       </Text>
+      {delegateStats?.securityPenaltyBreakdown && (
+        <>
+          <Code fontWeight="normal">
+            PP Formula: (MaxPenalty - MinPenalty) / (LastDay - FirstDay) =
+            points per day
+          </Code>
+          <Code fontWeight="normal">
+            PP: {delegateStats.securityPenaltyBreakdown}
+          </Code>
+        </>
+      )}
     </Flex>
   ),
 });
@@ -243,7 +254,6 @@ export const DelegateFinalScoreModal = ({
     bonusPoint = '0',
     securityCouncilVotePenalty = '0',
   } = delegateStats || {};
-
   const stats = {
     participationRate,
     snapshotVoting: snapshotScore,

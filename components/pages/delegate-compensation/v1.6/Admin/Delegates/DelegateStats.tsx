@@ -472,6 +472,86 @@ export const DelegateStats = () => {
           <DelegateBP isMonthFinished={isMonthFinished} />
         </Flex>
 
+        {/* Penalty Points Card */}
+        <Flex
+          flexDir="row"
+          bg={theme.compensation?.card.bg}
+          flex="1"
+          borderRadius="8px"
+          p="3"
+          gap="3"
+          justify="flex-start"
+          align="flex-start"
+        >
+          <Flex
+            borderRadius="4px"
+            bg={
+              delegateInfo?.stats?.securityPenaltyBreakdown
+                ? 'green.500'
+                : 'red.500'
+            }
+            w="40px"
+            h="40px"
+            justify="center"
+            align="center"
+            color="white"
+            fontWeight="bold"
+          >
+            {delegateInfo?.stats?.securityPenaltyBreakdown ? '✓' : '✗'}
+          </Flex>
+          {delegateInfo?.stats?.securityPenaltyBreakdown ? (
+            <Flex flexDir="column" gap="0" justify="center" align="flex-start">
+              <Text
+                fontSize="14px"
+                fontWeight={400}
+                color={theme.compensation?.card.text}
+              >
+                Voted on SC Elections
+              </Text>
+              <Flex flexDir="row" gap="2" align="center" mt="2">
+                <Text
+                  fontSize="14px"
+                  fontWeight={600}
+                  color={theme.compensation?.card.text}
+                >
+                  Penalty Points
+                </Text>
+                <Text
+                  fontSize="14px"
+                  fontWeight={700}
+                  color={theme.compensation?.card.secondaryText}
+                >
+                  {formatSimpleNumber(
+                    delegateInfo?.stats?.securityCouncilVotePenalty || 0
+                  )}
+                </Text>
+                <InfoTooltip
+                  stat="penaltyPoints"
+                  stats={delegateInfo?.stats as DelegateStatsFromAPI['stats']}
+                />
+              </Flex>
+            </Flex>
+          ) : (
+            <Flex flexDir="column" gap="0" justify="center" align="flex-start">
+              <Text
+                fontSize="14px"
+                fontWeight={400}
+                color={theme.compensation?.card.text}
+              >
+                {`Didn't vote on SC Elections`}
+              </Text>
+              <Text
+                fontSize="14px"
+                fontWeight={400}
+                color={theme.compensation?.card.secondaryText}
+                mt="2"
+              >
+                Disqualified of April and May Incentives
+              </Text>
+            </Flex>
+          )}
+        </Flex>
+
         <Flex
           flexDir="row"
           bg={theme.compensation?.card.bg}
