@@ -59,20 +59,20 @@ const metatags = (
   forumActivity: IMetatags;
 } => ({
   delegateStats: {
-    title: `${delegateName}'s ${
+    title: `${delegateName || delegateAddress}'s ${
       dao.charAt(0).toUpperCase() + dao.slice(1)
     } DAO Governance Stats | ${month} ${year}`,
-    description: `Explore ${delegateName}'s ${
+    description: `Explore ${delegateName || delegateAddress}'s ${
       dao.charAt(0).toUpperCase() + dao.slice(1)
     } governance stats and activity for ${month} ${year}`,
     image: `https://${dao}.karmahq.xyz/api/${dao}/delegate-compensation-stats?address=${delegateAddress}&month=${month}&year=${year}&date=${new Date().getTime()}`,
     url: `https://${dao}.karmahq.xyz/delegate-compensation/delegate/${delegateAddress}?month=${month}&year=${year}`,
   },
   forumActivity: {
-    title: `${delegateName}'s ${
+    title: `${delegateName || delegateAddress}'s ${
       dao.charAt(0).toUpperCase() + dao.slice(1)
     } DAO Forum Activity | ${month} ${year}`,
-    description: `Explore ${delegateName}'s ${
+    description: `Explore ${delegateName || delegateAddress}'s ${
       dao.charAt(0).toUpperCase() + dao.slice(1)
     } forum activity for ${month} ${year}`,
     image: `https://${dao}.karmahq.xyz/api/${dao}/delegate-compensation-stats?address=${delegateAddress}&month=${month}&year=${year}&date=${new Date().getTime()}`,
