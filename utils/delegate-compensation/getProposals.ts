@@ -52,6 +52,7 @@ export const getProposals = async (
             : null,
           isValid: value?.isValid,
           type: 'onChain',
+          endDate: value?.endDate,
         };
       });
     const snapshotProposals = fetchedProposalsArray
@@ -64,6 +65,7 @@ export const getProposals = async (
           : null,
         isValid: value?.isValid,
         type: 'snapshot',
+        endDate: value?.endDate,
       }));
 
     return {
