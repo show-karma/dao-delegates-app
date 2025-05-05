@@ -502,13 +502,13 @@ export const DelegateStats = () => {
           {delegateInfo?.stats?.securityPenaltyBreakdown ? (
             <Flex flexDir="column" gap="0" justify="center" align="flex-start">
               <Text
-                fontSize="14px"
-                fontWeight={400}
+                fontSize="16px"
+                fontWeight="600"
                 color={theme.compensation?.card.text}
               >
                 Voted on SC Elections
               </Text>
-              <Flex flexDir="row" gap="2" align="center" mt="2">
+              <Flex flexDir="row" gap="2" align="center">
                 <Text
                   fontSize="14px"
                   fontWeight={600}
@@ -534,8 +534,8 @@ export const DelegateStats = () => {
           ) : (
             <Flex flexDir="column" gap="0" justify="center" align="flex-start">
               <Text
-                fontSize="14px"
-                fontWeight={400}
+                fontSize="16px"
+                fontWeight="600"
                 color={theme.compensation?.card.text}
               >
                 {`Didn't vote on SC Elections`}
