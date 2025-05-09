@@ -628,7 +628,7 @@ const DelegateProposalsWrapped = ({
               size="md"
               color={theme.compensation?.card.text}
             >
-              Your Last 90 Days voting activity
+              Your voting history on proposals concluded in the last 90 days
             </Heading>
             <Flex flexDir="row" gap="2" alignItems="center">
               <Text
