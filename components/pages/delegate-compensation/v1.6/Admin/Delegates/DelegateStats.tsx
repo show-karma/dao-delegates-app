@@ -500,7 +500,11 @@ export const DelegateStats = () => {
           >
             <Flex
               borderRadius="4px"
-              bg={theme.compensation?.icons?.penalty}
+              bg={
+                delegateInfo?.stats?.securityPenaltyBreakdown
+                  ? theme.compensation?.icons?.penaltyYes
+                  : theme.compensation?.icons?.penaltyNo
+              }
               w="40px"
               h="40px"
               minW="40px"
