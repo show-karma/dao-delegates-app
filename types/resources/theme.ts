@@ -57,7 +57,8 @@ export interface IDAOTheme {
       bonusPoint: string;
       participationRate: string;
       finalScore: string;
-      penalty?: string;
+      penaltyYes?: string;
+      penaltyNo?: string;
     };
     performanceOverview: {
       header: {
