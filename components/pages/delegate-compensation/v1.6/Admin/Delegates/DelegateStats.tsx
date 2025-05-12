@@ -379,6 +379,10 @@ export const DelegateStats = () => {
             bg={theme.compensation?.icons.delegateFeedback}
             w="40px"
             h="40px"
+            minW="40px"
+            minH="40px"
+            maxW="40px"
+            maxH="40px"
             justify="center"
             align="center"
           >
@@ -465,6 +469,10 @@ export const DelegateStats = () => {
             bg={theme.compensation?.icons.bonusPoint}
             w="40px"
             h="40px"
+            minW="40px"
+            minH="40px"
+            maxW="40px"
+            maxH="40px"
             justify="center"
             align="center"
           >
@@ -492,19 +500,21 @@ export const DelegateStats = () => {
           >
             <Flex
               borderRadius="4px"
-              bg={
-                delegateInfo?.stats?.securityPenaltyBreakdown
-                  ? 'green.500'
-                  : 'red.500'
-              }
+              bg={theme.compensation?.icons?.penalty}
               w="40px"
               h="40px"
+              minW="40px"
+              minH="40px"
+              maxW="40px"
+              maxH="40px"
               justify="center"
               align="center"
-              color="white"
-              fontWeight="bold"
             >
-              {delegateInfo?.stats?.securityPenaltyBreakdown ? '✓' : '✗'}
+              <Img
+                src="/icons/delegate-compensation/voted.svg"
+                w="24px"
+                h="24px"
+              />
             </Flex>
             {delegateInfo?.stats?.securityPenaltyBreakdown ? (
               <Flex
@@ -585,6 +595,10 @@ export const DelegateStats = () => {
             bg={theme.compensation?.icons.participationRate}
             w="40px"
             h="40px"
+            minW="40px"
+            minH="40px"
+            maxW="40px"
+            maxH="40px"
             justify="center"
             align="center"
           >
@@ -644,6 +658,10 @@ export const DelegateStats = () => {
             bg={theme.compensation?.icons.participationRate}
             w="40px"
             h="40px"
+            minW="40px"
+            minH="40px"
+            maxW="40px"
+            maxH="40px"
             justify="center"
             align="center"
           >
@@ -690,15 +708,15 @@ export const DelegateStats = () => {
                     'Proposals',
                     +(prBreakdown?.proposals.length || 0)
                   )}
-                  ,
-                </Text>
-                <Text
-                  fontSize="14px"
-                  fontWeight={400}
-                  color={theme.compensation?.card.success}
-                  as="span"
-                >
-                  {prBreakdown?.votes.length} Voted On
+                  ,{' '}
+                  <Text
+                    fontSize="14px"
+                    fontWeight={400}
+                    color={theme.compensation?.card.success}
+                    as="span"
+                  >
+                    {prBreakdown?.votes.length} Voted On
+                  </Text>
                 </Text>
               </Flex>
             </Flex>
