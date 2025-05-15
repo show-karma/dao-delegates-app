@@ -48,7 +48,6 @@ const config: IDAOConfig = {
   EXCLUDED_CARD_FIELDS: [
     'offChainVotesPct',
     'discordScore',
-    // 'karmaScore',
     'healthScore',
   ],
   ENABLE_DELEGATE_TRACKER: true,
