@@ -45,7 +45,6 @@ const config: IDAOConfig = {
   EXCLUDED_CARD_FIELDS: [
     'forumScore',
     'healthScore',
-    'karmaScore',
     'discordScore',
     'offChainVotesPct',
   ],
