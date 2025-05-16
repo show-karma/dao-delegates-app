@@ -45,11 +45,7 @@ const config: IDAOConfig = {
       DEFAULT_STATUS_SELECTED: ['active', 'recognized'],
     },
   },
-  EXCLUDED_CARD_FIELDS: [
-    'offChainVotesPct',
-    'discordScore',
-    'healthScore',
-  ],
+  EXCLUDED_CARD_FIELDS: ['offChainVotesPct', 'discordScore', 'healthScore'],
   ENABLE_DELEGATE_TRACKER: true,
   EXCLUDED_VOTING_HISTORY_COLUMN: ['offChainVoteBreakdown'],
   DAO_CATEGORIES_TYPE: 'workstreams',
