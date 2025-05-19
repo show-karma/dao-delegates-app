@@ -43,7 +43,6 @@ const config: IDAOConfig = {
   DAO_GTAG: 'G-67LDHT697P',
   SORT_OPTIONS: ['forumScore', 'karmaScore'],
   EXCLUDED_CARD_FIELDS: [
-    'forumScore',
     'healthScore',
     'discordScore',
     'offChainVotesPct',
