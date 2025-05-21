@@ -11,7 +11,7 @@ export interface IWeeklyMetrics {
   totalVotes: number; // The total number of votes cast across all proposals
   uniqueVoters: number; // The number of unique addresses that have participated in voting
   activeProposals: number; // The number of proposals that are currently active and open for voting
-  vpUsagePercentage: number; // The percentage of total voting power that has been used in voting (0-100%)
+  vpUsagePercentage: string; // The percentage of total voting power that has been used in voting (0-100%)
 }
 
 /**
@@ -23,7 +23,7 @@ export interface IDaoSummary {
   averageVotingPowerUsed: string; // Average amount of voting power used per week
   averageActiveDelegates: number; // Average number of active delegates per week
   averageUniqueVoters: number; // Average number of unique voters per week
-  averageVpUsagePercentage: number; // Average percentage of voting power used per week
+  averageVpUsagePercentage: string; // Average percentage of voting power used per week
 }
 
 /**
