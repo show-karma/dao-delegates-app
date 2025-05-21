@@ -79,7 +79,7 @@ export const AnalyticsPage: React.FC = () => {
                   averageVotingPowerUsed: '0',
                   averageActiveDelegates: 0,
                   averageUniqueVoters: 0,
-                  averageVpUsagePercentage: 0,
+                  averageVpUsagePercentage: '0',
                 }
               }
               isLoading={isLoading}
