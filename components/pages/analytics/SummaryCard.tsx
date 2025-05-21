@@ -44,7 +44,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
   /**
    * Format a percentage value
    */
-  const formatPercentage = (value: number) => `${value.toFixed(1)}%`;
+  const formatPercentage = (value: string) => `${value}%`;
 
   /**
    * Format a string value that represents a number (like voting power)
