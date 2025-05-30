@@ -1,6 +1,6 @@
 import { IDAOConfig, IDAOTheme } from 'types';
 import { onChainRariVotesProvider } from 'utils/rari/onChainRariVotesProvider';
-import { mainnet } from 'wagmi/chains';
+import { rari as rariChain } from 'utils/customChains';
 import ABI from './ABI.json';
 
 const config: IDAOConfig = {
@@ -23,21 +23,20 @@ const config: IDAOConfig = {
   DAO_DEFAULT_SETTINGS: {
     FAQ: false,
   },
-  DAO_CHAINS: [mainnet],
+  DAO_CHAINS: [rariChain],
   DAO_TOKEN_CONTRACT: [
     {
-      contractAddress: ['0x096Bd9a7a2e703670088C05035e23c7a9F428496'],
+      contractAddress: ['0xCf78572A8fE97b2B9a4B9709f6a7D9a863c1b8E0'],
       method: ['balanceOf'],
-      chain: mainnet,
+      chain: rariChain,
     },
   ],
   DAO_DELEGATE_CONTRACT: [
-    //   {
-    //     contractAddress: '0x096Bd9a7a2e703670088C05035e23c7a9F428496',
-    //     chain: mainnet,
-    //   },
+    {
+      contractAddress: ['0xCf78572A8fE97b2B9a4B9709f6a7D9a863c1b8E0'],
+      chain: rariChain,
+    },
   ],
-  DAO_DELEGATION_URL: 'https://rari.foundation/lock',
   DAO_EXT_VOTES_PROVIDER: {
     onChain: onChainRariVotesProvider,
   },
@@ -341,7 +340,7 @@ const light: IDAOTheme = {
   filters: {
     head: '#666666',
     border: '#ADB8C033',
-    title: '#666666',
+    title: '#F2F4F9',
     bg: 'transparent',
     listBg: '#F2F4F9',
     listText: '#666666',
@@ -362,7 +361,6 @@ const light: IDAOTheme = {
     socialMedia: '#595A5E',
   },
   loginModal: {
-    logo: 'daos/rari/logo_black.svg',
     background: '#FFFFFF',
     text: '#212328',
     footer: { bg: '#EBEDEF', text: '#212328' },
