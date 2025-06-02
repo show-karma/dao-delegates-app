@@ -214,7 +214,7 @@ export const DelegatesList: FC<IDelegatesList> = ({ pathUser }) => {
       {selectedBreakdownUser && !!selectedBreakdownUser.address && (
         <StyledModal
           isOpen={isOpen}
-          title={`Forum Score Breakdown ${
+          title={`Score Breakdown ${
             formatPeriod(selectedBreakdownUser.period)
               ? ` (Last ${formatPeriod(selectedBreakdownUser.period)})`
               : ''
