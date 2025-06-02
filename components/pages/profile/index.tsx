@@ -5,8 +5,6 @@ import { Box, Flex, Text } from '@chakra-ui/react';
 import { useDAO, useDelegates, VotesProvider } from 'contexts';
 import { Header } from 'components/UserProfile/Header';
 import { VotingHistory } from 'components/UserProfile/VotingHistory';
-import { EndorsementsReceived } from 'components/UserProfile/EndorsementsReceived';
-import { EndorsementsGiven } from 'components/UserProfile/EndorsementsGiven';
 import { useMixpanel } from 'hooks';
 import { IActiveTab, IDelegate } from 'types';
 
@@ -54,12 +52,6 @@ const Tab: FC<{ activeTab: IActiveTab; profile: IDelegate }> = ({
   }
   if (activeTab === 'withdraw') {
     return <WithdrawDelegation />;
-  }
-  if (activeTab === 'endorsements-received') {
-    return <EndorsementsReceived />;
-  }
-  if (activeTab === 'endorsements-given') {
-    return <EndorsementsGiven />;
   }
   return <Statement />;
 };

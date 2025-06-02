@@ -3,7 +3,6 @@ import { useDAO, useDelegates } from 'contexts';
 import {
   formatNumber,
   formatNumberPercentage,
-  getEndorsementsOfAddress,
 } from 'utils';
 import { IStats } from 'types';
 import { useEffect, useState } from 'react';
@@ -20,7 +19,6 @@ export const StatsRow = () => {
   const { profileSelected } = useDelegates();
   const { daoInfo } = useDAO();
   const { config } = daoInfo;
-  const [endorsementsNumber, setEndorsementsNumber] = useState(0);
 
   const getScore = () => {
     if (profileSelected?.gitcoinHealthScore)
@@ -35,17 +33,6 @@ export const StatsRow = () => {
   const getScoreId = () => {
     if (profileSelected?.gitcoinHealthScore) return 'healthScore';
     return 'karmaScore';
-  };
-
-  const getEndorsements = async () => {
-    if (!profileSelected?.address) return;
-    const endorsements = await getEndorsementsOfAddress(
-      profileSelected?.address,
-      daoInfo.config.DAO_KARMA_ID,
-      daoInfo.config.DAO_CHAINS[0].id
-    );
-
-    setEndorsementsNumber(endorsements.length);
   };
 
   const stats: Stats[] = [
@@ -97,11 +84,6 @@ export const StatsRow = () => {
         : '-',
       id: 'discordScore',
     },
-    {
-      title: 'Endorsements',
-      amount: endorsementsNumber ? formatNumber(endorsementsNumber) : '-',
-      id: 'endorsements',
-    },
   ];
 
   const filteredCards = () => {
@@ -130,10 +112,6 @@ export const StatsRow = () => {
   };
 
   const cardStats = filteredCards();
-
-  useEffect(() => {
-    getEndorsements();
-  }, [profileSelected]);
 
   const daoNotSupportDelegatorPage = DELEGATOR_TRACKER_NOT_SUPPORTED_DAOS.find(
     dao => dao === config.DAO_KARMA_ID
