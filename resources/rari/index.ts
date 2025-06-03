@@ -22,7 +22,8 @@ const config: IDAOConfig = {
     URL: `https://rari.karmahq.xyz`,
   },
   DAO_DEFAULT_SETTINGS: {
-    FAQ: false,
+    TIMEPERIOD: '90d',
+    ORDERSTAT: 'karmaScore',
   },
   DAO_CHAINS: [mainnet, rariChain],
   DAO_TOKEN_CONTRACT: [
@@ -63,6 +64,7 @@ const config: IDAOConfig = {
       VE_RARI_TOKEN: '0x096Bd9a7a2e703670088C05035e23c7a9F428496',
     },
   },
+  DAO_HAS_REWARD_PROGRAM: true,
 };
 
 const dark: IDAOTheme = {

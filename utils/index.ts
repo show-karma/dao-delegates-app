@@ -11,7 +11,6 @@ export * from './dydx';
 export * from './eas-wagmi-utils';
 export * from './eas';
 export * from './EASAttestation';
-export * from './endorsements';
 export * from './ethers';
 export * from './fetchBlockTimestamp';
 export * from './fetchENSName';

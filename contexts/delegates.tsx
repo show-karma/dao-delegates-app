@@ -116,8 +116,6 @@ interface IDelegateProps {
   isOpenVoteToAnyone: boolean;
   onToggleVoteToAnyone: () => void;
   isFiltersDirty: () => boolean;
-  shouldRefreshEndorsements: boolean;
-  changeRefreshEndorsements: (choose: boolean) => void;
 }
 
 export const DelegatesContext = createContext({} as IDelegateProps);
@@ -366,7 +364,9 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
           gitcoinHealthScore: fetchedPeriod?.gitcoinHealthScore || 0,
           votingWeight: item.voteWeight,
           delegatedVotes:
-            +item.delegatedVotes || +(item?.snapshotDelegatedVotes || 0),
+            +item.delegatedVotes > 0
+              ? +item.delegatedVotes
+              : +(item.snapshotDelegatedVotes || 0),
           twitterHandle: item.twitterHandle,
           discourseHandles: item.discourseHandles,
           discordHandle: item.discordHandle,
@@ -439,7 +439,10 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
             offChain: fetchedPeriod?.offChainVotesPct || 0,
           },
           votingWeight: item.voteWeight,
-          delegatedVotes: +item.delegatedVotes || item.snapshotDelegatedVotes,
+          delegatedVotes:
+            +item.delegatedVotes > 0
+              ? +item.delegatedVotes
+              : +(item.snapshotDelegatedVotes || 0),
           gitcoinHealthScore: fetchedPeriod?.gitcoinHealthScore || 0,
           updatedAt: fetchedPeriod?.updatedAt,
           karmaScore: fetchedPeriod?.karmaScore || 0,
@@ -534,9 +537,8 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
         'overview',
         'handles',
         'withdraw',
-        'endorsements-received',
-        'endorsements-given',
       ];
+      if (daoInfo.config.DAO_HAS_REWARD_PROGRAM) tabs.push('reward-details');
       const checkTab = tabs.includes(getTab[1] as IActiveTab);
       const shouldOpenTab = defaultTab || (getTab[1] as IActiveTab);
 
@@ -584,8 +586,9 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
         },
         votingWeight: fetchedDelegate.voteWeight,
         delegatedVotes:
-          fetchedDelegate.delegatedVotes ||
-          fetchedDelegate.snapshotDelegatedVotes,
+          +fetchedDelegate.delegatedVotes > 0
+            ? +fetchedDelegate.delegatedVotes
+            : +(fetchedDelegate.snapshotDelegatedVotes || 0),
         gitcoinHealthScore: fetchedPeriod?.gitcoinHealthScore || 0,
         twitterHandle: fetchedDelegate.twitterHandle,
         discourseHandles: fetchedDelegate.discourseHandles,
@@ -645,8 +648,9 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
         },
         votingWeight: fetchedDelegate.voteWeight,
         delegatedVotes:
-          fetchedDelegate.delegatedVotes ||
-          fetchedDelegate.snapshotDelegatedVotes,
+          +fetchedDelegate.delegatedVotes > 0
+            ? +fetchedDelegate.delegatedVotes
+            : +(fetchedDelegate.snapshotDelegatedVotes || 0),
         gitcoinHealthScore: fetchedPeriod?.gitcoinHealthScore || 0,
         twitterHandle: fetchedDelegate.twitterHandle,
         discourseHandles: fetchedDelegate.discourseHandles,
@@ -674,9 +678,8 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
         'overview',
         'handles',
         'withdraw',
-        'endorsements-received',
-        'endorsements-given',
       ];
+      if (daoInfo.config.DAO_HAS_REWARD_PROGRAM) tabs.push('reward-details');
       if (userFound.aboutMe) tabs.push('aboutme');
       if (daoInfo.config.DAO_SUPPORTS_TOA) tabs.push('toa');
       const checkTab = tabs.includes(getTab[1] as IActiveTab);
@@ -734,8 +737,9 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
         },
         votingWeight: fetchedDelegate.voteWeight,
         delegatedVotes:
-          fetchedDelegate.delegatedVotes ||
-          fetchedDelegate.snapshotDelegatedVotes,
+          +fetchedDelegate.delegatedVotes > 0
+            ? +fetchedDelegate.delegatedVotes
+            : +(fetchedDelegate.snapshotDelegatedVotes || 0),
         gitcoinHealthScore: fetchedPeriod?.gitcoinHealthScore || 0,
         twitterHandle: fetchedDelegate.twitterHandle,
         discourseHandles: fetchedDelegate.discourseHandles,
@@ -822,7 +826,10 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
             offChain: fetchedPeriod?.offChainVotesPct || 0,
           },
           votingWeight: item?.voteWeight,
-          delegatedVotes: +item.delegatedVotes || item.snapshotDelegatedVotes,
+          delegatedVotes:
+            +item.delegatedVotes > 0
+              ? +item.delegatedVotes
+              : +(item.snapshotDelegatedVotes || 0),
           twitterHandle: item.twitterHandle,
           discourseHandles: item.discourseHandles,
           discordHandle: item.discordHandle,
@@ -1270,13 +1277,6 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
     setDelegationWillHaveError(value);
   }, 300);
 
-  const [shouldRefreshEndorsements, setShouldRefreshEndorsements] =
-    useState(false);
-
-  const changeRefreshEndorsements = (choose: boolean) => {
-    setShouldRefreshEndorsements(choose);
-  };
-
   const providerValue = useMemo(
     () => ({
       delegates,
@@ -1338,8 +1338,6 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
       isOpenVoteToAnyone,
       onToggleVoteToAnyone,
       isFiltersDirty,
-      shouldRefreshEndorsements,
-      changeRefreshEndorsements,
     }),
     [
       profileSelected,
@@ -1387,8 +1385,6 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
       isOpenVoteToAnyone,
       onToggleVoteToAnyone,
       isFiltersDirty,
-      shouldRefreshEndorsements,
-      changeRefreshEndorsements,
     ]
   );
 

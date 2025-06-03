@@ -116,6 +116,7 @@ export interface IDAOConfig {
   ENABLE_HANDLES_EDIT?: IMedias[];
   DAO_HAS_COMPENSATION_PROGRAM?: boolean;
   DAO_HAS_ORACLE_PROGRAM?: boolean;
+  DAO_HAS_REWARD_PROGRAM?: boolean;
   ECOSYSTEM?: {
     name: string;
     icon: string;
