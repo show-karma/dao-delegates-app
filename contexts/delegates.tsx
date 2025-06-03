@@ -537,8 +537,8 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
         'overview',
         'handles',
         'withdraw',
-        'reward-details',
       ];
+      if (daoInfo.config.DAO_HAS_REWARD_PROGRAM) tabs.push('reward-details');
       const checkTab = tabs.includes(getTab[1] as IActiveTab);
       const shouldOpenTab = defaultTab || (getTab[1] as IActiveTab);
 
@@ -678,8 +678,8 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
         'overview',
         'handles',
         'withdraw',
-        'reward-details',
       ];
+      if (daoInfo.config.DAO_HAS_REWARD_PROGRAM) tabs.push('reward-details');
       if (userFound.aboutMe) tabs.push('aboutme');
       if (daoInfo.config.DAO_SUPPORTS_TOA) tabs.push('toa');
       const checkTab = tabs.includes(getTab[1] as IActiveTab);

@@ -69,14 +69,16 @@ export const NavigatorRow: FC<INavigatorRow> = ({
           Voting History
         </NavButton>
 
-        <NavButton
-          isActive={isActiveTab('reward-details')}
-          onClick={() => changeTab('reward-details')}
-          borderTopRightRadius={isSamePerson || isDaoAdmin ? '0' : '5px'}
-          w="max-content"
-        >
-          Reward Details
-        </NavButton>
+        {daoInfo.config.DAO_HAS_REWARD_PROGRAM && (
+          <NavButton
+            isActive={isActiveTab('reward-details')}
+            onClick={() => changeTab('reward-details')}
+            borderTopRightRadius={isSamePerson || isDaoAdmin ? '0' : '5px'}
+            w="max-content"
+          >
+            Reward Details
+          </NavButton>
+        )}
 
         {isSamePerson && isAuthenticated && (
           <NavButton

@@ -48,6 +48,7 @@ const config: IDAOConfig = {
   EXCLUDED_VOTING_HISTORY_COLUMN: ['offChainVoteBreakdown'],
   ENABLE_HANDLES_EDIT: ['github'],
   EXCLUDED_CARD_FIELDS: ['healthScore', 'discordScore', 'offChainVotesPct'],
+  DAO_HAS_REWARD_PROGRAM: true,
 };
 
 const dark: IDAOTheme = {
