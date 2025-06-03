@@ -69,6 +69,15 @@ export const NavigatorRow: FC<INavigatorRow> = ({
           Voting History
         </NavButton>
 
+        <NavButton
+          isActive={isActiveTab('reward-details')}
+          onClick={() => changeTab('reward-details')}
+          borderTopRightRadius={isSamePerson || isDaoAdmin ? '0' : '5px'}
+          w="max-content"
+        >
+          Reward Details
+        </NavButton>
+
         {isSamePerson && isAuthenticated && (
           <NavButton
             isActive={isActiveTab('withdraw')}

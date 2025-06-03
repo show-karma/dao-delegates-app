@@ -30,6 +30,10 @@ const Handles = dynamic(() =>
   import('components/UserProfile/Handles').then(module => module.Handles)
 );
 
+const RewardDetails = dynamic(() =>
+  import('components/UserProfile/RewardDetails').then(module => module.RewardDetails)
+);
+
 const Tab: FC<{ activeTab: IActiveTab; profile: IDelegate }> = ({
   activeTab,
   profile,
@@ -52,6 +56,9 @@ const Tab: FC<{ activeTab: IActiveTab; profile: IDelegate }> = ({
   }
   if (activeTab === 'withdraw') {
     return <WithdrawDelegation />;
+  }
+  if (activeTab === 'reward-details') {
+    return <RewardDetails profile={profile} />;
   }
   return <Statement />;
 };

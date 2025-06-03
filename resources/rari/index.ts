@@ -21,7 +21,8 @@ const config: IDAOConfig = {
     URL: `https://rari.karmahq.xyz`,
   },
   DAO_DEFAULT_SETTINGS: {
-    FAQ: false,
+    TIMEPERIOD: '90d',
+    ORDERSTAT: 'karmaScore',
   },
   DAO_CHAINS: [mainnet],
   DAO_TOKEN_CONTRACT: [
