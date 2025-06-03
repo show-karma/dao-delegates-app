@@ -1,6 +1,7 @@
 import { Flex, Text, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react';
 import { useDAO } from 'contexts';
 import { FC } from 'react';
+import { formatDate } from 'utils';
 
 // Helper function for pluralization
 const pluralize = (word: string, count: number) =>
@@ -29,16 +30,6 @@ export const VotingProposalsCard: FC<VotingProposalsCardProps> = ({
   type,
 }) => {
   const { theme } = useDAO();
-
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
 
   const getTableTitle = () =>
     type === 'onChain' ? 'Onchain Proposals' : 'Snapshot Proposals';
@@ -124,7 +115,7 @@ export const VotingProposalsCard: FC<VotingProposalsCardProps> = ({
                   color={theme.text}
                   fontSize="14px"
                 >
-                  {formatDate(proposal.votedAt)}
+                  {proposal.votedAt ? formatDate(proposal.votedAt) : '-'}
                 </Td>
               </Tr>
             ))
