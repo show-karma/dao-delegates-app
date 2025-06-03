@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { FlexProps, Text, Flex, Button, Skeleton } from '@chakra-ui/react';
+import { FlexProps, Text, Flex } from '@chakra-ui/react';
 import { SubmitEmailInput } from 'components/Inputs/SubmitEmailInput';
 import { useDAO } from 'contexts';
 import { useToasty } from 'hooks';

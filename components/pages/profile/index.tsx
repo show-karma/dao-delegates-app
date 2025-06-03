@@ -31,7 +31,9 @@ const Handles = dynamic(() =>
 );
 
 const RewardDetails = dynamic(() =>
-  import('components/UserProfile/RewardDetails').then(module => module.RewardDetails)
+  import('components/UserProfile/RewardDetails').then(
+    module => module.RewardDetails
+  )
 );
 
 const Tab: FC<{ activeTab: IActiveTab; profile: IDelegate }> = ({

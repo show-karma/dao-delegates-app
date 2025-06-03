@@ -39,7 +39,7 @@ interface OracleBreakdownResponse {
 
 export const useOracleBreakdown = (publicAddress: string) => {
   const { daoInfo } = useDAO();
-  
+
   return useQuery({
     queryKey: ['oracle-breakdown', daoInfo.config.DAO_KARMA_ID, publicAddress],
     queryFn: async (): Promise<OracleBreakdownResponse> => {
@@ -51,4 +51,4 @@ export const useOracleBreakdown = (publicAddress: string) => {
     enabled: !!publicAddress && !!daoInfo.config.DAO_KARMA_ID,
     refetchOnWindowFocus: false,
   });
-}; 
+};

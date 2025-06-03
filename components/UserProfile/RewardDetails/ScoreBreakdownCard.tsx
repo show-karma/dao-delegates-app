@@ -22,13 +22,9 @@ export const ScoreBreakdownCard: FC<ScoreBreakdownCardProps> = ({
       borderWidth="1px"
       borderColor={theme.card.border}
     >
-      <Text
-        color={theme.title}
-        fontSize="lg"
-        fontWeight="600"
-      >
+      <Text color={theme.title} fontSize="lg" fontWeight="600">
         Score Breakdown: {formatSimpleNumber(totalScore)}
       </Text>
     </Flex>
   );
-}; 
+};

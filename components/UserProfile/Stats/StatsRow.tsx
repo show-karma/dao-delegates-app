@@ -1,11 +1,7 @@
 import { Flex, Link } from '@chakra-ui/react';
 import { useDAO, useDelegates } from 'contexts';
-import {
-  formatNumber,
-  formatNumberPercentage,
-} from 'utils';
+import { formatNumber, formatNumberPercentage } from 'utils';
 import { IStats } from 'types';
-import { useEffect, useState } from 'react';
 import { DELEGATOR_TRACKER_NOT_SUPPORTED_DAOS } from 'helpers';
 import { StatCard } from './StatCard';
 

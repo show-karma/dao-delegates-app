@@ -1,11 +1,10 @@
-import { Flex, Text, Table, Thead, Tbody, Tr, Th, Td, Link } from '@chakra-ui/react';
+import { Flex, Text, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react';
 import { useDAO } from 'contexts';
 import { FC } from 'react';
 
 // Helper function for pluralization
-const pluralize = (word: string, count: number) => {
-  return count === 1 ? word : `${word}s`;
-};
+const pluralize = (word: string, count: number) =>
+  count === 1 ? word : `${word}s`;
 
 interface Proposal {
   proposalId: string;
@@ -37,17 +36,14 @@ export const VotingProposalsCard: FC<VotingProposalsCardProps> = ({
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
-  const getTableTitle = () => {
-    return type === 'onChain' ? 'Onchain Proposals' : 'Snapshot Proposals';
-  };
+  const getTableTitle = () =>
+    type === 'onChain' ? 'Onchain Proposals' : 'Snapshot Proposals';
 
-  const formatParticipationRate = (rate: number) => {
-    return Math.round(rate * 100);
-  };
+  const formatParticipationRate = (rate: number) => Math.round(rate * 100);
 
   return (
     <Flex
@@ -65,36 +61,18 @@ export const VotingProposalsCard: FC<VotingProposalsCardProps> = ({
         alignItems={['flex-start', 'center']}
         w="full"
       >
-        <Text
-          color={theme.title}
-          fontSize="lg"
-          fontWeight="600"
-        >
+        <Text color={theme.title} fontSize="lg" fontWeight="600">
           {getTableTitle()}
         </Text>
         <Flex flexDir="row" gap="2" alignItems="center" flexWrap="wrap">
-          <Text
-            fontSize="14px"
-            fontWeight={500}
-            color={theme.title}
-          >
-            {totalProposals} Total{' '}
-            {pluralize('Proposal', totalProposals)}
+          <Text fontSize="14px" fontWeight={500} color={theme.title}>
+            {totalProposals} Total {pluralize('Proposal', totalProposals)}
             {', '}
-            <Text
-              as="span"
-              fontSize="14px"
-              fontWeight={500}
-              color={theme.text}
-            >
+            <Text as="span" fontSize="14px" fontWeight={500} color={theme.text}>
               {votedOnCount} Voted On
             </Text>
           </Text>
-          <Text
-            fontSize="14px"
-            fontWeight={500}
-            color={theme.subtitle}
-          >
+          <Text fontSize="14px" fontWeight={500} color={theme.subtitle}>
             • Participation Rate - {formatParticipationRate(votedPct)}%
           </Text>
         </Flex>
@@ -152,9 +130,9 @@ export const VotingProposalsCard: FC<VotingProposalsCardProps> = ({
             ))
           ) : (
             <Tr>
-              <Td 
-                colSpan={2} 
-                textAlign="center" 
+              <Td
+                colSpan={2}
+                textAlign="center"
                 color={theme.subtitle}
                 fontSize="14px"
               >
@@ -166,4 +144,4 @@ export const VotingProposalsCard: FC<VotingProposalsCardProps> = ({
       </Table>
     </Flex>
   );
-}; 
+};
