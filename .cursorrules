@@ -8,6 +8,7 @@
 
 - When you are suggesting something that can use URL, please always consider rootPathname of useDAO hook.
 - We should always first consider using react-query to fetch data.
+- Don't create comments in the code.
 
 # Pages
 

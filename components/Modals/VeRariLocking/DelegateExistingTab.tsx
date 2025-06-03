@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState } from 'react';
 import {
   Box,
   Button,
@@ -45,36 +45,34 @@ export const DelegateExistingTab: FC<IDelegateExistingTab> = ({
     refetch: refetchLocks,
   } = useVeRariLocks();
 
+  // Create success handler that will be called after delegation
+  const handleDelegationSuccess = () => {
+    setSelectedLockId(null); // Clear selection
+    refetchLocks(); // Refresh locks data
+    onSuccess(); // Close modal
+  };
+
   // Delegation hook - initialize with selected lock parameters
-  const {
-    delegateLock,
-    isLoading: isDelegateLoading,
-    isSuccess: isDelegateSuccess,
-  } = useVeRariDelegation({
+  const { delegateLock, isLoading: isDelegateLoading } = useVeRariDelegation({
     lockId: selectedLockId ? parseInt(selectedLockId, 10) : 0,
     newDelegateAddress: delegateAddress,
+    onSuccess: handleDelegationSuccess, // Pass success handler directly
   });
 
   const isCorrectNetwork = isOnMainnet;
 
-  // Handle delegation success
-  useEffect(() => {
-    if (isDelegateSuccess) {
-      setSelectedLockId(null);
-      refetchLocks(); // Refresh locks after successful delegation
-      onSuccess();
-    }
-  }, [isDelegateSuccess, refetchLocks, onSuccess]);
-
-  const handleDelegateClick = async (lockId: string) => {
+  const handleDelegateClick = (lockId: string) => {
     if (!isCorrectNetwork) return;
 
     setSelectedLockId(lockId);
-    // The delegateLock function will be called when the component re-renders with the new lockId
-    // We need to trigger it manually if it's available
-    if (delegateLock) {
-      delegateLock();
-    }
+
+    // Use setTimeout to ensure the hook has time to prepare the transaction
+    // with the new lockId before calling delegateLock
+    setTimeout(() => {
+      if (delegateLock) {
+        delegateLock();
+      }
+    }, 100);
   };
 
   const getButtonText = (lock: VeRariLock) => {

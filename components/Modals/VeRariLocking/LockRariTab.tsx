@@ -19,12 +19,13 @@ import {
   Skeleton,
 } from '@chakra-ui/react';
 import { useDAO } from 'contexts';
-import { FC, useState, useEffect } from 'react';
+import { FC, useState, useEffect, useRef } from 'react';
 import {
   useRariToken,
   useRariLock,
   useProspectiveVeRari,
   useRariNetwork,
+  useVeRariLocks,
 } from 'hooks';
 import {
   RARI_LOCK_TIMEFRAMES,
@@ -47,6 +48,9 @@ export const LockRariTab: FC<ILockRariTab> = ({
   const [selectedTimeframe, setSelectedTimeframe] =
     useState<RariLockTimeframe>('1 month');
 
+  // Track if we've already triggered lock after approval
+  const hasTriggeredLockRef = useRef(false);
+
   // Network checking
   const {
     isCorrectNetwork,
@@ -65,7 +69,15 @@ export const LockRariTab: FC<ILockRariTab> = ({
     refetchAllowance,
   } = useRariToken({ amountToApprove: rariAmount });
 
-  // Get prospective veRARI amount
+  // Get existing locks data for refreshing
+  const { refetch: refetchLocks } = useVeRariLocks();
+
+  // Lock RARI hook - calculate cliff and slope periods
+  const timeframeInWeeks = RARI_LOCK_TIMEFRAMES[selectedTimeframe];
+  const cliffWeeks = Math.floor(timeframeInWeeks * 0.75); // 75% of timeframe
+  const slopeWeeks = Math.floor(timeframeInWeeks * 0.25); // 25% of timeframe
+
+  // Get prospective veRARI amount - note: this calculation may not reflect the exact cliff/slope split
   const prospectiveVeRariResult = useProspectiveVeRari(
     rariAmount,
     selectedTimeframe
@@ -84,8 +96,6 @@ export const LockRariTab: FC<ILockRariTab> = ({
     }
   };
 
-  // Lock RARI hook - pass weeks directly, not seconds
-  const timeframeInWeeks = RARI_LOCK_TIMEFRAMES[selectedTimeframe];
   const {
     lockRari,
     isLoading: isLockLoading,
@@ -93,26 +103,35 @@ export const LockRariTab: FC<ILockRariTab> = ({
   } = useRariLock({
     amount: rariAmount,
     delegateAddress,
-    slopePeriod: timeframeInWeeks,
-    cliff: timeframeInWeeks,
+    slopePeriod: slopeWeeks,
+    cliff: cliffWeeks,
   });
 
-  // Handle success states
+  // Handle success states - FIXED: Remove lockRari from dependencies and use ref
   useEffect(() => {
-    if (isApproveSuccess) {
+    if (isApproveSuccess && !hasTriggeredLockRef.current) {
+      hasTriggeredLockRef.current = true; // Mark as triggered
       refetchAllowance();
       // Automatically trigger lock after approval succeeds
       if (lockRari) {
         lockRari();
       }
     }
-  }, [isApproveSuccess, refetchAllowance, lockRari]);
+  }, [isApproveSuccess, refetchAllowance]); // Removed lockRari from dependencies
 
   useEffect(() => {
     if (isLockSuccess) {
+      // Refresh the existing locks data so the "Delegate Existing" tab shows the new lock
+      refetchLocks();
       onSuccess();
     }
-  }, [isLockSuccess, onSuccess]);
+  }, [isLockSuccess, onSuccess, refetchLocks]);
+
+  // Reset the trigger flag when starting a new approval
+  const handleApproveClick = () => {
+    hasTriggeredLockRef.current = false; // Reset flag for new approval
+    approveRari();
+  };
 
   const handleMaxClick = () => {
     setRariAmount(formattedBalance);
@@ -277,7 +296,7 @@ export const LockRariTab: FC<ILockRariTab> = ({
       {/* Action Button */}
       {needsApprovalForAmount ? (
         <Button
-          onClick={approveRari}
+          onClick={handleApproveClick}
           isLoading={isApproveLoading || isLockLoading}
           loadingText={
             isApproveLoading ? 'Approving...' : 'Locking & Delegating...'

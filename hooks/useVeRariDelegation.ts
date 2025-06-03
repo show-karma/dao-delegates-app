@@ -11,6 +11,7 @@ import { useToasty } from './useToasty';
 interface DelegateLockParams {
   lockId: number;
   newDelegateAddress: string;
+  onSuccess?: () => void;
 }
 
 export const useVeRariDelegation = (params: DelegateLockParams) => {
@@ -26,7 +27,8 @@ export const useVeRariDelegation = (params: DelegateLockParams) => {
     enabled:
       !!userAddress &&
       !!params.newDelegateAddress &&
-      params.lockId !== undefined,
+      params.lockId !== undefined &&
+      params.lockId > 0, // Only enable when we have a valid lock ID
   });
 
   // Execute delegate transaction
@@ -69,6 +71,11 @@ export const useVeRariDelegation = (params: DelegateLockParams) => {
         description: 'Successfully delegated your veRARI lock!',
         status: 'success',
       });
+
+      // Call the success callback if provided
+      if (params.onSuccess) {
+        params.onSuccess();
+      }
     },
     onError(error) {
       console.log('Delegation confirmation error:', error);
