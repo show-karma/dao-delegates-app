@@ -13,3 +13,35 @@
 
 - Currently, we have kind of duplicated pages directory "\_sites" and "[site]", so whenever you are creating a new page, please consider where to put in both places.
 - Do not use @chakra-ui/icons for icons, use react-icons library instead.
+
+# Chain Configurations
+
+## Custom Chain Configuration Pattern
+
+- **Location**: Custom chain configurations should be placed in `utils/customChains/` for non-standard chains and `utils/mainnet/` for mainnet variants
+- **Structure**: Follow the wagmi/viem `Chain` interface pattern established in `utils/customChains/rari.ts` and `utils/mainnet/rpc.ts`
+- **RPC Redundancy**: Always include multiple RPC providers with fallbacks (public RPCs + conditional paid services)
+- **Environment Variables**: Support conditional RPC endpoints based on environment variables (Alchemy, Infura, etc.)
+- **Standard Contracts**: Include essential contracts like Multicall3, ENS when applicable
+- **WebSocket Support**: Provide both HTTP and WebSocket RPC URLs when available
+- **Block Explorers**: Configure multiple block explorer options with default preference
+
+## Example Pattern Structure:
+
+```typescript
+export const customChain: Chain = {
+  id: number,
+  name: string,
+  network: string,
+  nativeCurrency: { name, symbol, decimals },
+  rpcUrls: {
+    default: { http: [], webSocket: [] },
+    public: { http: [], webSocket: [] },
+    alchemy: { /* conditional based on env */ },
+    infura: { /* conditional based on env */ }
+  },
+  blockExplorers: { default, additional_options },
+  contracts: { /* standard contracts */ },
+  testnet: boolean
+}
+```
