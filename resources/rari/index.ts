@@ -21,7 +21,8 @@ const config: IDAOConfig = {
     URL: `https://rari.karmahq.xyz`,
   },
   DAO_DEFAULT_SETTINGS: {
-    FAQ: false,
+    TIMEPERIOD: '90d',
+    ORDERSTAT: 'karmaScore',
   },
   DAO_CHAINS: [mainnet],
   DAO_TOKEN_CONTRACT: [
@@ -47,6 +48,7 @@ const config: IDAOConfig = {
   EXCLUDED_VOTING_HISTORY_COLUMN: ['offChainVoteBreakdown'],
   ENABLE_HANDLES_EDIT: ['github'],
   EXCLUDED_CARD_FIELDS: ['healthScore', 'discordScore', 'offChainVotesPct'],
+  DAO_HAS_REWARD_PROGRAM: true,
 };
 
 const dark: IDAOTheme = {
