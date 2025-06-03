@@ -177,4 +177,15 @@ export interface IDAOConfig {
   // TODO change it from any
   // Had few issues w/ types, for now we'll leave it as any
   CUSTOM_RPC?: any;
+
+  // Custom delegation configuration for DAOs with multiple delegation systems (like RARI)
+  CUSTOM_DELEGATION?: {
+    ENABLE_CUSTOM_DELEGATION?: boolean;
+    PRIMARY_DELEGATION_CHAIN?: number;
+    SECONDARY_DELEGATION_CHAIN?: number;
+    MAINNET_CONTRACTS?: {
+      RARI_TOKEN?: string;
+      VE_RARI_TOKEN?: string;
+    };
+  };
 }
