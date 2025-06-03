@@ -357,7 +357,7 @@ const light: IDAOTheme = {
   filters: {
     head: '#666666',
     border: '#ADB8C033',
-    title: '#F2F4F9',
+    title: '#666666',
     bg: 'transparent',
     listBg: '#F2F4F9',
     listText: '#666666',

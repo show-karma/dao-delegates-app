@@ -2,13 +2,13 @@ import React, { FC } from 'react';
 import {
   Box,
   Button,
-  HStack,
   Text,
   Badge,
   Alert,
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Flex,
 } from '@chakra-ui/react';
 import { useDAO } from 'contexts';
 import { useRariNetwork } from 'hooks';
@@ -77,7 +77,12 @@ export const NetworkSelector: FC<INetworkSelector> = ({ onNetworkChange }) => {
           Choose Delegation Network
         </Text>
 
-        <HStack spacing="3">
+        <Flex
+          w="full"
+          flexDir={{ base: 'column', md: 'row' }}
+          flexWrap="wrap"
+          gap="3"
+        >
           {/* Ethereum Mainnet Option */}
           <Button
             flex="1"
@@ -197,7 +202,7 @@ export const NetworkSelector: FC<INetworkSelector> = ({ onNetworkChange }) => {
               </Badge>
             )}
           </Button>
-        </HStack>
+        </Flex>
       </Box>
     </Box>
   );

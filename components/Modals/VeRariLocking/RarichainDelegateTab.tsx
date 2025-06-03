@@ -9,6 +9,7 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Flex,
 } from '@chakra-ui/react';
 import { useDAO, useGovernanceVotes } from 'contexts';
 import { useRariNetwork, useRarichainToken, useDelegation } from 'hooks';
@@ -69,7 +70,6 @@ export const RarichainDelegateTab: FC<IRarichainDelegateTab> = ({
   const getButtonText = () => {
     if (!isOnRarichain) return 'Switch to Rarichain';
     if (parseFloat(formattedBalance) === 0) return 'No RARI to Delegate';
-    if (isCurrentlyDelegatedTo) return 'Already Delegated';
     return isLoading ? 'Delegating...' : 'Delegate RARI';
   };
 
@@ -124,11 +124,11 @@ export const RarichainDelegateTab: FC<IRarichainDelegateTab> = ({
                 fontWeight="bold"
                 color={theme.modal.delegateTo.text}
               >
-                Already delegated to this delegate
+                Already delegating to this delegate
               </Text>
             </HStack>
           ) : (
-            <HStack spacing="3" align="center">
+            <Flex flexDir="row" w="full" gap="3" align="center">
               <ImgWithFallback
                 h="32px"
                 w="32px"
@@ -136,19 +136,37 @@ export const RarichainDelegateTab: FC<IRarichainDelegateTab> = ({
                 src={`${daoInfo.config.IMAGE_PREFIX_URL}${currentDelegate}`}
                 fallback={currentDelegate}
               />
-              <Box>
+              <Flex
+                w="full"
+                maxW="full"
+                textOverflow="ellipsis"
+                overflow="hidden"
+                whiteSpace="nowrap"
+                flexDir="column"
+              >
                 <Text
                   fontSize="md"
                   fontWeight="bold"
                   color={theme.modal.delegateTo.text}
+                  textOverflow="ellipsis"
+                  overflow="hidden"
+                  whiteSpace="nowrap"
+                  flexDir="column"
                 >
-                  Delegated to another delegate
-                </Text>
-                <Text fontSize="xs" color={theme.modal.delegateTo.subtext}>
                   {currentDelegate}
                 </Text>
-              </Box>
-            </HStack>
+                <Text
+                  fontSize="xs"
+                  color={theme.modal.delegateTo.subtext}
+                  textOverflow="ellipsis"
+                  overflow="hidden"
+                  whiteSpace="nowrap"
+                  maxW="100%"
+                >
+                  {currentDelegate}
+                </Text>
+              </Flex>
+            </Flex>
           )}
         </Box>
       )}
@@ -163,10 +181,10 @@ export const RarichainDelegateTab: FC<IRarichainDelegateTab> = ({
         opacity={isOnRarichain ? 1 : 0.6}
       >
         <Text fontSize="sm" color={theme.modal.delegateTo.subtext} mb="3">
-          {isCurrentlyDelegatedTo ? 'Currently delegated to' : 'Delegate to'}
+          Delegate to
         </Text>
 
-        <HStack spacing="3" align="center">
+        <Flex flexDir="row" w="full" gap="3" align="center">
           {/* Delegate Profile Picture */}
           <ImgWithFallback
             h="48px"
@@ -177,20 +195,37 @@ export const RarichainDelegateTab: FC<IRarichainDelegateTab> = ({
           />
 
           {/* Delegate Info */}
-          <Box flex="1">
+          <Flex
+            flexDir="column"
+            flex="1"
+            textOverflow="ellipsis"
+            overflow="hidden"
+            whiteSpace="nowrap"
+          >
             <Text
               fontSize="lg"
               fontWeight="bold"
               color={theme.modal.delegateTo.text}
               mb="1"
+              textOverflow="ellipsis"
+              overflow="hidden"
+              whiteSpace="nowrap"
+              flexDir="column"
             >
               {delegateName || truncateAddress(delegateAddress)}
             </Text>
-            <Text fontSize="xs" color={theme.modal.delegateTo.subtext}>
+            <Text
+              fontSize="xs"
+              color={theme.modal.delegateTo.subtext}
+              textOverflow="ellipsis"
+              overflow="hidden"
+              whiteSpace="nowrap"
+              flexDir="column"
+            >
               {delegateAddress}
             </Text>
-          </Box>
-        </HStack>
+          </Flex>
+        </Flex>
       </Box>
 
       {/* Delegation Amount Display */}
@@ -217,11 +252,7 @@ export const RarichainDelegateTab: FC<IRarichainDelegateTab> = ({
       {/* Action Button */}
       <Button
         onClick={handleDelegate}
-        isDisabled={
-          !isOnRarichain ||
-          parseFloat(formattedBalance) === 0 ||
-          isCurrentlyDelegatedTo
-        }
+        isDisabled={!isOnRarichain || parseFloat(formattedBalance) === 0}
         isLoading={isLoading}
         loadingText="Delegating..."
         bg={theme.modal.delegateTo.button.normal.bg}

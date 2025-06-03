@@ -14,3 +14,4 @@ export * from './useVeRariDelegation';
 export * from './useRariNetwork';
 export * from './useRariConfig';
 export * from './useRarichainToken';
+export * from './useVeRariLocks';

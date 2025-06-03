@@ -53,7 +53,7 @@ export const RariLockAndDelegateModal: FC<IRariLockAndDelegateModal> = ({
       return {
         tabs: [
           { label: 'Lock RARI to Delegate', component: LockRariTab },
-          { label: 'Delegate Existing veRARI', component: DelegateExistingTab },
+          { label: 'Delegate Existing Locks', component: DelegateExistingTab },
         ],
         title: 'Lock $RARI and Delegate veRARI',
       };
