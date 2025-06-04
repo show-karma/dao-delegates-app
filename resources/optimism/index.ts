@@ -42,7 +42,11 @@ const config: IDAOConfig = {
   DAO_FORUM_TYPE: 'discourse',
   DAO_GTAG: 'G-67LDHT697P',
   SORT_OPTIONS: ['forumScore', 'karmaScore'],
-  EXCLUDED_CARD_FIELDS: ['healthScore', 'discordScore', 'offChainVotesPct'],
+  EXCLUDED_CARD_FIELDS: [
+    'healthScore',
+    'discordScore',
+    'offChainVotesPct',
+  ],
   ENABLE_DELEGATE_TRACKER: true,
   EXCLUDED_VOTING_HISTORY_COLUMN: ['offChainVoteBreakdown'],
   DAO_CATEGORIES_TYPE: 'workstreams',
