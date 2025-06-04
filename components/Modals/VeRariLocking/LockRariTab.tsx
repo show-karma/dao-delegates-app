@@ -107,29 +107,25 @@ export const LockRariTab: FC<ILockRariTab> = ({
     cliff: cliffWeeks,
   });
 
-  // Handle success states - FIXED: Remove lockRari from dependencies and use ref
   useEffect(() => {
     if (isApproveSuccess && !hasTriggeredLockRef.current) {
-      hasTriggeredLockRef.current = true; // Mark as triggered
+      hasTriggeredLockRef.current = true;
       refetchAllowance();
-      // Automatically trigger lock after approval succeeds
       if (lockRari) {
         lockRari();
       }
     }
-  }, [isApproveSuccess, refetchAllowance]); // Removed lockRari from dependencies
+  }, [isApproveSuccess, refetchAllowance]);
 
   useEffect(() => {
     if (isLockSuccess) {
-      // Refresh the existing locks data so the "Delegate Existing" tab shows the new lock
       refetchLocks();
       onSuccess();
     }
   }, [isLockSuccess, onSuccess, refetchLocks]);
 
-  // Reset the trigger flag when starting a new approval
   const handleApproveClick = () => {
-    hasTriggeredLockRef.current = false; // Reset flag for new approval
+    hasTriggeredLockRef.current = false;
     approveRari();
   };
 
