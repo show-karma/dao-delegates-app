@@ -1,12 +1,21 @@
-import { useDAO } from 'contexts';
+import { useDAO, useDelegates, useGovernanceVotes, useWallet } from 'contexts';
 import { IDelegation } from 'types';
-import { useContractWrite, useNetwork, usePrepareContractWrite } from 'wagmi';
+import {
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from 'wagmi';
 import { useMixpanel } from './useMixpanel';
 import { useToasty } from './useToasty';
 
 export const useDelegation = (args: IDelegation) => {
   const { delegatee, onSuccessFunction, chosenContract } = args;
   const { daoInfo } = useDAO();
+  const { fetchDelegates, refreshProfileModal, profileSelected } =
+    useDelegates();
+  const { getDelegatedBefore } = useGovernanceVotes();
+  const { delegateOnClose } = useWallet();
 
   const getArgs = () => {
     const functionArgs = daoInfo.config.DAO_DELEGATE_FUNCTION_ARGS;
@@ -31,19 +40,13 @@ export const useDelegation = (args: IDelegation) => {
   });
 
   const { toast } = useToasty();
-  const { data, isLoading, isSuccess, write } = useContractWrite({
+
+  const {
+    data,
+    isLoading: isWriteLoading,
+    write,
+  } = useContractWrite({
     ...config,
-    onSuccess() {
-      mixpanel.reportEvent({
-        event: 'delegateapp.tokenDelegated',
-      });
-      onSuccessFunction?.();
-      toast({
-        title: 'Success',
-        description: 'You successfully delegated your tokens!',
-        status: 'success',
-      });
-    },
     onError(error) {
       // eslint-disable-next-line no-console
       console.log(error);
@@ -66,6 +69,48 @@ export const useDelegation = (args: IDelegation) => {
       }
     },
   });
+
+  // Wait for transaction confirmation
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransaction({
+    hash: data?.hash,
+    confirmations: 1, // Wait for at least 1 confirmation
+    onSuccess() {
+      mixpanel.reportEvent({
+        event: 'delegateapp.tokenDelegated',
+      });
+      toast({
+        title: 'Success',
+        description: 'You successfully delegated your tokens!',
+        status: 'success',
+      });
+
+      getDelegatedBefore();
+
+      if (
+        profileSelected &&
+        profileSelected.address.toLowerCase() === delegatee.toLowerCase()
+      ) {
+        refreshProfileModal();
+      }
+
+      fetchDelegates(0);
+
+      onSuccessFunction?.();
+    },
+    onError(error) {
+      // eslint-disable-next-line no-console
+      console.log('Transaction confirmation error:', error);
+      toast({
+        title: 'Error',
+        description:
+          'Transaction failed during confirmation. Please check your transaction.',
+        status: 'error',
+      });
+    },
+  });
+
+  // Combine loading states: writing transaction + confirming transaction
+  const isLoading = isWriteLoading || isConfirming;
 
   return { data, isLoading, isSuccess, write };
 };

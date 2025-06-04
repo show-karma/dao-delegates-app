@@ -4,6 +4,5 @@ export type IActiveTab =
   | 'aboutme'
   | 'handles'
   | 'toa'
-  | 'endorsements-received'
-  | 'endorsements-given'
-  | 'withdraw';
+  | 'withdraw'
+  | 'reward-details';

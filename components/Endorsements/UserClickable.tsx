@@ -20,7 +20,7 @@ export const UserClickable: FC<UserClickableProps> = ({
   const { theme, rootPathname } = useDAO();
   return (
     <ChakraLink
-      href={LINKS.PROFILE(rootPathname, address, 'endorsements-received')}
+      href={LINKS.PROFILE(rootPathname, address)}
       flexDir="row"
       gap="2"
       p="0"

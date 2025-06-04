@@ -1,7 +1,7 @@
 import { Button, ButtonProps, Flex } from '@chakra-ui/react';
 import { ChakraLink } from 'components/ChakraLink';
 import { useDAO, useDelegates, useWallet } from 'contexts';
-import { useDelegation, useMixpanel, useToasty } from 'hooks';
+import { useDelegation, useMixpanel, useToasty, useRariConfig } from 'hooks';
 import { FC, useEffect, useState } from 'react';
 import { convertHexToRGBA } from 'utils';
 import { useAccount, useSwitchNetwork } from 'wagmi';
@@ -31,12 +31,24 @@ export const DelegateButton: FC<IDelegateButton> = ({
   const { delegateOnToggle, delegateIsOpen } = useWallet();
   const { delegatePoolList } = useDelegates();
 
+  // Check if this is RARI DAO with custom delegation
+  const { hasCustomDelegation, isRariDAO } = useRariConfig();
+
   const [writeAfterAction, setWriteAfterAction] = useState(false);
 
-  const { isLoading, write } = useDelegation({
-    delegatee: delegated,
-    onSuccessFunction: successEmitter,
+  // Only use delegation hook if NOT using RARI custom delegation
+  const shouldUseStandardDelegation = !(hasCustomDelegation && isRariDAO);
+
+  const standardDelegation = useDelegation({
+    delegatee: shouldUseStandardDelegation ? delegated : '',
+    onSuccessFunction: shouldUseStandardDelegation ? successEmitter : undefined,
   });
+
+  // Use either the real delegation hook or mock values for RARI
+  const { isLoading, write } = shouldUseStandardDelegation
+    ? standardDelegation
+    : { isLoading: false, write: undefined };
+
   const sameNetwork = !!config.DAO_CHAINS.find(
     chainToSearch => chainToSearch.id === chain?.id
   )?.id;
@@ -63,29 +75,35 @@ export const DelegateButton: FC<IDelegateButton> = ({
         description: `You can only delegate to ${config.BULK_DELEGATE_MAXSIZE} user at a time.`,
         status: 'error',
       });
+      return;
     }
 
     mixpanel.reportEvent({
       event: 'delegateButtonClick',
     });
+
+    // Call beforeOnClick (which opens RARI modal for RARI DAO)
     beforeOnClick?.();
 
+    // If this is RARI with custom delegation, stop here - let the modal handle it
+    if (hasCustomDelegation && isRariDAO) {
+      return;
+    }
+
+    // Continue with standard delegation logic for non-RARI DAOs
     if (config.DAO_DELEGATE_ACTION) {
-      return config.DAO_DELEGATE_ACTION();
-    }
-    if (!isConnected) {
+      config.DAO_DELEGATE_ACTION();
+    } else if (!isConnected) {
       setWriteAfterAction(true);
-      return openConnectModal?.();
-    }
-
-    if (chain && !sameNetwork) {
+      openConnectModal?.();
+    } else if (chain && !sameNetwork) {
       setWriteAfterAction(true);
-      return switchNetwork?.();
+      switchNetwork?.();
+    } else if (!delegateIsOpen && !shouldBlockModal) {
+      delegateOnToggle();
+    } else {
+      write?.();
     }
-
-    if (!delegateIsOpen && !shouldBlockModal) return delegateOnToggle();
-
-    return write?.();
   };
 
   if (config.DAO_DELEGATION_URL) {

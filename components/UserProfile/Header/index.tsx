@@ -17,7 +17,6 @@ import {
 } from 'components';
 import { AddToRegistryButton } from 'components/DelegateRegistry/AddToRegistryButton';
 import { GithubIcon } from 'components/Icons/GithubIcon';
-import { EndorseModal } from 'components/Modals/Endorse';
 import {
   useDAO,
   useDelegates,
@@ -334,18 +333,6 @@ const UserSection: FC<IUserSection> = ({ profile, changeTab }) => {
               <AddToRegistryButton profile={profileSelected} />
             )}
 
-            {isSamePerson ? null : (
-              <EndorseModal
-                endorsingAddress={profile.address}
-                endorsingName={
-                  profile.realName ||
-                  profile.ensName ||
-                  truncateAddress(profile.address)
-                }
-                endorsingImage={profile.profilePicture}
-                changeTab={changeTab}
-              />
-            )}
             {!isEditing && (compareProxy(profile.address) || isDaoAdmin) ? (
               <Button
                 fontWeight="normal"
@@ -429,18 +416,6 @@ const UserSection: FC<IUserSection> = ({ profile, changeTab }) => {
           justify="center"
           gap="2"
         >
-          {isSamePerson || compareProxy(fullAddress) ? null : (
-            <EndorseModal
-              endorsingAddress={profile.address}
-              endorsingName={
-                profile.realName ||
-                profile.ensName ||
-                truncateAddress(profile.address)
-              }
-              endorsingImage={profile.profilePicture}
-              changeTab={changeTab}
-            />
-          )}
           <DelegateCases
             fullAddress={fullAddress}
             status={profileSelected?.status}

@@ -3,3 +3,4 @@ export * from './DelegateLoginModal';
 export * from './DelegateToAnyone';
 export * from './Linking';
 export * from './Sidebar';
+export * from './VeRariLocking';

@@ -131,12 +131,6 @@ export const HeaderHat: FC<IHeaderHat> = ({
       }
     }
 
-    array.push({
-      title: 'Endorsements',
-      path: `${rootPathname}/endorsements`,
-      isExternal: false,
-    });
-
     return array;
   };
 

@@ -5,8 +5,6 @@ import { Box, Flex, Text } from '@chakra-ui/react';
 import { useDAO, useDelegates, VotesProvider } from 'contexts';
 import { Header } from 'components/UserProfile/Header';
 import { VotingHistory } from 'components/UserProfile/VotingHistory';
-import { EndorsementsReceived } from 'components/UserProfile/EndorsementsReceived';
-import { EndorsementsGiven } from 'components/UserProfile/EndorsementsGiven';
 import { useMixpanel } from 'hooks';
 import { IActiveTab, IDelegate } from 'types';
 
@@ -32,6 +30,12 @@ const Handles = dynamic(() =>
   import('components/UserProfile/Handles').then(module => module.Handles)
 );
 
+const RewardDetails = dynamic(() =>
+  import('components/UserProfile/RewardDetails').then(
+    module => module.RewardDetails
+  )
+);
+
 const Tab: FC<{ activeTab: IActiveTab; profile: IDelegate }> = ({
   activeTab,
   profile,
@@ -55,11 +59,8 @@ const Tab: FC<{ activeTab: IActiveTab; profile: IDelegate }> = ({
   if (activeTab === 'withdraw') {
     return <WithdrawDelegation />;
   }
-  if (activeTab === 'endorsements-received') {
-    return <EndorsementsReceived />;
-  }
-  if (activeTab === 'endorsements-given') {
-    return <EndorsementsGiven />;
+  if (activeTab === 'reward-details') {
+    return <RewardDetails profile={profile} />;
   }
   return <Statement />;
 };
