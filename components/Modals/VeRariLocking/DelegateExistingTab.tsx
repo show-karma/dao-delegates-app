@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -36,6 +36,7 @@ export const DelegateExistingTab: FC<IDelegateExistingTab> = ({
   const { theme, daoInfo } = useDAO();
   const { isOnMainnet, switchToMainnet, currentNetworkName } = useRariNetwork();
   const [selectedLockId, setSelectedLockId] = useState<string | null>(null);
+  const [shouldTriggerDelegation, setShouldTriggerDelegation] = useState(false);
 
   // Fetch real veRARI locks from the API
   const {
@@ -48,6 +49,7 @@ export const DelegateExistingTab: FC<IDelegateExistingTab> = ({
   // Create success handler that will be called after delegation
   const handleDelegationSuccess = () => {
     setSelectedLockId(null); // Clear selection
+    setShouldTriggerDelegation(false); // Reset trigger flag
     refetchLocks(); // Refresh locks data
     onSuccess(); // Close modal
   };
@@ -59,20 +61,21 @@ export const DelegateExistingTab: FC<IDelegateExistingTab> = ({
     onSuccess: handleDelegationSuccess, // Pass success handler directly
   });
 
+  // Auto-trigger delegation when hook is ready and flag is set
+  useEffect(() => {
+    if (shouldTriggerDelegation && delegateLock && selectedLockId) {
+      setShouldTriggerDelegation(false); // Reset trigger flag
+      delegateLock();
+    }
+  }, [shouldTriggerDelegation, delegateLock, selectedLockId]);
+
   const isCorrectNetwork = isOnMainnet;
 
   const handleDelegateClick = (lockId: string) => {
     if (!isCorrectNetwork) return;
 
     setSelectedLockId(lockId);
-
-    // Use setTimeout to ensure the hook has time to prepare the transaction
-    // with the new lockId before calling delegateLock
-    setTimeout(() => {
-      if (delegateLock) {
-        delegateLock();
-      }
-    }, 100);
+    setShouldTriggerDelegation(true); // Set flag to trigger delegation
   };
 
   const getButtonText = (lock: VeRariLock) => {

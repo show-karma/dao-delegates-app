@@ -87,8 +87,8 @@ export const LockRariTab: FC<ILockRariTab> = ({
   const getProspectiveVeRariAmount = (): string => {
     try {
       const data = prospectiveVeRariResult?.data as any[];
-      if (data && Array.isArray(data) && data[1]) {
-        return formatNumber(formatEther(data[1]));
+      if (data && Array.isArray(data) && data[0]) {
+        return formatNumber(formatEther(data[0]));
       }
       return '0';
     } catch {

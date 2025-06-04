@@ -70,20 +70,20 @@ export const useVeRari = () => {
   };
 };
 
-// Separate hook for getting prospective veRARI amount
 export const useProspectiveVeRari = (
   rariAmount: string,
   timeframe: RariLockTimeframe
-) =>
-  useContractRead({
+) => {
+  const totalWeeks = RARI_LOCK_TIMEFRAMES[timeframe];
+  const slopePeriod = Math.floor(totalWeeks * 0.25);
+  const cliff = Math.floor(totalWeeks * 0.75);
+
+  return useContractRead({
     address: RARI_MAINNET_CONTRACTS.VE_RARI_TOKEN,
     abi: VE_RARI_ABI,
     functionName: 'getLock',
-    args: [
-      parseEther(rariAmount || '0').toString(),
-      1,
-      RARI_LOCK_TIMEFRAMES[timeframe],
-    ],
+    args: [parseEther(rariAmount || '0').toString(), slopePeriod, cliff],
     enabled: !!rariAmount && parseFloat(rariAmount) > 0,
     chainId: mainnet.id,
   });
+};
