@@ -826,7 +826,10 @@ export const DelegatesProvider: React.FC<ProviderProps> = ({
             offChain: fetchedPeriod?.offChainVotesPct || 0,
           },
           votingWeight: item?.voteWeight,
-          delegatedVotes: +item.delegatedVotes || item.snapshotDelegatedVotes,
+          delegatedVotes:
+            +item.delegatedVotes > 0
+              ? +item.delegatedVotes
+              : +(item.snapshotDelegatedVotes || 0),
           twitterHandle: item.twitterHandle,
           discourseHandles: item.discourseHandles,
           discordHandle: item.discordHandle,

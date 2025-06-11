@@ -8,8 +8,103 @@
 
 - When you are suggesting something that can use URL, please always consider rootPathname of useDAO hook.
 - We should always first consider using react-query to fetch data.
+- Don't create comments in the code.
 
 # Pages
 
 - Currently, we have kind of duplicated pages directory "\_sites" and "[site]", so whenever you are creating a new page, please consider where to put in both places.
 - Do not use @chakra-ui/icons for icons, use react-icons library instead.
+
+# Authentication Patterns for Modals
+
+## Login-Required Modal Pattern
+
+When implementing modals that require wallet connection (like delegation modals), follow this established pattern:
+
+```typescript
+// Required imports
+import { useWallet, useAuth } from 'contexts';
+import { useState, useEffect } from 'react';
+
+// Component setup
+const { isConnected } = useWallet();
+const { isAuthenticated, authenticate } = useAuth();
+const [openModalAfterConnect, setOpenModalAfterConnect] = useState(false);
+
+// Connect and authenticate handler
+const handleConnectAndAuthenticate = () => {
+  setOpenModalAfterConnect(true);
+  authenticate(); // Handles both wallet connection and message signing
+};
+
+// Auto-open modal content after both connection and authentication
+useEffect(() => {
+  if (openModalAfterConnect && isConnected && isAuthenticated) {
+    setOpenModalAfterConnect(false);
+  }
+}, [isConnected, isAuthenticated, openModalAfterConnect]);
+
+// Clean up state on modal close
+const handleClose = () => {
+  setOpenModalAfterConnect(false);
+  onClose();
+};
+
+// Conditional rendering - check BOTH connection and authentication
+{!isConnected || !isAuthenticated ? (
+  renderLoginPrompt()
+) : (
+  // Modal content
+)}
+```
+
+**Key Components:**
+
+- **Dual Authentication Check**: Must check both `!isConnected || !isAuthenticated`
+- **Complete Authentication Flow**: Use `authenticate()` function that handles wallet connection + message signing
+- **Login Prompt**: Clear messaging about why both connection and authentication are needed
+- **Connect & Authenticate Button**: Single button that handles the complete flow
+- **State Management**: Tracks both connection and authentication state
+- **Seamless Flow**: Modal stays open after successful connection and authentication
+- **Security**: Ensures users have signed authentication message for secure access
+
+**Visual Standards:**
+
+- Center-aligned login prompt with proper spacing
+- Clear explanatory text about wallet connection and authentication requirement
+- Prominent connect button using theme colors
+- Consistent with existing modal authentication patterns
+
+This pattern is implemented in `RariLockAndDelegateModal` and should be used for any future modals requiring authentication.
+
+# Chain Configurations
+
+## Custom Chain Configuration Pattern
+
+- **Location**: Custom chain configurations should be placed in `utils/customChains/` for non-standard chains and `utils/mainnet/` for mainnet variants
+- **Structure**: Follow the wagmi/viem `Chain` interface pattern established in `utils/customChains/rari.ts` and `utils/mainnet/rpc.ts`
+- **RPC Redundancy**: Always include multiple RPC providers with fallbacks (public RPCs + conditional paid services)
+- **Environment Variables**: Support conditional RPC endpoints based on environment variables (Alchemy, Infura, etc.)
+- **Standard Contracts**: Include essential contracts like Multicall3, ENS when applicable
+- **WebSocket Support**: Provide both HTTP and WebSocket RPC URLs when available
+- **Block Explorers**: Configure multiple block explorer options with default preference
+
+## Example Pattern Structure:
+
+```typescript
+export const customChain: Chain = {
+  id: number,
+  name: string,
+  network: string,
+  nativeCurrency: { name, symbol, decimals },
+  rpcUrls: {
+    default: { http: [], webSocket: [] },
+    public: { http: [], webSocket: [] },
+    alchemy: { /* conditional based on env */ },
+    infura: { /* conditional based on env */ }
+  },
+  blockExplorers: { default, additional_options },
+  contracts: { /* standard contracts */ },
+  testnet: boolean
+}
+```

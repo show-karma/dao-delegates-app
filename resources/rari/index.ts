@@ -1,6 +1,7 @@
 import { IDAOConfig, IDAOTheme } from 'types';
 import { onChainRariVotesProvider } from 'utils/rari/onChainRariVotesProvider';
-import { mainnet } from 'wagmi/chains';
+import { rari as rariChain } from 'utils/customChains';
+import { mainnet } from 'utils/mainnet/rpc';
 import ABI from './ABI.json';
 
 const config: IDAOConfig = {
@@ -24,21 +25,27 @@ const config: IDAOConfig = {
     TIMEPERIOD: '90d',
     ORDERSTAT: 'karmaScore',
   },
-  DAO_CHAINS: [mainnet],
+  DAO_CHAINS: [mainnet, rariChain],
   DAO_TOKEN_CONTRACT: [
     {
-      contractAddress: ['0x096Bd9a7a2e703670088C05035e23c7a9F428496'],
+      contractAddress: ['0xCf78572A8fE97b2B9a4B9709f6a7D9a863c1b8E0'],
+      method: ['balanceOf'],
+      chain: rariChain,
+    },
+    {
+      contractAddress: ['0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF'],
       method: ['balanceOf'],
       chain: mainnet,
     },
   ],
   DAO_DELEGATE_CONTRACT: [
-    //   {
-    //     contractAddress: '0x096Bd9a7a2e703670088C05035e23c7a9F428496',
-    //     chain: mainnet,
-    //   },
+    {
+      contractAddress: ['0xCf78572A8fE97b2B9a4B9709f6a7D9a863c1b8E0'],
+      chain: rariChain,
+    },
   ],
-  DAO_DELEGATION_URL: 'https://rari.foundation/lock',
+  DAO_DELEGATE_FUNCTION: 'delegate',
+  DAO_CHECK_DELEGATION_FUNCTION: 'delegates',
   DAO_EXT_VOTES_PROVIDER: {
     onChain: onChainRariVotesProvider,
   },
@@ -48,6 +55,15 @@ const config: IDAOConfig = {
   EXCLUDED_VOTING_HISTORY_COLUMN: ['offChainVoteBreakdown'],
   ENABLE_HANDLES_EDIT: ['github'],
   EXCLUDED_CARD_FIELDS: ['healthScore', 'discordScore', 'offChainVotesPct'],
+  CUSTOM_DELEGATION: {
+    ENABLE_CUSTOM_DELEGATION: true,
+    PRIMARY_DELEGATION_CHAIN: mainnet.id,
+    SECONDARY_DELEGATION_CHAIN: rariChain.id,
+    MAINNET_CONTRACTS: {
+      RARI_TOKEN: '0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF',
+      VE_RARI_TOKEN: '0x096Bd9a7a2e703670088C05035e23c7a9F428496',
+    },
+  },
   DAO_HAS_REWARD_PROGRAM: true,
 };
 
@@ -141,33 +157,33 @@ const dark: IDAOTheme = {
       },
     },
     delegateTo: {
-      bg: '#FFFFFF',
-      userBg: '#FFFFFF',
-      userShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-      topBg: '#EBEDEF',
-      text: '#212328',
-      subtext: '#595A5E',
+      bg: '#1A1D21',
+      userBg: '#1A1D21',
+      userShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
+      topBg: '#2A2E35',
+      text: '#FFFFFF',
+      subtext: '#ADB8C0',
       input: {
-        placeholder: '#595A5E',
-        text: '#212328',
-        dirtyBorder: '#212328',
-        border: '#E6E6E6',
+        placeholder: '#ADB8C0',
+        text: '#FFFFFF',
+        dirtyBorder: '#FFFFFF',
+        border: '#404651',
         error: '#C80925',
-        bg: '#FFFFFF',
+        bg: '#1A1D21',
       },
       button: {
         disabled: {
-          bg: '#F2F4F9',
-          text: 'rgba(89, 90, 94, 0.5)',
+          bg: '#2A2E35',
+          text: 'rgba(173, 184, 192, 0.5)',
         },
         normal: {
-          bg: '#C80925',
-          text: '#FFFFFF',
+          bg: '#FFFFFF',
+          text: '#34383f',
         },
         alternative: {
           bg: 'transparent',
-          text: '#212328',
-          border: '#595A5E',
+          text: '#FFFFFF',
+          border: '#ADB8C0',
         },
       },
     },
@@ -364,7 +380,6 @@ const light: IDAOTheme = {
     socialMedia: '#595A5E',
   },
   loginModal: {
-    logo: 'daos/rari/logo_black.svg',
     background: '#FFFFFF',
     text: '#212328',
     footer: { bg: '#EBEDEF', text: '#212328' },

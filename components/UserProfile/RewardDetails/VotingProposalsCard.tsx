@@ -1,6 +1,7 @@
 import { Flex, Text, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react';
 import { useDAO } from 'contexts';
 import { FC } from 'react';
+import { formatDate } from 'utils';
 
 // Helper function for pluralization
 const pluralize = (word: string, count: number) =>
@@ -124,7 +125,7 @@ export const VotingProposalsCard: FC<VotingProposalsCardProps> = ({
                   color={theme.text}
                   fontSize="14px"
                 >
-                  {formatDate(proposal.votedAt)}
+                  {proposal.votedAt ? formatDate(proposal.votedAt) : '-'}
                 </Td>
               </Tr>
             ))

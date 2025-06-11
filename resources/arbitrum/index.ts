@@ -50,7 +50,7 @@ const config: IDAOConfig = {
   ENABLE_DELEGATE_TRACKER: true,
   DAO_HAS_COMPENSATION_PROGRAM: true,
   DAO_HAS_ORACLE_PROGRAM: true,
-  DAO_HAS_REWARD_PROGRAM: true,
+  DAO_HAS_REWARD_PROGRAM: false,
   DAO_CATEGORIES_TYPE: 'workstreams',
   ENABLE_HANDLES_EDIT: ['github'],
 };

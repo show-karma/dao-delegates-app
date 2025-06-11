@@ -29,10 +29,11 @@ import {
   DelegatedTokensByNetwork,
   DelegatedTokensByTrack,
 } from 'components/Popovers';
+import { RariLockAndDelegateModal } from 'components/Modals/VeRariLocking';
 import { useDAO, useDelegates } from 'contexts';
 import { IBreakdownProps } from 'contexts/scoreBreakdown';
 import { DELEGATOR_TRACKER_NOT_SUPPORTED_DAOS, LINKS } from 'helpers';
-import { useToasty } from 'hooks';
+import { useToasty, useRariConfig } from 'hooks';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import pluralize from 'pluralize';
@@ -154,13 +155,27 @@ interface IDelegateCardProps {
 
 export const DelegateCard: FC<IDelegateCardProps> = props => {
   const { data } = props;
-  const { daoInfo, theme, daoData } = useDAO();
+  const { daoInfo, theme, daoData, selectedDAO } = useDAO();
   const { selectProfile, period, setSelectedProfileData } = useDelegates();
   const { onCopy } = useClipboard(data?.address || '');
   const [isInterestsOpen, setIsInterestsOpen] = useState(false);
 
+  // RARI configuration and modal state management
+  const { hasCustomDelegation, isRariDAO } = useRariConfig();
+  const [isRariModalOpen, setIsRariModalOpen] = useState(false);
+
   const { config } = daoInfo;
   const isLoaded = !!data;
+
+  // Handler for RARI delegation
+  const handleRariDelegation = () => {
+    if (!data) return;
+    setIsRariModalOpen(true);
+  };
+
+  const handleRariModalClose = () => {
+    setIsRariModalOpen(false);
+  };
 
   const getScore = () => {
     if (data?.gitcoinHealthScore) return formatNumber(data.gitcoinHealthScore);
@@ -968,7 +983,9 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
                       delegated={data.address}
                       px={['4', '8']}
                       beforeOnClick={() => {
-                        if (config.ALLOW_BULK_DELEGATE) {
+                        if (hasCustomDelegation && isRariDAO) {
+                          handleRariDelegation();
+                        } else if (config.ALLOW_BULK_DELEGATE) {
                           handleAddToDelegatePool(data);
                         } else {
                           setSelectedProfileData(data);
@@ -1112,6 +1129,16 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
           )}
         </Flex>
       </Flex>
+
+      {/* RARI Lock and Delegate Modal */}
+      {hasCustomDelegation && isRariDAO && data && (
+        <RariLockAndDelegateModal
+          isOpen={isRariModalOpen}
+          onClose={handleRariModalClose}
+          delegateAddress={data.address}
+          delegateName={data.realName || data.ensName}
+        />
+      )}
     </Flex>
   );
 };

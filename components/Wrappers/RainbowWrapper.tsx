@@ -13,6 +13,7 @@ import {
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { useDAO } from 'contexts';
 import { getEASChainInfo, talismanWallet } from 'utils';
 import { optimism } from 'wagmi/chains';
@@ -26,12 +27,33 @@ export const RainbowWrapper: React.FC<ProviderProps> = ({ children }) => {
 
   const { config } = daoInfo;
 
+  // Create a jsonRpcProvider that supports all chains including custom ones
+  const customRpcProvider = jsonRpcProvider({
+    rpc: chain => {
+      // Check if the chain has rpcUrls defined
+      if (chain.rpcUrls?.default?.http?.[0]) {
+        return {
+          http: chain.rpcUrls.default.http[0],
+        };
+      }
+      // Fallback to public RPC if available
+      if (chain.rpcUrls?.public?.http?.[0]) {
+        return {
+          http: chain.rpcUrls.public.http[0],
+        };
+      }
+      // Return null if no RPC URL is found
+      return null;
+    },
+  });
+
   const rpcs = [
     process.env.NEXT_PUBLIC_ALCHEMY_KEY
       ? alchemyProvider({
           apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
         })
       : publicProvider(),
+    customRpcProvider, // Add the custom RPC provider
     config.CUSTOM_RPC ? config.CUSTOM_RPC : null,
   ].filter(item => item !== null);
 
