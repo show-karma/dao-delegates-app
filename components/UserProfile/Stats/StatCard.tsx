@@ -13,7 +13,9 @@ export const StatCard: FC<StatCardProps> = ({ amount, title }) => {
       display="flex"
       flexDirection="column"
       gap="1"
-      w={{ base: '120px', lg: '140px' }}
+      maxW={{ base: '120px', lg: '180px' }}
+      w="max-content"
+      minW={{ base: '120px', lg: '140px' }}
       height="120px"
       borderWidth="1px"
       borderStyle="solid"
