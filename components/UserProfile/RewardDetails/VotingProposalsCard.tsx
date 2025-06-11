@@ -74,7 +74,7 @@ export const VotingProposalsCard: FC<VotingProposalsCardProps> = ({
             </Text>
           </Text>
           <Text fontSize="14px" fontWeight={500} color={theme.subtitle}>
-            • Participation Rate - {formatParticipationRate(votedPct)}%
+            Participation Rate - {formatParticipationRate(votedPct)}%
           </Text>
         </Flex>
       </Flex>
