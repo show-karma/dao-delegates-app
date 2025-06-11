@@ -31,7 +31,6 @@ import { IoCopy } from 'react-icons/io5';
 import { IActiveTab, IDelegate } from 'types';
 import { convertHexToRGBA, truncateAddress } from 'utils';
 import { NameEditable, PictureEditable } from '../EditProfile';
-import { StatsRow } from '../Stats';
 import { MediaIcon } from './MediaIcon';
 import { NavigatorRow } from './NavigatorRow';
 import { ProxySwitch } from './ProxySwitch';
@@ -474,10 +473,6 @@ export const Header: FC<IHeader> = ({ activeTab, changeTab, profile }) => {
 
         <UserSection profile={profile} changeTab={changeTab} />
       </Flex>
-      <Flex>
-        <StatsRow />
-      </Flex>
-
       <NavigatorRow
         activeTab={activeTab}
         changeTab={changeTab}

@@ -62,7 +62,7 @@ export const StatsRow = () => {
       id: 'delegatorCount',
     },
     {
-      title: 'Score',
+      title: 'Lifetime Score',
       amount: getScore(),
       id: getScoreId(),
     },

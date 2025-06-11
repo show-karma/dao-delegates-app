@@ -4,7 +4,7 @@ import { FC } from 'react';
 import { IDelegate } from 'types';
 import { useOracleBreakdown } from 'hooks/useOracleBreakdown';
 import { VotingProposalsCard } from './VotingProposalsCard';
-import { ScoreBreakdownCard } from './ScoreBreakdownCard';
+import { RewardStatsRow } from './RewardStatsRow';
 
 interface IRewardDetailsProps {
   profile: IDelegate;
@@ -80,9 +80,10 @@ export const RewardDetails: FC<IRewardDetailsProps> = ({ profile }) => {
 
   return (
     <Flex flexDir="column" w="full" px={{ base: '4', lg: '6' }} py="6" gap="6">
-      {/* Score Breakdown */}
-      <ScoreBreakdownCard
-        totalScore={breakdown?.formulaBreakdown?.finalScore || 0}
+      {/* Reward Stats Cards */}
+      <RewardStatsRow
+        participationRate={(breakdown?.onChainData?.votedPct || 0) * 100}
+        oracleScore={breakdown?.formulaBreakdown?.finalScore}
       />
 
       {/* OnChain Proposals Table - only show if there are proposals */}

@@ -15,6 +15,7 @@ import { convertHexToRGBA } from 'utils';
 import { Sidebar } from '../Modals/Sidebar';
 import { NoStatement } from './NoStatement';
 import { SelectSavingMethod } from './SelectSavingMethod';
+import { StatsRow } from './Stats';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 const MDPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
@@ -143,6 +144,10 @@ export const Statement: FC = () => {
 
   return (
     <Flex flexDir="column" gap="1" mb="10" w="full" flex="2">
+      {/* Display stats cards at the top of the overview tab */}
+      <Flex mb="8">
+        <StatsRow />
+      </Flex>
       {isEditing && (
         <Flex flexDir="column" gap="1.5" mb={{ base: '5', lg: '5' }}>
           <Text

@@ -31,6 +31,16 @@ export const VotingProposalsCard: FC<VotingProposalsCardProps> = ({
 }) => {
   const { theme } = useDAO();
 
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
   const getTableTitle = () =>
     type === 'onChain' ? 'Onchain Proposals' : 'Snapshot Proposals';
 
