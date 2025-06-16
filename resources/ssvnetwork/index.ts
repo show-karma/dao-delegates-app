@@ -48,11 +48,19 @@ const config: IDAOConfig = {
   ],
   DAO_FORUM_TYPE: 'discourse',
   DAO_GTAG: 'G-67LDHT697P',
+  GET_ENVOLVED_URL: 'https://ssv.network/governance',
+  APPLY_AS_DELEGATE_URL:
+    'https://forum.ssv.network/t/apply-as-a-delegate-for-ssv-network-dao/1130',
   DAO_DEFAULT_SETTINGS: {
     SORT: 'score',
     FAQ: true,
+    GUIDE: false,
+    STATUS_FILTER: {
+      DEFAULT_STATUS_SELECTED: ['active'],
+      CUSTOM_STATUS: ['active', 'withdrawn', 'inactive'],
+    },
   },
-  EXCLUDED_CARD_FIELDS: ['onChainVotesPct', 'healthScore', 'discordScore'],
+  EXCLUDED_CARD_FIELDS: ['onChainVotesPct', 'healthScore'],
   EXCLUDED_VOTING_HISTORY_COLUMN: ['onChainVoteBreakdown'],
   ENABLE_DELEGATE_TRACKER: true,
   DAO_DISCORD_CHANNEL:
