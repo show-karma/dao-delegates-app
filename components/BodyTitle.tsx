@@ -173,7 +173,7 @@ export const BodyTitle: FC = () => {
               flexWrap="wrap"
               w="full"
             >
-              {(config.GOVERNANCE_FORUM) && (
+              {config.GOVERNANCE_FORUM && (
                 <Link
                   href={config.GOVERNANCE_FORUM}
                   isExternal
@@ -275,7 +275,7 @@ export const BodyTitle: FC = () => {
                 </Button>
               </Link>
 
-              {(config.APPLY_AS_DELEGATE_URL) && (
+              {config.APPLY_AS_DELEGATE_URL && (
                 <Link
                   href={config.APPLY_AS_DELEGATE_URL}
                   isExternal

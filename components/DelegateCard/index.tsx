@@ -1077,7 +1077,7 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
                     <DiscordIcon w="17px" h="17px" />
                   </Link>
                 )}
-                
+
                 {data?.discussionThread && (
                   <Link
                     href={data.discussionThread}

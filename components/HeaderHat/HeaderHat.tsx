@@ -151,7 +151,6 @@ export const HeaderHat: FC<IHeaderHat> = ({
     }
   }, [shouldOpenDelegateToAnyone]);
 
-
   return (
     <Flex flexDir="column" w="full">
       <Flex
