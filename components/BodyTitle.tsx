@@ -232,7 +232,7 @@ export const BodyTitle: FC = () => {
                 </Link>
               )}
               <Link
-                href={config.GET_ENVOLVED_URL || config.DAO_URL}
+                href={config.GET_INVOLVED_URL || config.DAO_URL}
                 isExternal
                 _hover={{}}
                 w={{ base: 'full', md: 'max-content' }}

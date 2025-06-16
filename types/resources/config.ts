@@ -67,7 +67,7 @@ export interface IDAOConfig {
   DAO_GTAG?: string;
   HEADER_MARGIN?: boolean;
   DAO_DISCORD_CHANNEL?: string;
-  GET_ENVOLVED_URL?: string;
+  GET_INVOLVED_URL?: string;
   APPLY_AS_DELEGATE_URL?: string;
   DAO_DEFAULT_SETTINGS?: {
     FAQ?: boolean;

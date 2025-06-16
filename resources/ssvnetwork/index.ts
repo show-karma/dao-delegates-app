@@ -48,7 +48,7 @@ const config: IDAOConfig = {
   ],
   DAO_FORUM_TYPE: 'discourse',
   DAO_GTAG: 'G-67LDHT697P',
-  GET_ENVOLVED_URL: 'https://ssv.network/governance',
+  GET_INVOLVED_URL: 'https://ssv.network/governance',
   APPLY_AS_DELEGATE_URL:
     'https://forum.ssv.network/t/apply-as-a-delegate-for-ssv-network-dao/1130',
   DAO_DEFAULT_SETTINGS: {
