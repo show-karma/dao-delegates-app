@@ -151,6 +151,7 @@ export const HeaderHat: FC<IHeaderHat> = ({
     }
   }, [shouldOpenDelegateToAnyone]);
 
+
   return (
     <Flex flexDir="column" w="full">
       <Flex
@@ -193,9 +194,11 @@ export const HeaderHat: FC<IHeaderHat> = ({
                   accordion
                 />
               )}
-              <ChakraLink href={`${rootPathname}/guide`} _hover={{}}>
-                <StyledButton>Guide</StyledButton>
-              </ChakraLink>
+              {daoInfo.config.DAO_DEFAULT_SETTINGS?.GUIDE !== false && (
+                <ChakraLink href={`${rootPathname}/guide`} _hover={{}}>
+                  <StyledButton>Guide</StyledButton>
+                </ChakraLink>
+              )}
               {daoInfo.config.DAO_DEFAULT_SETTINGS?.FAQ && (
                 <ChakraLink href={`${rootPathname}/faq`} _hover={{}} w="full">
                   <StyledButton w="full">FAQs</StyledButton>
@@ -283,9 +286,11 @@ export const HeaderHat: FC<IHeaderHat> = ({
 
                   {isSmallScreen ? null : (
                     <>
-                      <ChakraLink href={`${rootPathname}/guide`} _hover={{}}>
-                        <StyledButton>Guide</StyledButton>
-                      </ChakraLink>
+                      {daoInfo.config.DAO_DEFAULT_SETTINGS?.GUIDE !== false && (
+                        <ChakraLink href={`${rootPathname}/guide`} _hover={{}}>
+                          <StyledButton>Guide</StyledButton>
+                        </ChakraLink>
+                      )}
                       {daoInfo.config.DAO_DEFAULT_SETTINGS?.FAQ && (
                         <ChakraLink href={`${rootPathname}/faq`} _hover={{}}>
                           <StyledButton>FAQs</StyledButton>

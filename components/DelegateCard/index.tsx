@@ -52,7 +52,7 @@ import {
 import { ChakraLink } from 'components/ChakraLink';
 import { HandlesTooltip } from 'components/HandlesTooltip';
 import { DelegateButton } from '../DelegateButton';
-import { ThreadIcon, WebsiteIcon } from '../Icons';
+import { DiscordIcon, ThreadIcon, WebsiteIcon } from '../Icons';
 import { ImgWithFallback } from '../ImgWithFallback';
 import { ExpandableCardText } from './ExpandableCardText';
 import { StatsCarousel } from './StatsCarousel';
@@ -1062,40 +1062,22 @@ export const DelegateCard: FC<IDelegateCardProps> = props => {
                   )}
 
                 {data.discordUsername && (
-                  <Popover>
-                    <PopoverTrigger>
-                      <Button
-                        color={theme.card.socialMedia}
-                        _hover={{
-                          transform: 'scale(1.25)',
-                        }}
-                        h="max-content"
-                        w="min-content"
-                        minW="min-content"
-                        maxW="min-content"
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        px="0"
-                        bg="transparent"
-                        _active={{}}
-                        _focus={{}}
-                        _focusWithin={{}}
-                      />
-                    </PopoverTrigger>
-                    <PopoverContent
-                      w="max-content"
-                      color={theme.card.interests.text}
-                      bg={theme.background}
-                    >
-                      <PopoverArrow
-                        color={theme.card.interests.text}
-                        bg={theme.background}
-                      />
-                      <PopoverBody>{data.discordUsername}</PopoverBody>
-                    </PopoverContent>
-                  </Popover>
+                  <Link
+                    href={`https://discordapp.com/users/${data.discordHandle}`}
+                    isExternal
+                    color={theme.card.socialMedia}
+                    _hover={{
+                      transform: 'scale(1.25)',
+                    }}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    h="max-content"
+                  >
+                    <DiscordIcon w="17px" h="17px" />
+                  </Link>
                 )}
+                
                 {data?.discussionThread && (
                   <Link
                     href={data.discussionThread}

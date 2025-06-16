@@ -173,7 +173,7 @@ export const BodyTitle: FC = () => {
               flexWrap="wrap"
               w="full"
             >
-              {config.GOVERNANCE_FORUM && (
+              {(config.GOVERNANCE_FORUM) && (
                 <Link
                   href={config.GOVERNANCE_FORUM}
                   isExternal
@@ -222,7 +222,7 @@ export const BodyTitle: FC = () => {
                     }}
                     w={{ base: 'full', md: 'max-content' }}
                   >
-                    View discussion
+                    Join discussion
                     <Icon
                       as={TbExternalLink}
                       ml="2.5"
@@ -232,7 +232,7 @@ export const BodyTitle: FC = () => {
                 </Link>
               )}
               <Link
-                href={config.DAO_URL}
+                href={config.GET_ENVOLVED_URL || config.DAO_URL}
                 isExternal
                 _hover={{}}
                 w={{ base: 'full', md: 'max-content' }}
@@ -266,7 +266,7 @@ export const BodyTitle: FC = () => {
                   }}
                   w={{ base: 'full', md: 'max-content' }}
                 >
-                  Learn more & Get Involved
+                  Get Involved
                   <Icon
                     as={TbExternalLink}
                     ml="2.5"
@@ -274,6 +274,65 @@ export const BodyTitle: FC = () => {
                   />
                 </Button>
               </Link>
+
+              {(config.APPLY_AS_DELEGATE_URL) && (
+                <Link
+                  href={config.APPLY_AS_DELEGATE_URL}
+                  isExternal
+                  _hover={{}}
+                  w={{ base: 'full', md: 'max-content' }}
+                  {...(theme.brandingImageColor && {
+                    style: {
+                      backgroundImage: theme.brandingImageColor,
+                      padding: '2px',
+                      borderRadius: '6px',
+                    },
+                  })}
+                >
+                  <Button
+                    px={{ base: '3', md: '6' }}
+                    py={{
+                      base: theme.brandingImageColor ? '14px' : '4',
+                      md: theme.brandingImageColor ? '22px' : '6',
+                    }}
+                    justifyContent={{ base: 'space-between', lg: 'center' }}
+                    borderRadius="base"
+                    borderWidth="1px"
+                    borderColor={theme.branding}
+                    borderStyle="solid"
+                    background={theme.branding}
+                    fontSize={{ base: 'sm', md: 'md' }}
+                    fontFamily="heading"
+                    color={theme.buttonText}
+                    _hover={{
+                      bgColor: theme.branding,
+                      opacity: 0.8,
+                    }}
+                    _focusVisible={{
+                      bgColor: theme.branding,
+                      opacity: 0.8,
+                    }}
+                    _focusWithin={{
+                      bgColor: theme.branding,
+                      opacity: 0.8,
+                    }}
+                    _focus={{
+                      opacity: 0.8,
+                    }}
+                    _active={{
+                      opacity: 0.8,
+                    }}
+                    w={{ base: 'full', md: 'max-content' }}
+                  >
+                    Apply as Delegate
+                    <Icon
+                      as={TbExternalLink}
+                      ml="2.5"
+                      boxSize={{ base: '4', lg: '4' }}
+                    />
+                  </Button>
+                </Link>
+              )}
             </Flex>
           </Flex>
           <Icon
