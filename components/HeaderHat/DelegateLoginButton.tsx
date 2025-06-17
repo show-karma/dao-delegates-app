@@ -174,7 +174,7 @@ const LoginButton: FC<{ onOpen: () => void }> = ({ onOpen }) => {
         alignItems="center"
         fontSize={{ base: 'sm', lg: 'md' }}
       >
-        Delegate Sign Up / Login
+        Delegate Login
         {isMobile ? (
           <Box display={{ base: 'flex', md: 'none' }}>
             <ArrowRightIcon boxSize="14px" />
