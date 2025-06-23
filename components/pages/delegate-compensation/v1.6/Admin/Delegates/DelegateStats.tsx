@@ -487,7 +487,7 @@ export const DelegateStats = () => {
         </Flex>
 
         {/* Penalty Points Card */}
-        {isPenaltyMonth ? (
+        {isPenaltyMonth && delegateInfo?.stats?.securityPenaltyBreakdown ? (
           <Flex
             flexDir="row"
             bg={theme.compensation?.card.bg}
