@@ -7,7 +7,7 @@ import { IChainRow } from 'types';
 const RARI_GOVERNANCE_SUBGRAPH_URLS: Record<number, string> = {
   1: 'https://api.studio.thegraph.com/query/63515/onchain-voting-rari/version/latest', // Mainnet
   1380012617:
-    'https://api.goldsky.com/api/public/project_cm8sydf8wvsad01ye3qsj9emk/subgraphs/goldsky-onchain-voting-rari/v1.0.0/gn', // RARI Chain
+    'https://api.goldsky.com/api/public/project_cm8sydf8wvsad01ye3qsj9emk/subgraphs/goldsky-onchain-voting-rari/latest/gn', // RARI Chain
 };
 
 const VOTING_HISTORY = {
