@@ -91,22 +91,31 @@ export const GovernanceVotesProvider: React.FC<ProviderProps> = ({
             Promise.all(
               contracts.flatMap(contract =>
                 contract.contractAddress.map(async address => {
-                  const args = walletAddress ? [walletAddress] : [];
-                  const balance = await readContract({
-                    address: address as Hex,
-                    abi: contract.ABI || daoInfo.TOKEN_ABI,
-                    functionName: contract.method[0],
-                    args,
-                    chainId: contract.chain.id,
-                  });
-                  const fromWeiAmount = balance
-                    ? formatEther(BigNumber.from(balance))
-                    : '0';
-                  return {
-                    chain,
-                    value: fromWeiAmount,
-                    contractAddress: address,
-                  } as MultiChainResult;
+                  try {
+                    const args = walletAddress ? [walletAddress] : [];
+                    const balance = await readContract({
+                      address: address as Hex,
+                      abi: contract.ABI || daoInfo.TOKEN_ABI,
+                      functionName: contract.method[0],
+                      args,
+                      chainId: contract.chain.id,
+                    });
+                    const fromWeiAmount = balance
+                      ? formatEther(BigNumber.from(balance))
+                      : '0';
+                    return {
+                      chain,
+                      value: fromWeiAmount,
+                      contractAddress: address,
+                    } as MultiChainResult;
+                  } catch (error) {
+                    console.error('Error fetching balance for', address, error);
+                    return {
+                      chain,
+                      value: '0',
+                      contractAddress: address,
+                    } as MultiChainResult;
+                  }
                 })
               )
             ),

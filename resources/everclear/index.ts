@@ -1,6 +1,7 @@
 import { IDAOConfig, IDAOTheme } from 'types';
 import { customGnosis } from 'utils/customChains';
-import { arbitrum, bsc, mainnet, optimism, polygon } from 'wagmi/chains';
+import { arbitrum, mainnet, optimism, polygon } from 'wagmi/chains';
+import { customBSC as bsc } from 'utils/customChains/bsc';
 // import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { customEverclear } from 'utils/customChains/everclear';
 import { publicProvider } from 'wagmi/providers/public';
