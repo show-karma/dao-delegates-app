@@ -93,8 +93,9 @@ export const MultiChain: React.FC<StepProps> = ({
     }).then(async () => {
       toast({
         title: 'Success',
-        description: `You have successfully delegated to ${delegatedUser.ensName || delegatedUser.address
-          } on ${chain?.name}`,
+        description: `You have successfully delegated to ${
+          delegatedUser.ensName || delegatedUser.address
+        } on ${chain?.name}`,
         status: 'success',
       });
       handleModal();
@@ -318,10 +319,11 @@ export const MultiChain: React.FC<StepProps> = ({
               >
                 <Flex alignItems="center" gap="2" mb="2">
                   <Image
-                    src={`/images/chains/${config.DAO_TOKEN_CONTRACT?.find(
-                      c => c.chain.id === +chainId
-                    )?.chain.network
-                      }.svg`}
+                    src={`/images/chains/${
+                      config.DAO_TOKEN_CONTRACT?.find(
+                        c => c.chain.id === +chainId
+                      )?.chain.network
+                    }.svg`}
                     alt={
                       config.DAO_TOKEN_CONTRACT?.find(
                         c => c.chain.id === +chainId
