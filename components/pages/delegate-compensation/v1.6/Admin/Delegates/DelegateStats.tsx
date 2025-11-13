@@ -75,7 +75,7 @@ export const DelegateStats = () => {
 
   const isPenaltyMonth =
     (selectedDate?.value.month &&
-      ([4,5,10].includes(selectedDate?.value.month)) &&
+      ([4, 5, 10].includes(selectedDate?.value.month)) &&
       selectedDate?.value.year === 2025);
 
   return (
