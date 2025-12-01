@@ -239,7 +239,7 @@ export const DelegateCompensationAdmin = () => {
           COMPENSATION_DATES.versions.find(v => v.version === 'v1.5')
             ?.startDate || new Date(COMPENSATION_DATES.versions[1].startDate)
         }
-        maximumPeriod={new Date()}
+        maximumPeriod={COMPENSATION_DATES.AVAILABLE_MAX}
       />
       <Flex my="8" flexDir="row" align="center" gap="4">
         <Switch

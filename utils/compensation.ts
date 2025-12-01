@@ -63,7 +63,7 @@ export const compensation: ICompensationDates = {
           // No endDate means it's the current version
         },
       ],
-      AVAILABLE_MAX: new Date(),
+      AVAILABLE_MAX: new Date('2025-11-30'),
       DEFAULT_SELECTED: calculateDefaultSelected(),
     },
     zksync: {
