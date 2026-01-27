@@ -64,7 +64,7 @@ export const compensation: ICompensationDates = {
         },
       ],
       AVAILABLE_MAX: new Date('2025-11-30'),
-      DEFAULT_SELECTED: calculateDefaultSelected(),
+      DEFAULT_SELECTED: new Date('2025-10-10'),
     },
     zksync: {
       versions: [
