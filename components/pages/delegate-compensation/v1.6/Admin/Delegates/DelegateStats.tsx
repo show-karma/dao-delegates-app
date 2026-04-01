@@ -74,9 +74,10 @@ export const DelegateStats = () => {
   const isMonthFinished = proposalsData?.finished || false;
 
   const isPenaltyMonth =
-    (selectedDate?.value.month &&
-      ([4,5,10].includes(selectedDate?.value.month)) &&
-      selectedDate?.value.year === 2025);
+  (selectedDate?.value.month &&
+    selectedDate?.value.month >= 4 &&
+    selectedDate?.value.year === 2025) ||
+  (selectedDate?.value.year && selectedDate?.value.year > 2025);
 
   return (
     <Flex flexDir="column" w="full" gap="5">
@@ -486,7 +487,7 @@ export const DelegateStats = () => {
         </Flex>
 
         {/* Penalty Points Card */}
-        {isPenaltyMonth ? (
+        {isPenaltyMonth && delegateInfo?.stats?.securityPenaltyBreakdown ? (
           <Flex
             flexDir="row"
             bg={theme.compensation?.card.bg}
