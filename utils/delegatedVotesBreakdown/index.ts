@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const chainsDelegatesData = {
-  1: 'https://gateway-arbitrum.network.thegraph.com/api/e25da26d50f6fced18c2b28649290d0b/subgraphs/id/BaVcsEz8hxtxkKUstFJ9S6fWZzWGzPgsccm85vALi1x3?source=karma',
+  1: 'https://api.goldsky.com/api/public/project_cm8sydf8wvsad01ye3qsj9emk/subgraphs/dao-delegates/prod/gn',
   10: 'https://gateway-arbitrum.network.thegraph.com/api/e25da26d50f6fced18c2b28649290d0b/subgraphs/id/FbqvXdcPpy83YnvoKiQkZQFYWWapDqdJbU7DupMhqwd1?source=karma',
   137: 'https://gateway-arbitrum.network.thegraph.com/api/e25da26d50f6fced18c2b28649290d0b/subgraphs/id/9HtFUEhLZuAC88d226RN4W3ywRhFcvNP5yTBE11HkE8T?source=karma',
   42161:
