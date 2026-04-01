@@ -49,7 +49,7 @@ function concatOnChainProposals(proposals: any[], votes: any[]) {
 async function fetchOnChainProposals(
   daoName: string | string[],
   skipIds: string[],
-  clientUrl = 'https://gateway-arbitrum.network.thegraph.com/api/e25da26d50f6fced18c2b28649290d0b/subgraphs/id/DobC2bZLMCBMExAGWBzGWaYg8DwkqVkxyjt7hiM4YA9y?source=karma'
+  clientUrl = 'https://api.goldsky.com/api/public/project_cm8sydf8wvsad01ye3qsj9emk/subgraphs/dao-on-chain-voting/prod/gn'
 ): Promise<any[]> {
   if (!daoName) return [];
   const onChainClient = new ApolloClient({
@@ -75,7 +75,7 @@ async function fetchOnChainProposals(
 async function fetchOnChainProposalVotes(
   daoName: string | string[],
   address: string,
-  clientUrl = 'https://gateway-arbitrum.network.thegraph.com/api/e25da26d50f6fced18c2b28649290d0b/subgraphs/id/DobC2bZLMCBMExAGWBzGWaYg8DwkqVkxyjt7hiM4YA9y?source=karma'
+  clientUrl = 'https://api.goldsky.com/api/public/project_cm8sydf8wvsad01ye3qsj9emk/subgraphs/dao-on-chain-voting/prod/gn'
 ) {
   if (!daoName || !address) return [];
   try {
