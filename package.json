@@ -46,7 +46,7 @@
     "karma-score": "git+https://github.com/show-karma/reputation-scores.git#7bfbaae",
     "lodash.debounce": "^4.0.8",
     "lodash.startcase": "^4.4.0",
-    "markdown-it": "^13.0.1",
+    "markdown-it": "^14.1.1",
     "mixpanel-browser": "^2.45.0",
     "moment": "^2.29.4",
     "next": "12.2.5",
